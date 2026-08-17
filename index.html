@@ -1,209 +1,107 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>رصد السلوك المتميز - School Stars</title>
+<title>نظام رصد السلوك المتميز</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  :root{
-    --bg:#f5f7fb;
-    --card:#ffffff;
-    --ink:#1f2937;
-    --muted:#6b7280;
-    --line:#e5e7eb;
-    --primary:#4f46e5;
-    --primary-2:#6366f1;
-    --accent:#f59e0b;
-    --accent-2:#fbbf24;
-    --good:#10b981;
-    --bad:#ef4444;
-    --shadow:0 10px 25px -10px rgba(79,70,229,.25), 0 2px 6px rgba(0,0,0,.04);
-  }
+  :root{--bg:#f5f7fb;--card:#ffffff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--primary:#4f46e5;--primary-2:#6366f1;--accent:#f59e0b;--accent-2:#fbbf24;--good:#10b981;--bad:#ef4444;--shadow:0 10px 25px -10px rgba(79,70,229,.25),0 2px 6px rgba(0,0,0,.04)}
   *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Tajawal','Cairo',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Tajawal','Cairo',system-ui,sans-serif}
   a{color:var(--primary)}
-  header.app{
-    background:linear-gradient(135deg,var(--primary) 0%,var(--primary-2) 100%);
-    color:#fff;padding:18px 22px;display:flex;align-items:center;gap:14px;
-    box-shadow:0 4px 20px rgba(79,70,229,.25);
-  }
-  header.app .logo{
-    width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.18);
-    display:grid;place-items:center;font-size:24px;backdrop-filter:blur(6px)
-  }
-  header.app h1{margin:0;font-size:1.35rem;font-weight:800;letter-spacing:-.3px}
+  header.app{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;padding:16px 22px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(79,70,229,.25)}
+  header.app .logo{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:24px;flex-shrink:0}
+  header.app h1{margin:0;font-size:1.3rem;font-weight:800}
   header.app .sub{font-size:.85rem;opacity:.85;margin-top:2px}
-
+  #save-status{font-size:.78rem;opacity:.95;font-weight:700;margin-top:3px}
   .container{max-width:1200px;margin:0 auto;padding:18px}
-
-  .tabs{
-    display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;
-    background:var(--card);padding:8px;border-radius:14px;box-shadow:var(--shadow);
-  }
-  .tab{
-    flex:1 1 130px;text-align:center;padding:10px 12px;border-radius:10px;cursor:pointer;
-    font-weight:700;color:var(--muted);transition:.2s;border:1px solid transparent;user-select:none;
-  }
+  .banner{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;border-radius:12px;padding:12px 16px;font-weight:700;margin-bottom:16px;display:none;font-size:.92rem}
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;background:var(--card);padding:8px;border-radius:14px;box-shadow:var(--shadow)}
+  .tab{flex:1 1 120px;text-align:center;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;color:var(--muted);transition:.2s;border:1px solid transparent;user-select:none}
   .tab.active{background:var(--primary);color:#fff;box-shadow:0 6px 16px -6px rgba(79,70,229,.6)}
   .tab:not(.active):hover{background:#f1f5f9}
-
   .panel{display:none;animation:fade .25s ease}
   .panel.active{display:block}
   @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-
-  .card{
-    background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px
-  }
+  .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
   .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
   .grid{display:grid;gap:14px}
   .g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
   .g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-  .g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
-
-  label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:6px;font-weight:600}
-  input[type=text],input[type=number],select,textarea{
-    width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;
-    font-family:inherit;font-size:1rem;background:#fff;transition:.2s;color:var(--ink)
-  }
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
-
-  button{
-    cursor:pointer;border:none;font-family:inherit;font-weight:700;border-radius:10px;
-    padding:10px 16px;font-size:.95rem;transition:.2s;display:inline-flex;align-items:center;gap:6px
-  }
-  .btn-primary{background:var(--primary);color:#fff}
-  .btn-primary:hover{background:var(--primary-2)}
-  .btn-soft{background:#eef2ff;color:var(--primary)}
-  .btn-soft:hover{background:#e0e7ff}
-  .btn-gold{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
-  .btn-gold:hover{filter:brightness(1.05)}
-  .btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--line)}
-  .btn-ghost:hover{background:#f1f5f9}
-  .btn-danger{background:#fee2e2;color:var(--bad)}
-  .btn-danger:hover{background:#fecaca}
-  .btn-sm{padding:6px 10px;font-size:.85rem;border-radius:8px}
-
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
-  .stat{
-    background:var(--card);border-radius:14px;padding:16px;box-shadow:var(--shadow);
-    display:flex;align-items:center;gap:12px
-  }
-  .stat .icon{
-    width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex-shrink:0
-  }
+  .stat{background:var(--card);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
+  .stat .icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex-shrink:0}
   .stat .num{font-size:1.5rem;font-weight:800;line-height:1}
   .stat .lbl{font-size:.82rem;color:var(--muted);margin-top:2px}
-  .i-purple{background:#ede9fe;color:var(--primary)}
-  .i-gold{background:#fef3c7;color:var(--accent)}
-  .i-green{background:#d1fae5;color:var(--good)}
-  .i-pink{background:#fce7f3;color:#db2777}
-
-  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:.82rem;font-weight:700}
-  .chip-good{background:#d1fae5;color:#047857}
-  .chip-neutral{background:#e0e7ff;color:#4338ca}
-
-  table{width:100%;border-collapse:collapse;font-size:.95rem}
-  th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line)}
-  th{color:var(--muted);font-weight:700;font-size:.82rem;text-transform:uppercase;letter-spacing:.3px}
-  tr:hover td{background:#f9fafb}
-
-  .student-list,.behaviors-list{display:grid;gap:10px}
-  .student-card{
-    background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;
-    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap
-  }
+  .i-purple{background:#ede9fe;color:var(--primary)}.i-gold{background:#fef3c7;color:var(--accent)}.i-green{background:#d1fae5;color:var(--good)}.i-pink{background:#fce7f3;color:#db2777}
+  label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:6px;font-weight:600}
+  input[type=text],input[type=number],select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:1rem;background:#fff;transition:.2s;color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
+  button{cursor:pointer;border:none;font-family:inherit;font-weight:700;border-radius:10px;padding:10px 16px;font-size:.95rem;transition:.2s;display:inline-flex;align-items:center;gap:6px}
+  .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-2)}
+  .btn-soft{background:#eef2ff;color:var(--primary)}.btn-soft:hover{background:#e0e7ff}
+  .btn-gold{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
+  .btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--line)}.btn-ghost:hover{background:#f1f5f9}
+  .btn-danger{background:#fee2e2;color:var(--bad)}.btn-danger:hover{background:#fecaca}
+  .btn-sm{padding:6px 10px;font-size:.85rem;border-radius:8px}
+  .student-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .student-list{display:grid;gap:10px}
   .student-card .left{display:flex;align-items:center;gap:12px}
-  .avatar{
-    width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
-    background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;font-weight:800;font-size:.95rem;flex-shrink:0
-  }
+  .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;font-weight:800;font-size:.95rem;flex-shrink:0}
   .stars{color:var(--accent);font-size:.95rem;letter-spacing:1px}
   .actions{display:flex;gap:6px;flex-wrap:wrap}
-
   .behaviors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-  .behavior-card{
-    background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center;
-    cursor:pointer;transition:.15s;position:relative
-  }
+  .behavior-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:.15s;position:relative}
   .behavior-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
   .behavior-card .emoji{font-size:30px;display:block;margin-bottom:6px}
   .behavior-card .name{font-weight:700;font-size:.95rem}
   .behavior-card .pts{display:inline-block;margin-top:6px;background:#fef3c7;color:#92400e;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:700}
-
   .leaderboard{display:flex;flex-direction:column;gap:10px}
-  .lb-item{
-    background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;
-    display:flex;align-items:center;gap:12px
-  }
-  .lb-rank{
-    width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:800;flex-shrink:0
-  }
+  .lb-item{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px}
+  .lb-rank{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:800;flex-shrink:0}
   .rank-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
   .rank-2{background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#fff}
   .rank-3{background:linear-gradient(135deg,#d6a87a,#a1734a);color:#fff}
   .rank-other{background:#eef2ff;color:var(--primary)}
-
+  table{width:100%;border-collapse:collapse;font-size:.95rem}
+  th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:700;font-size:.82rem;letter-spacing:.3px}
+  tr:hover td{background:#f9fafb}
+  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:.82rem;font-weight:700}
+  .chip-good{background:#d1fae5;color:#047857}.chip-neutral{background:#e0e7ff;color:#4338ca}.chip-warn{background:#fef3c7;color:#92400e}
   .empty{text-align:center;padding:30px 20px;color:var(--muted)}
   .empty .big{font-size:42px;display:block;margin-bottom:10px;opacity:.6}
-
-  .toast{
-    position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;
-    border-radius:10px;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,.2);z-index:99;
-    transform:translateY(20px);opacity:0;transition:.3s;pointer-events:none
-  }
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,.2);z-index:99;transform:translateY(20px);opacity:0;transition:.3s;pointer-events:none}
   .toast.show{transform:none;opacity:1}
-
-  .modal-bg{
-    position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px
-  }
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
   .modal-bg.show{display:flex}
-  .modal{
-    background:#fff;border-radius:16px;width:100%;max-width:520px;padding:20px;max-height:90vh;overflow:auto
-  }
+  .modal{background:#fff;border-radius:16px;width:100%;max-width:520px;padding:20px;max-height:90vh;overflow:auto}
   .modal h3{margin:0 0 14px;font-size:1.2rem}
   .close-btn{background:#f3f4f6;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;cursor:pointer}
-
-  .star-anim{
-    position:fixed;font-size:32px;pointer-events:none;z-index:60;
-    animation:starFloat 1.2s ease-out forwards
-  }
-  @keyframes starFloat{
-    0%{transform:translateY(0) scale(.5);opacity:1}
-    100%{transform:translateY(-80px) scale(1.4);opacity:0}
-  }
-
-  @media (max-width:600px){
-    header.app{padding:14px}
-    header.app h1{font-size:1.1rem}
-    .container{padding:12px}
-    .tab{font-size:.85rem;padding:8px 6px}
-    th,td{padding:8px;font-size:.88rem}
-  }
+  .star-anim{position:fixed;font-size:32px;pointer-events:none;z-index:60;animation:starFloat 1.2s ease-out forwards}
+  @keyframes starFloat{0%{transform:translateY(0) scale(.5);opacity:1}100%{transform:translateY(-80px) scale(1.4);opacity:0}}
+  @media(max-width:600px){.container{padding:12px}.tab{font-size:.85rem;padding:8px 4px}th,td{padding:8px;font-size:.88rem}header.app h1{font-size:1.05rem}}
 </style>
 </head>
 <body>
-
 <header class="app">
   <div class="logo">⭐</div>
   <div style="flex:1">
     <h1>نظام رصد السلوك المتميز</h1>
-    <div class="sub">أداة بسيطة لمتابعة الطلاب المتميزين في المدرسة</div>
-    <div class="sub" id="save-status" style="margin-top:4px;font-weight:700">💾 ...</div>
+    <div class="sub">متابعة الطلاب المتميزين في المدرسة • يعمل بالكامل من قاعدة البيانات</div>
+    <div class="sub" id="save-status">🔄 جارٍ الاتصال بقاعدة البيانات...</div>
   </div>
-  <button class="btn-gold btn-sm" onclick="exportJSON()" title="حفظ نسخة احتياطية من بياناتك">💾 نسخة احتياطية</button>
-</header>
-
-<div id="storage-notice" style="display:none;background:#fef3c7;color:#92400e;padding:10px 16px;font-weight:700;text-align:center;border-bottom:2px solid #f59e0b;font-size:.9rem">
-  ⚠️ التخزين التلقائي غير متاح في هذه النافذة (وضع المعاينة). بياناتك ستبقى أثناء الجلسة فقط — احفظ نسخة من تبويب "التقارير" بزر "تصدير JSON" ثم استوردها لاحقاً.
-</div>
+  <button class="btn-soft btn-sm" onclick="loadAll()">🔄 تحديث</button></header>
 
 <div class="container">
+  <div class="banner" id="setup-banner">
+    ⚠️ لم تُهيّأ جداول قاعدة البيانات بعد. شغّل كود الإعداد من <a href="#" id="banner-admin-link" target="_blank" rel="noopener"><strong>صفحة إدارة قاعدة البيانات</strong></a> (مرة واحدة فقط)، ثم اضغط تحديث.
+  </div>
 
-  <div class="stats" id="stats">
+  <div class="stats">
     <div class="stat"><div class="icon i-purple">👨‍🎓</div><div><div class="num" id="stat-students">0</div><div class="lbl">طالب/ة</div></div></div>
     <div class="stat"><div class="icon i-gold">⭐</div><div><div class="num" id="stat-stars">0</div><div class="lbl">إجمالي النجوم</div></div></div>
     <div class="stat"><div class="icon i-green">📒</div><div><div class="num" id="stat-classes">0</div><div class="lbl">الفصول</div></div></div>
@@ -216,22 +114,16 @@
     <div class="tab" data-tab="manage">⚙️ الإدارة</div>
     <div class="tab" data-tab="behaviors">✨ السلوكيات</div>
     <div class="tab" data-tab="report">📊 التقارير</div>
-    <div class="tab" data-tab="db">🗄️ قاعدة البيانات</div>
+    <!-- <div class="tab" data-tab="db">🗄️ قاعدة البيانات</div> -->
   </div>
 
-  <!-- لوحة الرصد -->
+  <!-- الرصد السريع -->
   <section class="panel active" id="panel-record">
     <div class="card">
       <h3 style="margin:0 0 12px">⚡ رصد سلوك جديد</h3>
       <div class="grid g2">
-        <div>
-          <label>الفصل</label>
-          <select id="rec-class"></select>
-        </div>
-        <div>
-          <label>الطالب/ة</label>
-          <select id="rec-student"></select>
-        </div>
+        <div><label>الفصل</label><select id="rec-class"></select></div>
+        <div><label>الطالب/ة</label><select id="rec-student"></select></div>
       </div>
       <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
         <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">⚡ إضافة سريعة عند الحاجة:</div>
@@ -260,7 +152,6 @@
         <button class="btn-ghost" onclick="resetRecord()">تفريغ</button>
       </div>
     </div>
-
     <div class="card">
       <h3 style="margin:0 0 12px">📝 آخر الأحداث</h3>
       <div id="recent-events"></div>
@@ -272,23 +163,17 @@
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
         <h3 style="margin:0">🏆 لوحة الشرف</h3>
-        <div class="row">
-          <label style="margin:0">تصفية:</label>
-          <select id="lb-filter" style="width:auto" onchange="renderLeaderboard()">
-            <option value="all">جميع الفصول</option>
-          </select>
-        </div>
+        <div class="row"><label style="margin:0">تصفية:</label><select id="lb-filter" style="width:auto" onchange="renderLeaderboard()"><option value="all">جميع الفصول</option></select></div>
       </div>
       <div id="leaderboard" class="leaderboard"></div>
     </div>
   </section>
 
-  <!-- لوحة الإدارة -->
+  <!-- الإدارة -->
   <section class="panel" id="panel-manage">
     <div class="card">
-      <h3 style="margin:0 0 6px">⚙️ الإدارة الشاملة</h3>
-      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">أضف، عدّل، احذف الفصول والطلاب والراصدين. كل التغييرات تُحفظ تلقائياً.</p>
-
+      <h3 style="margin:0 0 6px">⚙️ الإدارة</h3>
+      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">إضافة وتعديل وحذف الفصول والطلاب والراصدين — كلها تُحفظ مباشرة في قاعدة البيانات.</p>
       <div class="stats" style="margin-bottom:16px">
         <div class="stat"><div class="icon i-green">🏫</div><div><div class="num" id="mg-classes">0</div><div class="lbl">فصل</div></div></div>
         <div class="stat"><div class="icon i-purple">👨‍🎓</div><div><div class="num" id="mg-students">0</div><div class="lbl">طالب/ة</div></div></div>
@@ -296,29 +181,17 @@
         <div class="stat"><div class="icon i-pink">🎯</div><div><div class="num" id="mg-events">0</div><div class="lbl">رصد</div></div></div>
       </div>
     </div>
-
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
         <h3 style="margin:0">🏫 الفصول</h3>
-        <div class="row">
-          <button class="btn-primary" onclick="openModal('class')">➕ إضافة فصل</button>
-        </div>
+        <button class="btn-primary" onclick="openModal('class')">➕ إضافة فصل</button>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
-        <input type="text" id="mg-class-input" placeholder="اكتب اسم فصل جديد" style="flex:1;min-width:200px" />
-        <button class="btn-soft" onclick="quickAddClass('mg-class-input')">➕ إضافة سريعة</button>
+        <input type="text" id="quick-class-input" placeholder="اكتب اسم فصل جديد" style="flex:1;min-width:200px" />
+        <button class="btn-soft" onclick="quickAddClass('quick-class-input')">➕ إضافة سريعة</button>
       </div>
-      <div class="row" style="margin-bottom:14px">
-        <input type="text" id="mg-class-search" placeholder="🔍 بحث عن فصل..." style="max-width:300px" oninput="renderManageClasses()" />
-        <select id="mg-class-sort" style="width:auto" onchange="renderManageClasses()">
-          <option value="name">ترتيب أبجدي</option>
-          <option value="students">الأكثر طلاباً</option>
-          <option value="stars">الأعلى نقاطاً</option>
-        </select>
-      </div>
-      <div id="mg-classes-list" class="student-list"></div>
+      <div id="classes-list" class="student-list"></div>
     </div>
-
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
         <h3 style="margin:0">👨‍🎓 الطلاب</h3>
@@ -328,24 +201,21 @@
         </div>
       </div>
       <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
-        <select id="mg-st-class" style="width:auto;min-width:160px" onchange="renderManageStudents()">
-          <option value="all">كل الفصول</option>
-        </select>
-        <input type="text" id="mg-st-search" placeholder="🔍 بحث عن طالب..." style="flex:1;min-width:200px" oninput="renderManageStudents()" />
+        <select id="mg-st-class" style="width:auto;min-width:160px" onchange="renderStudents()"><option value="all">كل الفصول</option></select>
+        <input type="text" id="mg-st-search" placeholder="🔍 بحث عن طالب..." style="flex:1;min-width:200px" oninput="renderStudents()" />
       </div>
-      <div id="mg-students-list" class="student-list"></div>
+      <div id="students-list" class="student-list"></div>
     </div>
-
     <div class="card">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
         <h3 style="margin:0">👨‍🏫 الراصدون (المعلمون)</h3>
         <button class="btn-primary" onclick="openModal('observer')">➕ إضافة راصد</button>
       </div>
       <div style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
-        <input type="text" id="mg-observer-input" placeholder="اسم المعلم/ة" style="flex:1;min-width:200px" />
-        <button class="btn-soft" onclick="quickAddObserverMg()">➕ إضافة سريعة</button>
+        <input type="text" id="quick-observer-input" placeholder="اسم المعلم/ة" style="flex:1;min-width:200px" />
+        <button class="btn-soft" onclick="quickAddObserver()">➕ إضافة سريعة</button>
       </div>
-      <div id="mg-observers-list" class="student-list"></div>
+      <div id="observers-list" class="student-list"></div>
     </div>
   </section>
 
@@ -365,15 +235,11 @@
     <div class="card">
       <h3 style="margin:0 0 14px">📊 تقرير طالب</h3>
       <div class="row">
-        <div style="flex:1;min-width:220px">
-          <label>اختر الطالب/ة</label>
-          <select id="rep-student"></select>
-        </div>
+        <div style="flex:1;min-width:220px"><label>اختر الطالب/ة</label><select id="rep-student"></select></div>
         <button class="btn-soft" onclick="generateReport()">إنشاء التقرير</button>
       </div>
       <div id="report-output" style="margin-top:14px"></div>
     </div>
-
     <div class="card">
       <h3 style="margin:0 0 14px">💾 تصدير البيانات</h3>
       <div class="row">
@@ -391,67 +257,112 @@
   <!-- قاعدة البيانات -->
   <section class="panel" id="panel-db">
     <div class="card">
-      <h3 style="margin:0 0 6px">🗄️ قاعدة البيانات السحابية (Supabase)</h3>
-      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">اربط التطبيق بقاعدة بيانات مجانية على Supabase (Postgres) لتُحفظ بياناتك في السحابة وترجع إليها من أي جهاز. حتى بدون اتصال تبقى النسخة المحلية تعمل وتُتزامن لاحقاً تلقائياً.</p>
-      <div class="grid g2">
-        <div>
-          <label>رابط المشروع (Project URL)</label>
-          <input type="text" id="db-url" placeholder="https://abcd1234.supabase.co" dir="ltr" style="text-align:left" />
-        </div>
-        <div>
-          <label>المفتاح العام (anon public key)</label>
-          <input type="text" id="db-key" placeholder="eyJhbGciOiJIUzI1NiIs..." dir="ltr" style="text-align:left" />
-        </div>
+      <h3 style="margin:0 0 6px">🗄️ إدارة قاعدة البيانات</h3>
+      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">هذه الصفحة مخصصة لك لإدارة بنية قاعدة البيانات. شغّل الكودين في Supabase SQL Editor مرة واحدة فقط، وبعدها تعمل كل الجداول تلقائياً من التطبيق.</p>
+      <div class="row" style="margin-bottom:12px">
+        <button class="btn-soft" onclick="testDbNow()">🔌 اختبار الاتصال</button>
+        <button class="btn-soft" onclick="copyText('db-setup-sql')">📋 نسخ كود الإعداد</button>
+        <button class="btn-soft" onclick="copyText('db-seed-sql')">📋 نسخ كود بياناتك</button>
       </div>
-      <div class="row" style="margin-top:14px">
-        <button class="btn-primary" onclick="saveDbSettings()">💾 حفظ الإعدادات</button>
-        <button class="btn-soft" onclick="testDb()">🔌 اختبار الاتصال</button>
-        <button class="btn-gold" onclick="pushNow()">🔄 مزامنة الآن</button>
-        <button class="btn-danger" onclick="disconnectDb()">✖️ فصل قاعدة البيانات</button>
-      </div>
-      <div id="db-status"></div>
+      <div id="db-test-result"></div>
     </div>
-
     <div class="card">
-      <h3 style="margin:0 0 10px">📋 خطوات الإعداد (مرة واحدة فقط)</h3>
-      <ol style="margin:0;padding-right:20px;line-height:2;font-size:.95rem">
-        <li>سجّل حساباً مجانياً في <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a></li>
-        <li>أنشئ مشروعاً جديداً (New project) وانتظر دقيقة أو دقيقتين حتى يُجهز</li>
-        <li>من القائمة الجانبية افتح <strong>SQL Editor</strong> ثم <strong>New query</strong></li>
-        <li>الصق كود SQL بالأسفل واضغط <strong>Run</strong></li>
-        <li>من <strong>Settings → API</strong> انسخ <strong>Project URL</strong> و<strong>anon public key</strong></li>
-        <li>الصقهما في الحقلين أعلاه واضغط <strong>حفظ الإعدادات</strong> ثم <strong>اختبار الاتصال</strong></li>
-      </ol>
-      <label style="margin-top:14px">كود إنشاء الجدول (شغّله في SQL Editor):</label>
-      <pre id="db-sql" style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.8rem;direction:ltr;text-align:left;line-height:1.7">create table if not exists school_data (
-  id integer primary key,
-  data jsonb not null default '{}'::jsonb,
-  updated_at timestamptz not null default now()
+      <h3 style="margin:0 0 8px">1️⃣ كود إنشاء الجداول (شغّله أولاً)</h3>
+      <pre id="db-setup-sql" style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.78rem;direction:ltr;text-align:left;line-height:1.6;max-height:340px">
+-- ===== إعداد الجداول (شغّله مرة واحدة في SQL Editor ثم Run) =====
+create table if not exists classes (
+  id text primary key,
+  name text not null
 );
 
-alter table school_data enable row level security;
+create table if not exists students (
+  id text primary key,
+  name text not null,
+  class_id text references classes(id) on delete cascade
+);
 
-drop policy if exists "school_data_select" on school_data;
-create policy "school_data_select" on school_data
-  for select using (true);
+create table if not exists behaviors (
+  id text primary key,
+  name text not null,
+  emoji text default '⭐',
+  points integer not null default 3
+);
 
-drop policy if exists "school_data_insert" on school_data;
-create policy "school_data_insert" on school_data
-  for insert with check (true);
+create table if not exists observers (
+  id bigserial primary key,
+  name text unique not null
+);
 
-drop policy if exists "school_data_update" on school_data;
-create policy "school_data_update" on school_data
-  for update using (true);</pre>
-      <div class="row" style="margin-top:8px">
-        <button class="btn-soft btn-sm" onclick="copySql()">📋 نسخ كود SQL</button>
-      </div>
-      <p style="margin-top:10px;font-size:.82rem;color:#b45309;background:#fef3c7;padding:8px 12px;border-radius:8px">⚠️ تنبيه أمني: المفتاح العام يسمح لأي شخص يملكه بالقراءة والكتابة — مناسب للاستخدام الداخلي للمدرسة، ويمكن لاحقاً تقييد الصلاحيات أو إضافة كلمة مرور للتطبيق.</p>
+create table if not exists submissions (
+  id text primary key,
+  student_id text references students(id) on delete cascade,
+  class_id text references classes(id),
+  behavior_id text references behaviors(id),
+  behavior_name text,
+  emoji text,
+  points integer,
+  observer text,
+  note text,
+  recorded_at timestamptz not null default now()
+);
+
+alter table classes enable row level security;
+alter table students enable row level security;
+alter table behaviors enable row level security;
+alter table observers enable row level security;
+alter table submissions enable row level security;
+
+-- سياسات مفتوحة (كما كان التطبيق سابقاً) — يمكن تشديدها لاحقاً
+do $ declare t text; begin
+  foreach t in array array['classes','students','behaviors','observers','submissions'] loop
+    execute format('drop policy if exists "%1$s_all" on %1$s', t);
+    execute format('create policy "%1$s_all" on %1$s for all using (true) with check (true)', t);
+  end loop;
+end $;
+</pre>
+    </div>
+    <div class="card">
+      <h3 style="margin:0 0 8px">2️⃣ كود بياناتك الحالية (بذر — شغّله بعد ذلك)</h3>
+      <pre id="db-seed-sql" style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.78rem;;direction:ltr;text-align:left;line-height:1.6;max-height:340px">
+-- ===== بياناتك الحالية (بذر) ======
+
+-- الفصول
+insert into classes (id,name) values ('c1','الصف الأول أ') on conflict (id) do nothing;
+insert into classes (id,name) values ('c2','الصف الثاني ب') on conflict (id) do nothing;
+insert into classes (id,name) values ('c3','الصف الثالث أ') on conflict (id) do nothing;
+insert into classes (id,name) values ('cmsx8w0zttqjp','روابي') on conflict (id) do nothing;
+
+-- الطلاب
+insert into students (id,name,class_id) values ('s1','أحمد محمد','c1') on conflict (id) do nothing;
+insert into students (id,name,class_id) values ('s2','سارة علي','c1') on conflict (id) do nothing;
+insert into students (id,name,class_id) values ('s3','خالد العتيبي','c2') on conflict (id) do nothing;
+insert into students (id,name,class_id) values ('s4','نورة الشمري','c2') on conflict (id) do nothing;
+insert into students (id,name,class_id) values ('s5','يوسف القحطاني','c3') on conflict (id) do nothing;
+insert into students (id,name,class_id) values ('s6','لجين السبيعي','c3') on conflict (id) do nothing;
+
+-- السلوكيات
+insert into behaviors (id,name,emoji,points) values ('b1','تعاون مع الزملاء','🤝',5) on conflict (id) do nothing;
+insert into behaviors (id,name,emoji,points) values ('b2','إجتاز قراءة','📚',3) on conflict (id) do nothing;
+insert into behaviors (id,name,emoji,points) values ('b3','حافظ على النظافة','🧹',2) on conflict (id) do nothing;
+insert into behaviors (id,name,emoji,points) values ('b4','إجابة مميزة','💡',4) on conflict (id) do nothing;
+insert into behaviors (id,name,emoji,points) values ('b5','التزام بالحضور','⏰',2) on conflict (id) do nothing;
+insert into behaviors (id,name,emoji,points) values ('b6','إبداع في النشاط','🎨',5) on conflict (id) do nothing;
+insert into behaviors (id,name,emoji,points) values ('b7','مساعدة المعلم','🌟',4) on conflict (id) do nothing;
+insert into behaviors (id,name,emoji,points) values ('b8','واجب متميز','📝',3) on conflict (id) do nothing;
+
+-- الراصدون
+insert into observers (name) values ('rawabi1') on conflict (name) do nothing;
+
+-- سجل الرصد (الطلبات المدخلة بكامل بياناتها)
+insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,points,observer,note,recorded_at) values ('emsx8ttfuekym','s1','c1','b8','واجب متميز','📝',3,'rawabi1','','2026-08-17T13:02:07.434Z') on conflict (id) do nothing;
+insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,points,observer,note,recorded_at) values ('emsx9lcgnpgap','s4','c2','b8','واجب متميز','📝',3,'rawabi1','','2026-08-17T13:23:31.799Z') on conflict (id) do nothing;
+</pre>
+      <p style="margin-top:10px;font-size:.82rem;color:#b45309;background:#fef3c7;;padding:8px 12px;border-radius:8px">⚠️ بعد تشغيل الكودين اضغط "🔄 تحديث" في أعلى الصفحة — ستظهر الفصول والطلاب والسلوكيات والراصدين والسجل من قاعدة البيانات مباشرة.</p>
     </div>
   </section>
 
 </div>
 
-<!-- نافذة منبثقة -->
 <div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
@@ -461,959 +372,957 @@ create policy "school_data_update" on school_data
     <div id="modal-body"></div>
   </div>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-/* ===================== إدارة البيانات ===================== */
-const STORAGE_KEY = 'school-stars-v1';
+/* ===================== إعداد الاتصال بقاعدة البيانات ===================== */
+  /* ===================== DATABASE CONNECTION ===================== */
 
-const DEFAULT_DATA = {
-  classes: [
-    {id:'c1', name:'الصف الأول أ'},
-    {id:'c2', name:'الصف الثاني ب'},
-    {id:'c3', name:'الصف الثالث أ'}
-  ],
-  students: [
-    {id:'s1', classId:'c1', name:'أحمد محمد'},
-    {id:'s2', classId:'c1', name:'سارة علي'},
-    {id:'s3', classId:'c2', name:'خالد العتيبي'},
-    {id:'s4', classId:'c2', name:'نورة الشمري'},
-    {id:'s5', classId:'c3', name:'يوسف القحطاني'},
-    {id:'s6', classId:'c3', name:'لجين السبيعي'}
-  ],
-  behaviors: [
-    {id:'b1', emoji:'🤝', name:'تعاون مع الزملاء', points:5},
-    {id:'b2', emoji:'📚', name:'إجتاز قراءة', points:3},
-    {id:'b3', emoji:'🧹', name:'حافظ على النظافة', points:2},
-    {id:'b4', emoji:'💡', name:'إجابة مميزة', points:4},
-    {id:'b5', emoji:'⏰', name:'التزام بالحضور', points:2},
-    {id:'b6', emoji:'🎨', name:'إبداع في النشاط', points:5},
-    {id:'b7', emoji:'🌟', name:'مساعدة المعلم', points:4},
-    {id:'b8', emoji:'📝', name:'واجب متميز', points:3}
-  ],
-  events: [],
-  selectedBehavior: null
-};
+  const CFG_KEY = 'school-stars-db-v1';
 
-let data = loadData();
-
-function normalizeData(d){
-  const base = structuredClone(DEFAULT_DATA);
-  if(!d || typeof d !== 'object') return base;
-  return {
-    classes:   Array.isArray(d.classes)   ? d.classes   : base.classes,
-    students:  Array.isArray(d.students)  ? d.students  : base.students,
-    behaviors: Array.isArray(d.behaviors) ? d.behaviors : base.behaviors,
-    events:    Array.isArray(d.events)    ? d.events    : [],
-    observers: Array.isArray(d.observers) ? d.observers : [],
-    selectedBehavior: null
+  const DEFAULT_CFG = {
+    url: 'https://radltqjqjvgfoeqganhs.supabase.co',
+    anonKey: 'sb_publishable_mkxBGfRasN19DRBUHH-EzA_2NjAo4hl'
   };
-}
-function loadData(){
-  try{
-    // نقرأ أولاً من التخزين الدائم، وإلا من جلسة مؤقتة
-    const raw = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
-    if(!raw) return structuredClone(DEFAULT_DATA);
-    return normalizeData(JSON.parse(raw));
-  }catch(e){
-    try{
-      const raw = sessionStorage.getItem(STORAGE_KEY);
-      if(raw) return normalizeData(JSON.parse(raw));
-    }catch(_){}
-    return structuredClone(DEFAULT_DATA);
+
+  let DB = {};
+
+  /* ===================== CONFIG ===================== */
+
+  function loadCfg() {
+    try {
+      const c = JSON.parse(localStorage.getItem(CFG_KEY) || '');
+
+      DB = (c && c.url && c.anonKey)
+        ? c
+        : { ...DEFAULT_CFG };
+
+    } catch (e) {
+      DB = { ...DEFAULT_CFG };
+    }
   }
-}
-function saveData(){
-  try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    const n = document.getElementById('storage-notice');
-    if(n) n.style.display = 'none';
-    setSaveStatus('✅ البيانات محفوظة في هذا المتصفح');
-  }catch(e){
-    // التخزين الدائم غير متاح (مثل وضع المعاينة) → نحاول جلسة مؤقتة على الأقل
-    try{ sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(_){}
-    const n = document.getElementById('storage-notice');
-    if(n) n.style.display = 'block';
-    setSaveStatus('⚠️ حفظ مؤقت فقط — استخدم زر النسخة الاحتياطية');
+
+  function saveCfg() {
+    try {
+      localStorage.setItem(
+        CFG_KEY,
+        JSON.stringify(DB)
+      );
+    } catch (e) {
+      console.warn('Could not save config:', e);
+    }
   }
-  queueDbPush(); // مزامنة تلقائية مع قاعدة البيانات السحابية إن كانت مربوطة
-}
-function setSaveStatus(txt){
-  const el = document.getElementById('save-status');
+
+  /* ===================== SUPABASE API ===================== */
+
+  function api(table) {
+    return (
+      String(DB.url).replace(/\/+$/, '') +
+      '/rest/v1/' +
+      table
+    );
+  }
+
+  function h() {
+    return {
+      'apikey': DB.anonKey,
+      'Content-Type': 'application/json'
+    };
+  }
+
+  /* ===================== STATUS ===================== */
+
+  function setStatus(txt, kind) {
+    const el = document.getElementById('save-status');
+
+    if (!el) return;
+
+    el.textContent = txt;
+
+    el.style.color =
+      kind === 'warn'
+        ? '#fef08a'
+        : 'rgba(255,255,255,.95)';
+  }
+
+  /* ===================== STATE ===================== */
+
+  let classes = [];
+  let students = [];
+  let behaviors = [];
+  let observers = [];
+  let submissions = [];
+
+  let selectedBehavior = null;
+
+  /* ===================== GET TABLE ===================== */
+
+  async function getTable(table, query = '?select=*') {
+
+    const response = await fetch(
+      api(table) + query,
+      {
+        method: 'GET',
+        headers: h()
+      }
+    );
+
+    const text = await response.text();
+
+    console.log(
+      `📦 ${table} → HTTP ${response.status}`,
+      text
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `${table} → HTTP ${response.status}: ${text}`
+      );
+    }
+
+    return JSON.parse(text);
+  }
+
+  /* ===================== LOAD ALL DATA ===================== */
+
+  async function loadAll() {
+
+    console.log('🚀 loadAll started');
+
+    setStatus(
+      '🔄 جارٍ التحميل من قاعدة البيانات...',
+      ''
+    );
+
+    try {
+
+      classes = await getTable(
+        'classes',
+        '?select=*&order=name'
+      );
+
+      students = await getTable(
+        'students',
+        '?select=*&order=name'
+      );
+
+      behaviors = await getTable(
+        'behaviors',
+        '?select=*&order=name'
+      );
+
+      observers = await getTable(
+        'observers',
+        '?select=*&order=name'
+      );
+
+      submissions = await getTable(
+        'submissions',
+        '?select=*&order=recorded_at.desc'
+      );
+
+      console.log('✅ All data loaded successfully');
+
+      const banner =
+        document.getElementById('setup-banner');
+
+      if (banner) {
+        banner.style.display = 'none';
+      }
+
+      setStatus(
+        '✅ متصل بقاعدة البيانات — البيانات محدّثة',
+        ''
+      );
+
+      renderAll();
+
+    } catch (error) {
+
+      console.error(
+        '❌ loadAll failed:',
+        error
+      );
+
+      setStatus(
+        '❌ حدث خطأ في قاعدة البيانات',
+        'warn'
+      );
+
+      const banner =
+        document.getElementById('setup-banner');
+
+      if (banner) {
+
+        banner.style.display = 'block';
+
+        banner.innerHTML =
+          '❌ <strong>خطأ قاعدة البيانات:</strong><br>' +
+          '<code style="direction:ltr;display:block;' +
+          'margin-top:8px;white-space:pre-wrap;">' +
+          esc(error.message) +
+          '</code>';
+      }
+    }
+  }
+
+  /* ===================== INSERT ===================== */
+
+  async function dbInsert(table, row) {
+
+    const response = await fetch(
+      api(table),
+      {
+        method: 'POST',
+        headers: {
+          ...h(),
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(row)
+      }
+    );
+
+    const text = await response.text();
+
+    console.log(
+      `INSERT ${table} → HTTP ${response.status}`,
+      text
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `${table} insert → HTTP ${response.status}: ${text}`
+      );
+    }
+  }
+
+  /* ===================== UPDATE ===================== */
+
+  async function dbUpdate(
+    table,
+    col,
+    val,
+    patch
+  ) {
+
+    const url =
+      api(table) +
+      '?' +
+      encodeURIComponent(col) +
+      '=eq.' +
+      encodeURIComponent(val);
+
+    const response = await fetch(
+      url,
+      {
+        method: 'PATCH',
+        headers: h(),
+        body: JSON.stringify(patch)
+      }
+    );
+
+    const text = await response.text();
+
+    console.log(
+      `UPDATE ${table} → HTTP ${response.status}`,
+      text
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `${table} update → HTTP ${response.status}: ${text}`
+      );
+    }
+  }
+
+  /* ===================== DELETE ===================== */
+
+  async function dbDelete(
+    table,
+    col,
+    val
+  ) {
+
+    const url =
+      api(table) +
+      '?' +
+      encodeURIComponent(col) +
+      '=eq.' +
+      encodeURIComponent(val);
+
+    const response = await fetch(
+      url,
+      {
+        method: 'DELETE',
+        headers: {
+          ...h(),
+          'Prefer': 'return=minimal'
+        }
+      }
+    );
+
+    const text = await response.text();
+
+    console.log(
+      `DELETE ${table} → HTTP ${response.status}`,
+      text
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `${table} delete → HTTP ${response.status}: ${text}`
+      );
+    }
+  }
+
+  /* ===================== ID GENERATOR ===================== */
+
+  function uid(p) {
+    return (
+      p +
+      Date.now().toString(36) +
+      Math.random()
+        .toString(36)
+        .slice(2, 6)
+    );
+  }
+  /* ===================== الفصول ===================== */
+  async function addClass(name) {
+    const id = uid('c');
+    await dbInsert('classes', { id, name });
+    await loadAll();
+  }
+  async function renameClass(id, name) {
+    await dbUpdate('classes', 'id', id, { name });
+    await loadAll();
+  }
+  async function deleteClass(id) {
+    if (!confirm('حذف هذا الفصل؟ سيُحذف كل طلابه أيضاً. سجل الرصد يبقى محفوظاً.')) return;
+    await dbDelete('classes', 'id', id);
+    toast('تم حذف الفصل'); await loadAll();
+  }
+
+  /* ===================== الطلاب ===================== */
+  async function addStudent(name, classId) {
+    const id = uid('s');
+    await dbInsert('students', { id, name, class_id: classId });
+    await loadAll();
+  }
+  async function updateStudent(id, name, classId) {
+    await dbUpdate('students', 'id', id, { name, class_id: classId });
+    await loadAll();
+  }
+  async function deleteStudent(id) {
+    if (!confirm('حذف هذا الطالب/ة وكل سجل رصده؟')) return;
+    await dbDelete('students', 'id', id);
+    toast('تم حذف الطالب'); await loadAll();
+  }
+
+  /* ===================== السلوكيات ===================== */
+  async function addBehavior(name, emoji, points) {
+    const id = uid('b');
+    await dbInsert('behaviors', { id, name, emoji, points });
+    await loadAll();
+  }
+  async function updateBehavior(id, name, emoji, points) {
+    await dbUpdate('behaviors', 'id', id, { name, emoji, points });
+    await loadAll();
+  }
+  async function deleteBehavior(id) {
+    if (!confirm('حذف هذا السلوك؟ (السجلات السابقة تبقى محفوظة بنص السلوك)')) return;
+    await dbDelete('behaviors', 'id', id);
+    toast('تم حذف السلوك'); await loadAll();
+  }
+
+  /* ===================== الراصدون ===================== */
+  async function addObserver(name) {
+    await dbInsert('observers', { name });
+    await loadAll();
+  }
+  async function deleteObserver(id) {
+    if (!confirm('حذف هذا الراصد؟ (السجلات السابقة تبقى محفوظة بالاسم)')) return;
+    await dbDelete('observers', 'id', id);
+    toast('تم الحذف'); await loadAll();
+  }
+
+  /* ===================== الرصد السريع ===================== */
+  function renderRecordPanel() {
+    const rc = document.getElementById('rec-class');
+    rc.innerHTML = classes.map(c => '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>').join('');
+    rc.onchange = updateRecStudents;
+    updateRecStudents();
+    document.getElementById('rec-behaviors').innerHTML = behaviors.map(b =>
+      '<div class="behavior-card" data-bid="' + b.id + '" onclick="pickBehavior(\'' + b.id + '\')">' +
+      '<span class="emoji">' + (b.emoji || '⭐') + '</span>' +
+      '<div class="name">' + esc(b.name) + '</div>' +
+      '<span class="pts">+' + b.points + ' نجوم</span>' +
+      '</div>').join('');
+    document.getElementById('observer-list').innerHTML = observers.slice(0, 20).map(o => '<option value="' + esc(o.name) + '"></option>').join('');
+    renderRecent();
+  }
+  function updateRecStudents() {
+    const cid = document.getElementById('rec-class').value;
+    const list = students.filter(s => s.class_id === cid);
+    document.getElementById('rec-student').innerHTML = list.length
+      ? list.map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join('')
+      : '<option value="">لا يوجد طلاب في هذا الفصل</option>';
+  }
+  function pickBehavior(id) {
+    selectedBehavior = id;
+    document.querySelectorAll('#rec-behaviors .behavior-card').forEach(el => {
+      const on = el.dataset.bid === id;
+      el.style.borderColor = on ? 'var(--primary)' : 'var(--line)';
+      el.style.background = on ? '#eef2ff' : '#fff';
+    });
+  }
+  async function recordBehavior() {
+    const studentId = document.getElementById('rec-student').value;
+    const observer = document.getElementById('rec-observer').value.trim();
+    const bid = selectedBehavior;
+    if (!studentId) { toast('اختر طالباً أولاً', 'err'); return; }
+    if (!bid) { toast('اختر سلوكاً متميزاً', 'err'); return; }
+    if (!observer) { toast('اكتب اسم الراصد', 'err'); return; }
+    const student = students.find(x => x.id === studentId);
+    const behavior = behaviors.find(x => x.id === bid);
+    if (!student || !behavior) { toast('خطأ في البيانات', 'err'); return; }
+    try {
+      await dbInsert('submissions', {
+        id: uid('e'),
+        student_id: student.id,
+        class_id: student.class_id,
+        behavior_id: behavior.id,
+        behavior_name: behavior.name,
+        emoji: behavior.emoji || '⭐',
+        points: behavior.points,
+        observer: observer,
+        note: document.getElementById('rec-note').value.trim(),
+        recorded_at: new Date().toISOString()
+      });
+      spawnStar();
+      toast('+' + behavior.points + ' ⭐ لـ ' + student.name);
+      document.getElementById('rec-note').value = '';
+      selectedBehavior = null;
+      await loadAll();
+    } catch (e) { toast('تعذر الحفظ في قاعدة البيانات', 'err'); console.error(e); }
+  }
+  async function quickAddClass(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) { toast('اكتب اسم الفصل', 'err'); return; }
+    if (classes.some(c => c.name === name)) { toast('هذا الفصل موجود بالفعل', 'err'); return; }
+    await addClass(name);
+    input.value = '';
+    if (inputId === 'quick-record-class') {
+      const nc = classes.find(c => c.name === name);
+      if (nc) { document.getElementById('rec-class').value = nc.id; updateRecStudents(); }
+    }
+  }
+  async function quickAddStudent() {
+    const name = document.getElementById('quick-record-student').value.trim();
+    const classId = document.getElementById('rec-class').value;
+    if (!name) { toast('اكتب اسم الطالب/ة', 'err'); return; }
+    if (!classId) { toast('اختر فصلاً أولاً', 'err'); return; }
+    if (students.some(s => s.name === name && s.class_id === classId)) { toast('الطالب موجود في هذا الفصل', 'err'); return; }
+    await addStudent(name, classId);
+    document.getElementById('quick-record-student').value = '';
+    const ns = students.find(s => s.name === name && s.class_id === classId);
+    if (ns) { document.getElementById('rec-student').value = ns.id; }
+  }
+  async function quickAddObserver() {
+    const input = document.getElementById('quick-observer-input');
+    const name = input.value.trim();
+    if (!name) { toast('اكتب اسم الراصد', 'err'); return; }
+    if (observers.some(o => o.name === name)) { toast('هذا الراصد موجود بالفعل', 'err'); return; }
+    await addObserver(name);
+    input.value = '';
+    document.getElementById('rec-observer').value = name;
+  }
+  function resetRecord() {
+    document.getElementById('rec-note').value = '';
+    selectedBehavior = null;
+    renderRecordPanel();
+  }
+  function spawnStar() {
+    const star = document.createElement('div');
+    star.className = 'star-anim';
+    star.textContent = '⭐';
+    star.style.right = (Math.random() * 60 + 20) + '%';
+    star.style.bottom = '60px';
+    document.body.appendChild(star);
+    setTimeout(() => star.remove(), 1200);
+  }
+  function renderRecent() {
+    const out = document.getElementById('recent-events');
+    const evs = submissions.slice(0, 10);
+    if (!evs.length) { out.innerHTML = '<div class="empty"><span class="big">📭</span>لم تُسجّل أحداث بعد.</div>'; return; }
+    out.innerHTML = '<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>السلوك</th><th>النقاط</th><th>الراصد</th></tr></thead><tbody>' +
+      evs.map(e => {
+        const s = students.find(x => x.id === e.student_id);
+        const d = new Date(e.recorded_at);
+        const dateStr = d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+        return '<tr><td>' + dateStr + '</td>' +
+          '<td><strong>' + (s ? esc(s.name) : 'محذوف') + '</strong></td>' +
+          '<td>' + (e.emoji || '') + ' ' + esc(e.behavior_name) + (e.note ? '<div style="font-size:.8rem;color:var(--muted)">📝 ' + esc(e.note) + '</div>' : '') + '</td>' +
+          '<td><span class="chip chip-good">+' + e.points + '</span></td>' +
+          '<td style="font-size:.85rem;color:var(--muted)">' + (e.observer ? esc(e.observer) : '-') + '</td></tr>';
+      }).join('') + '</tbody></table>';
+  }
+
+  /* ===================== لوحة الشرف ===================== */
+  function renderLeaderboard() {
+    const f = document.getElementById('lb-filter');
+    f.innerHTML = '<option value="all">جميع الفصول</option>' + classes.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('');
+    const scores = students.map(s => ({
+      ...s,
+      stars: submissions.filter(e => e.student_id === s.id).reduce((sum, e) => sum + (e.points || 0), 0)
+    })).filter(s => f.value === 'all' || s.class_id === f.value)
+      .sort((a, b) => b.stars - a.stars);
+    const out = document.getElementById('leaderboard');
+    if (!scores.length) { out.innerHTML = '<div class="empty"><span class="big">🏆</span>لا توجد بيانات لعرضها.</div>'; return; }
+    out.innerHTML = scores.slice(0, 30).map((s, i) => {
+      const cls = classes.find(c => c.id === s.class_id);
+      const rc = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+      return '<div class="lb-item">' +
+        '<div class="lb-rank ' + rc + '">' + medal + '</div>' +
+        '<div class="avatar">' + esc(s.name.charAt(0)) + '</div>' +
+        '<div style="flex:1"><div style="font-weight:700">' + esc(s.name) + '</div><div style="font-size:.82rem;color:var(--muted)">' + (cls ? esc(cls.name) : '') + '</div></div>' +
+        '<div style="text-align:left"><div class="stars">' + '⭐'.repeat(Math.min(s.stars, 15)) + '</div><div style="font-weight:800;color:var(--accent);font-size:1.1rem">' + s.stars + ' نقطة</div></div>' +
+        '</div>';
+    }).join('');
+  }
+
+  /* ===================== الإدارة ===================== */
+  function renderManage() {
+    document.getElementById('mg-classes').textContent = classes.length;
+    document.getElementById('mg-students').textContent = students.length;
+    document.getElementById('mg-observers').textContent = observers.length;
+    document.getElementById('mg-events').textContent = submissions.length;
+    renderClasses();
+    renderStudents();
+    renderObservers();
+  }
+  function renderClasses() {
+    const list = document.getElementById('classes-list');
+    if (!classes.length) { list.innerHTML = '<div class="empty"><span class="big">🏫</span>لا توجد فصول. أضف فصلاً من الأعلى.</div>'; return; }
+    list.innerHTML = classes.map(c => {
+      const count = students.filter(s => s.class_id === c.id).length;
+      const stars = submissions.filter(e => e.class_id === c.id).reduce((s, e) => s + (e.points || 0), 0);
+      return '<div class="student-card">' +
+        '<div class="left"><div class="avatar" style="background:linear-gradient(135deg,#10b981,#34d399)">🏫</div>' +
+        '<div><div style="font-weight:700">' + esc(c.name) + '</div><div style="font-size:.82rem;color:var(--muted)">' + count + ' طالب/ة • <span style="color:var(--accent);font-weight:700">⭐ ' + stars + '</span> نقطة</div></div></div>' +
+        '<div class="actions"><button class="btn-soft btn-sm" onclick="openModal(\'class\',\'' + c.id + '\')">✏️ تعديل</button>' +
+        '<button class="btn-danger btn-sm" onclick="deleteClass(\'' + c.id + '\')">🗑️ حذف</button></div></div>';
+    }).join('');
+  }
+  function renderStudents() {
+    const f = document.getElementById('mg-st-class');
+    f.innerHTML = '<option value="all">كل الفصول</option>' + classes.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('');
+    const search = document.getElementById('mg-st-search').value.trim();
+    let list = f.value === 'all' ? [...students] : students.filter(s => s.class_id === f.value);
+    if (search) list = list.filter(s => s.name.includes(search));
+    list.forEach(s => { s._stars = submissions.filter(e => e.student_id === s.id).reduce((sum, e) => sum + (e.points || 0), 0); });
+    list.sort((a, b) => b._stars - a._stars);
+    const out = document.getElementById('students-list');
+    if (!list.length) { out.innerHTML = '<div class="empty"><span class="big">👨‍🎓</span>لا يوجد طلاب.</div>'; return; }
+    out.innerHTML = list.map(s => {
+      const cls = classes.find(c => c.id === s.class_id);
+      return '<div class="student-card">' +
+        '<div class="left"><div class="avatar">' + esc(s.name.charAt(0)) + '</div>' +
+        '<div><div style="font-weight:700">' + esc(s.name) + '</div><div style="font-size:.82rem;color:var(--muted)">' + (cls ? esc(cls.name) : 'بدون فصل') + ' • <span class="stars">' + '⭐'.repeat(Math.min(s._stars, 15)) + '</span> <span style="color:var(--accent);font-weight:700">' + s._stars + '</span></div></div></div>' +
+        '<div class="actions"><button class="btn-soft btn-sm" onclick="openModal(\'student\',\'' + s.id + '\')">✏️ تعديل</button>' +
+        '<button class="btn-danger btn-sm" onclick="deleteStudent(\'' + s.id + '\')">🗑️ حذف</button></div></div>';
+    }).join('');
+  }
+  function renderObservers() {
+    const out = document.getElementById('observers-list');
+    if (!observers.length) { out.innerHTML = '<div class="empty"><span class="big">👨‍🏫</span>لا يوجد راصدون.</div>'; return; }
+    out.innerHTML = observers.map(o => {
+      const count = submissions.filter(e => e.observer === o.name).length;
+      const stars = submissions.filter(e => e.observer === o.name).reduce((s, e) => s + (e.points || 0), 0);
+      return '<div class="student-card">' +
+        '<div class="left"><div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">👤</div>' +
+        '<div><div style="font-weight:700">' + esc(o.name) + '</div><div style="font-size:.82rem;color:var(--muted)">📊 ' + count + ' رصد • <span style="color:var(--accent);font-weight:700">⭐ ' + stars + '</span> نقطة</div></div></div>' +
+        '<div class="actions"><button class="btn-soft btn-sm" onclick="useObserver(\'' + esc(o.name) + '\')">↩️ تعيين كراصد حالي</button>' +
+        '<button class="btn-danger btn-sm" onclick="deleteObserver(\'' + o.id + '\')">🗑️ حذف</button></div></div>';
+    }).join('');
+  }
+  function useObserver(name) {
+    document.getElementById('rec-observer').value = name;
+    toast('تم تعيين "' + name + '" كراصد حالي');
+    switchTab('record');
+  }
+
+  /* ===================== السلوكيات (قائمة) ===================== */
+  function renderBehaviorsList() {
+    const list = document.getElementById('behaviors-list');
+    if (!behaviors.length) { list.innerHTML = '<div class="empty"><span class="big">✨</span>لا توجد سلوكيات. أضف سلوكيات من الزر بالأعلى.</div>'; return; }
+    list.innerHTML = behaviors.map(b =>
+      '<div class="behavior-card" style="cursor:default">' +
+      '<span class="emoji">' + (b.emoji || '⭐') + '</span>' +
+      '<div class="name">' + esc(b.name) + '</div>' +
+      '<span class="pts">+' + b.points + ' نجوم</span>' +
+      '<div style="margin-top:8px;display:flex;justify-content:center;gap:4px">' +
+      '<button class="btn-soft btn-sm" onclick="openModal(\'behavior\',\'' + b.id + '\')">✏️</button>' +
+      '<button class="btn-danger btn-sm" onclick="deleteBehavior(\'' + b.id + '\')">🗑️</button>' +
+      '</div></div>').join('');
+  }
+
+  /* ===================== التقارير ===================== */
+  function fillReportSelect() {
+    document.getElementById('rep-student').innerHTML = students.map(s => {
+      const cls = classes.find(c => c.id === s.class_id);
+      return '<option value="' + s.id + '">' + esc(s.name) + (cls ? ' - ' + esc(cls.name) : '') + '</option>';
+    }).join('');
+  }
+  function generateReport() {
+    const sid = document.getElementById('rep-student').value;
+    if (!sid) { toast('اختر طالباً', 'err'); return; }
+    const student = students.find(s => s.id === sid);
+    if (!student) return;
+    const cls = classes.find(c => c.id === student.class_id);
+    const evs = submissions.filter(e => e.student_id === sid);
+    const total = evs.reduce((s, e) => s + (e.points || 0), 0);
+    const by = {};
+    evs.forEach(e => { by[e.behavior_name] = by[e.behavior_name] || { count: 0, points: 0, emoji: e.emoji }; by[e.behavior_name].count++; by[e.behavior_name].points += e.points; });
+    const rows = Object.entries(by).sort((a, b) => b[1].points - a[1].points)
+      .map(([n, info]) => '<tr><td>' + (info.emoji || '') + ' ' + esc(n) + '</td><td>' + info.count + '</td><td><span class="chip chip-good">+' + info.points + '</span></td></tr>').join('');
+    const tl = evs.slice(0, 50).map(e => {
+      const d = new Date(e.recorded_at);
+      return '<tr><td>' + d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' }) + '</td>' +
+        '<td>' + (e.emoji || '') + ' ' + esc(e.behavior_name) + '</td>' +
+        '<td><span class="chip chip-good">+' + e.points + '</span></td>' +
+        '<td style="font-size:.85rem;color:var(--muted)">' + (e.observer ? esc(e.observer) : '-') + '</td>' +
+        '<td style="font-size:.85rem;color:var(--muted)">' + esc(e.note || '-') + '</td></tr>';
+    }).join('');
+    document.getElementById('report-output').innerHTML =
+      '<div style="background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-radius:14px;padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">' +
+      '<div class="avatar" style="width:64px;height:64px;font-size:1.6rem;background:rgba(255,255,255,.25)">' + esc(student.name.charAt(0)) + '</div>' +
+      '<div style="flex:1"><div style="font-size:1.4rem;font-weight:800">' + esc(student.name) + '</div><div style="opacity:.9">' + (cls ? esc(cls.name) : '') + '</div></div>' +
+      '<div style="text-align:center"><div style="font-size:2.2rem;font-weight:800">⭐ ' + total + '</div><div style="opacity:.85">إجمالي النجوم</div></div></div>' +
+      '<h4 style="margin:14px 0 8px">📊 تفصيل حسب السلوك</h4>' +
+      '<table><thead><tr><th>السلوك</th><th>عدد المرات</th><th>النقاط</th></tr></thead><tbody>' +
+      (rows || '<tr><td colspan="3" style="text-align:center;color:var(--muted)">لا توجد بيانات</td></tr>') + '</tbody></table>' +
+      '<h4 style="margin:14px 0 8px">📅 السجل الزمني</h4>' +
+      '<table><thead><tr><th>التاريخ</th><th>السلوك</th><th>النقاط</th><th>الراصد</th><th>ملاحظة</th></tr></thead><tbody>' +
+      (tl || '<tr><td colspan="5" style="text-align:center;color:var(--muted)">لا توجد أحداث</td></tr>') + '</tbody></table>';
+  }
+
+  /* ===================== التصدير والاستيراد ===================== */
+  async function exportCSV() {
+    const rows = [['التاريخ', 'الطالب', 'الفصل', 'السلوك', 'النقاط', 'الملاحظة', 'الراصد']];
+    submissions.forEach(e => {
+      const s = students.find(x => x.id === e.student_id);
+      const c = classes.find(x => x.id === e.class_id);
+      rows.push([new Date(e.recorded_at).toLocaleString('ar-EG'), s ? s.name : '', c ? c.name : '', e.behavior_name, e.points, e.note || '', e.observer || '']);
+    });
+    const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+    download(csv, 'school-stars-events.csv', 'text/csv;charset=utf-8');
+  }
+  async function exportJSON() {
+    const bundle = { classes, students, behaviors, observers, submissions, exported_at: new Date().toISOString() };
+    download(JSON.stringify(bundle, null, 2), 'school-stars-backup.json', 'application/json');
+    toast('تم تنزيل النسخة الاحتياطية 💾');
+  }
+  async function importJSON(event) {
+    const file = event.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const obj = JSON.parse(e.target.result);
+        if (!confirm('سيتم دمج البيانات المستوردة مع الحالية (المكرر يُتجاهل). متابعة؟')) return;
+        // دعم صيغة النسخ القديمة (events) والصيغة الجديدة (submissions)
+        const st = obj.submissions || (obj.events ? obj.events.map(ev => ({ id: ev.id || uid('e'), student_id: ev.studentId, class_id: ev.classId, behavior_id: ev.behaviorId || null, behavior_name: ev.behaviorName, emoji: ev.emoji || '⭐', points: ev.points, observer: ev.observer || '', note: ev.note || '', recorded_at: ev.date || new Date().toISOString() })) : []);
+        const cl = obj.classes || [], sd = obj.students || [], bh = obj.behaviors || [], ob = obj.observers || [];
+        let added = 0;
+        for (const c of cl) { try { await dbInsert('classes', { id: c.id, name: c.name }); added++; } catch (_) { } }
+        for (const s of sd) { try { await dbInsert('students', { id: s.id, name: s.name, class_id: s.classId || s.class_id }); added++; } catch (_) { } }
+        for (const b of bh) { try { await dbInsert('behaviors', { id: b.id, name: b.name, emoji: b.emoji || '⭐', points: b.points }); added++; } catch (_) { } }
+        for (const o of ob) { const n = typeof o === 'string' ? o : (o.name || ''); if (n) { try { await dbInsert('observers', { name: n }); added++; } catch (_) { } } }
+        for (const e2 of st) { try { await dbInsert('submissions', e2); added++; } catch (_) { } }
+        toast('تم الاستيراد: أُضيف ' + added + ' سجلاً جديداً');
+        await loadAll();
+      } catch (err) { toast('ملف غير صالح', 'err'); }
+    };
+    reader.readAsText(file);
+    event.target.value = '';
+  }
+  async function resetAllData() {
+    if (!confirm('سيتم مسح كل البيانات من قاعدة البيانات. متابعة؟')) return;
+    if (!confirm('تأكيد نهائي: لا يمكن التراجع!')) return;
+    try {
+      await fetch(api('submissions') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+      await fetch(api('students') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+      await fetch(api('classes') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+      await fetch(api('behaviors') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+      await fetch(api('observers') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+      toast('تم مسح كل البيانات'); await loadAll();
+    } catch (err) { toast('تعذر المسح', 'err'); }
+  }
+  function download(content, name, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name; a.click();
+    URL.revokeObjectURL(url);
+  }
+  /* ===================== DATABASE TEST ===================== */
+
+  async function testDbNow() {
+
+    const el =
+      document.getElementById('db-test-result');
+
+    if (el) {
+      el.innerHTML =
+        '<span class="chip chip-neutral">' +
+        '🔄 جارٍ الاختبار...</span>';
+    }
+
+    console.log('🔌 Starting database test...');
+
+    const tables = [
+      'classes',
+      'students',
+      'behaviors',
+      'observers',
+      'submissions'
+    ];
+
+    let allGood = true;
+
+    for (const table of tables) {
+
+      try {
+
+        console.log(
+          `🔍 Testing ${table}...`
+        );
+
+        const response = await fetch(
+          api(table) +
+          '?select=*&limit=1',
+          {
+            method: 'GET',
+            headers: {
+              'apikey': DB.anonKey
+            }
+          }
+        );
+
+        const text =
+          await response.text();
+
+        console.log(
+          `📦 ${table} → HTTP ${response.status}`,
+          text
+        );
+
+        if (!response.ok) {
+          allGood = false;
+
+          console.error(
+            `❌ ${table} FAILED`
+          );
+        }
+
+      } catch (error) {
+
+        allGood = false;
+
+        console.error(
+          `❌ ${table} FAILED`,
+          error
+        );
+      }
+    }
+
+    console.log(
+      '✅ Finished testing all tables'
+    );
+
+    if (el) {
+
+      if (allGood) {
+
+        el.innerHTML =
+          '<span class="chip chip-good">' +
+          '✅ الاتصال ناجح — جميع الجداول تعمل' +
+          '</span>';
+
+      } else {
+
+        el.innerHTML =
+          '<span class="chip chip-warn">' +
+          '❌ يوجد خطأ في أحد الجداول — راجع Console' +
+          '</span>';
+      }
+    }
+  }
+function copyText(id){
+  const el = document.getElementById(id);
   if(!el) return;
-  el.textContent = '💾 ' + txt + ' • ' + new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  if(navigator.clipboard){ navigator.clipboard.writeText(el.textContent).then(()=>toast('تم نسخ الكود �📋')).catch(()=>toast('انسخ يدويًا')); }
+  else{ const r=document.createRange(); r.selectNodeContents(el); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); toast('تم نسخ الكود 📋'); }
 }
-
-function uid(p='id'){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
-
-/* ===================== التنقل بين التبويبات ===================== */
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click',()=>{
-    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-    document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-    t.classList.add('active');
-    document.getElementById('panel-'+t.dataset.tab).classList.add('active');
-    renderAll();
-  });
-});
-
-/* ===================== الإحصائيات ===================== */
-function renderStats(){
-  const totalStars = data.events.reduce((s,e)=>s+(e.points||0),0);
-  document.getElementById('stat-students').textContent = data.students.length;
-  document.getElementById('stat-stars').textContent = totalStars;
-  document.getElementById('stat-classes').textContent = data.classes.length;
-  document.getElementById('stat-events').textContent = data.events.length;
-}
-
-/* ===================== الطلاب ===================== */
-function renderStudents(){
-  const list = document.getElementById('students-list');
-  const filter = document.getElementById('st-filter').value;
-  const sel = $('#st-filter');
-  sel.innerHTML = '<option value="all">جميع الفصول</option>' + data.classes.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-  sel.value = filter;
-
-  const students = filter==='all' ? data.students : data.students.filter(s=>s.classId===filter);
-  if(!students.length){list.innerHTML = `<div class="empty"><span class="big">📭</span>لا يوجد طلاب. أضف طلاب جدد من الزر بالأعلى.</div>`;return}
-
-  list.innerHTML = students.map(s=>{
-    const cls = data.classes.find(c=>c.id===s.classId);
-    const stars = data.events.filter(e=>e.studentId===s.id).reduce((sum,e)=>sum+e.points,0);
-    return `<div class="student-card">
-      <div class="left">
-        <div class="avatar">${escapeHtml(s.name.charAt(0))}</div>
-        <div>
-          <div style="font-weight:700">${escapeHtml(s.name)}</div>
-          <div style="font-size:.82rem;color:var(--muted)">${cls?escapeHtml(cls.name):'بدون فصل'} • <span class="stars">${'⭐'.repeat(Math.min(stars,20))}</span> <span style="color:var(--accent);font-weight:700">${stars}</span></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn-soft btn-sm" onclick="openModal('student','${s.id}')">✏️ تعديل</button>
-        <button class="btn-danger btn-sm" onclick="deleteStudent('${s.id}')">🗑️ حذف</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function deleteStudent(id){
-  if(!confirm('هل تريد حذف هذا الطالب وكل أحداثه؟')) return;
-  data.students = data.students.filter(s=>s.id!==id);
-  data.events = data.events.filter(e=>e.studentId!==id);
-  saveData();renderAll();toast('تم حذف الطالب');
-}
-
-/* ===================== الفصول ===================== */
-function renderClasses(){
-  const list = document.getElementById('classes-list');
-  if(!data.classes.length){list.innerHTML=`<div class="empty"><span class="big">🏫</span>لا توجد فصول بعد.</div>`;return}
-  list.innerHTML = data.classes.map(c=>{
-    const count = data.students.filter(s=>s.classId===c.id).length;
-    const stars = data.events.filter(e=>e.classId===c.id).reduce((s,e)=>s+e.points,0);
-    return `<div class="student-card">
-      <div class="left">
-        <div class="avatar" style="background:linear-gradient(135deg,#10b981,#34d399)">🏫</div>
-        <div>
-          <div style="font-weight:700">${escapeHtml(c.name)}</div>
-          <div style="font-size:.82rem;color:var(--muted)">${count} طالب/ة • <span style="color:var(--accent);font-weight:700">⭐ ${stars}</span> نقطة</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn-soft btn-sm" onclick="openModal('class','${c.id}')">✏️ تعديل</button>
-        <button class="btn-danger btn-sm" onclick="deleteClass('${c.id}')">🗑️ حذف</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-function deleteClass(id){
-  if(!confirm('سيتم حذف كل الطلاب والأحداث المرتبطة بهذا الفصل. متابعة؟')) return;
-  data.classes = data.classes.filter(c=>c.id!==id);
-  const studentIds = data.students.filter(s=>s.classId===id).map(s=>s.id);
-  data.students = data.students.filter(s=>s.classId!==id);
-  data.events = data.events.filter(e=>!studentIds.includes(e.studentId));
-  saveData();renderAll();toast('تم حذف الفصل');
-}
-
-/* ===================== السلوكيات ===================== */
-function renderBehaviors(){
-  const list = document.getElementById('behaviors-list');
-  if(!data.behaviors.length){list.innerHTML=`<div class="empty"><span class="big">✨</span>لا توجد سلوكيات. أضف سلوكيات من الزر بالأعلى.</div>`;return}
-  list.innerHTML = data.behaviors.map(b=>`
-    <div class="behavior-card" style="cursor:default">
-      <span class="emoji">${b.emoji||'⭐'}</span>
-      <div class="name">${escapeHtml(b.name)}</div>
-      <span class="pts">+${b.points} نجوم</span>
-      <div style="margin-top:8px;display:flex;justify-content:center;gap:4px">
-        <button class="btn-soft btn-sm" onclick="openModal('behavior','${b.id}')">✏️</button>
-        <button class="btn-danger btn-sm" onclick="deleteBehavior('${b.id}')">🗑️</button>
-      </div>
-    </div>`).join('');
-}
-function deleteBehavior(id){
-  if(!confirm('حذف هذا السلوك؟')) return;
-  data.behaviors = data.behaviors.filter(b=>b.id!==id);
-  saveData();renderAll();toast('تم حذف السلوك');
-}
-
-/* ===================== الرصد السريع ===================== */
-function renderRecordPanel(){
-  $('#rec-class').innerHTML = data.classes.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-  updateRecStudents();
-  $('#rec-class').onchange = updateRecStudents;
-  $('#rec-behaviors').innerHTML = data.behaviors.map(b=>`
-    <div class="behavior-card" data-bid="${b.id}" onclick="pickBehavior('${b.id}')">
-      <span class="emoji">${b.emoji||'⭐'}</span>
-      <div class="name">${escapeHtml(b.name)}</div>
-      <span class="pts">+${b.points} نجوم</span>
-    </div>`).join('');
-  renderRecent();
-}
-
-function updateRecStudents(){
-  const cid = $('#rec-class').value;
-  const list = data.students.filter(s=>s.classId===cid);
-  $('#rec-student').innerHTML = list.length
-    ? list.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join('')
-    : '<option value="">لا يوجد طلاب</option>';
-}
-
-function pickBehavior(id){
-  data.selectedBehavior = id;
-  document.querySelectorAll('#rec-behaviors .behavior-card').forEach(el=>{
-    el.style.borderColor = el.dataset.bid===id ? 'var(--primary)' : 'var(--line)';
-    el.style.background = el.dataset.bid===id ? '#eef2ff' : '#fff';
-  });
-}
-
-function recordBehavior(){
-  const studentId = $('#rec-student').value;
-  const bid = data.selectedBehavior;
-  const observer = $('#rec-observer').value.trim();
-  if(!studentId){toast('اختر طالباً أولاً','err');return}
-  if(!bid){toast('اختر سلوكاً متميزاً','err');return}
-  if(!observer){toast('اكتب اسم الراصد','err');return}
-  const student = data.students.find(s=>s.id===studentId);
-  const behavior = data.behaviors.find(b=>b.id===bid);
-  if(!student||!behavior){toast('خطأ في البيانات','err');return}
-
-  const event = {
-    id: uid('e'),
-    studentId,
-    classId: student.classId,
-    behaviorId: bid,
-    behaviorName: behavior.name,
-    emoji: behavior.emoji,
-    points: behavior.points,
-    note: $('#rec-note').value.trim(),
-    observer: observer,
-    date: new Date().toISOString()
-  };
-  data.events.unshift(event);
-  // حفظ اسم الراصد للاقتراح لاحقاً
-  if(!data.observers) data.observers = [];
-  if(!data.observers.includes(observer)) data.observers.unshift(observer);
-  if(data.observers.length > 20) data.observers = data.observers.slice(0,20);
-  saveData();
-
-  // أنميشن نجمة
-  spawnStar();
-
-  toast(`+${behavior.points} ⭐ لـ ${student.name}`);
-  $('#rec-note').value='';
-  data.selectedBehavior=null;
-  renderAll();
-}
-
-function quickAddClass(inputId='quick-class-input'){
-  const input = document.getElementById(inputId);
-  if(!input) return;
-  const name = input.value.trim();
-  if(!name){toast('اكتب اسم الفصل','err');return}
-  if(data.classes.some(c=>c.name===name)){toast('هذا الفصل موجود بالفعل','err');return}
-  data.classes.push({id:uid('c'),name});
-  saveData();
-  input.value='';
-  renderAll();
-  toast(`تمت إضافة "${name}"`);
-  // إعادة تحديد الفصل الجديد في الرصد السريع إذا كنا هناك
-  if(inputId==='quick-record-class'){
-    const rec = $('#rec-class');
-    const newCls = data.classes.find(c=>c.name===name);
-    if(rec && newCls){rec.value=newCls.id;updateRecStudents();}
-  }
-}
-
-function quickAddStudent(){
-  const classSel = $('#rec-class');
-  const nameInput = $('#quick-record-student');
-  const name = nameInput.value.trim();
-  const classId = classSel.value;
-  if(!name){toast('اكتب اسم الطالب/ة','err');return}
-  if(!classId){toast('اختر فصلاً أولاً','err');return}
-  if(data.students.some(s=>s.name===name && s.classId===classId)){toast('هذا الطالب/ة موجود في هذا الفصل','err');return}
-  const newId = uid('s');
-  data.students.push({id:newId,classId,name});
-  saveData();
-  nameInput.value='';
-  renderAll();
-  // اختيار الطالب الجديد تلقائياً
-  const rec = $('#rec-student');
-  if(rec){rec.value=newId;}
-  toast(`تمت إضافة "${name}"`);
-}
-
-function quickAddObserver(){
-  const input = $('#quick-observer-input');
-  const name = input.value.trim();
-  if(!name){toast('اكتب اسم الراصد','err');return}
-  if(!data.observers) data.observers = [];
-  if(data.observers.includes(name)){toast('هذا الراصد موجود بالفعل','err');return}
-  data.observers.unshift(name);
-  if(data.observers.length>50) data.observers=data.observers.slice(0,50);
-  saveData();
-  input.value='';
-  renderAll();
-  toast(`تمت إضافة "${name}"`);
-  // وضعه في حقل الراصد الحالي
-  const rec = $('#rec-observer');
-  if(rec) rec.value = name;
-}
-
-function deleteObserver(name){
-  if(!confirm(`حذف الراصد "${name}"؟ (الأحداث القديمة ستبقى محفوظة بالاسم)`)) return;
-  data.observers = (data.observers||[]).filter(o=>o!==name);
-  saveData();renderAll();toast('تم الحذف');
-}
-
-function renderObserverList(){
-  const dl = document.getElementById('observer-list');
-  if(!dl) return;
-  const obs = (data.observers||[]).slice(0,20);
-  dl.innerHTML = obs.map(o=>`<option value="${escapeHtml(o)}"></option>`).join('');
-  // عرض قائمة الراصدين في تبويب الإدارة
-  const list = document.getElementById('mg-observers-list');
-  if(list) renderManageObservers();
-}
-
-/* ===================== لوحة الإدارة الشاملة ===================== */
-function renderManage(){
-  document.getElementById('mg-classes').textContent = data.classes.length;
-  document.getElementById('mg-students').textContent = data.students.length;
-  document.getElementById('mg-observers').textContent = (data.observers||[]).length;
-  document.getElementById('mg-events').textContent = data.events.length;
-  renderManageClasses();
-  renderManageStudents();
-  renderManageObservers();
-}
-
-function renderManageClasses(){
-  const list = document.getElementById('mg-classes-list');
-  if(!list) return;
-  const search = (document.getElementById('mg-class-search')?.value || '').trim();
-  const sort = document.getElementById('mg-class-sort')?.value || 'name';
-  let classes = [...data.classes];
-  if(search) classes = classes.filter(c=>c.name.includes(search));
-  classes.forEach(c=>{
-    c._count = data.students.filter(s=>s.classId===c.id).length;
-    c._stars = data.events.filter(e=>e.classId===c.id).reduce((s,e)=>s+e.points,0);
-  });
-  if(sort==='name') classes.sort((a,b)=>a.name.localeCompare(b.name,'ar'));
-  else if(sort==='students') classes.sort((a,b)=>b._count-a._count);
-  else if(sort==='stars') classes.sort((a,b)=>b._stars-a._stars);
-
-  if(!classes.length){list.innerHTML=`<div class="empty"><span class="big">🏫</span>لا توجد فصول. أضف فصلاً من الأعلى.</div>`;return}
-  list.innerHTML = classes.map(c=>`
-    <div class="student-card">
-      <div class="left">
-        <div class="avatar" style="background:linear-gradient(135deg,#10b981,#34d399)">🏫</div>
-        <div>
-          <div style="font-weight:700">${escapeHtml(c.name)}</div>
-          <div style="font-size:.82rem;color:var(--muted)">${c._count} طالب/ة • <span style="color:var(--accent);font-weight:700">⭐ ${c._stars}</span> نقطة</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn-soft btn-sm" onclick="openModal('class','${c.id}')">✏️ تعديل</button>
-        <button class="btn-danger btn-sm" onclick="deleteClass('${c.id}')">🗑️ حذف</button>
-      </div>
-    </div>`).join('');
-}
-
-function renderManageStudents(){
-  const list = document.getElementById('mg-students-list');
-  if(!list) return;
-  const filterCls = document.getElementById('mg-st-class');
-  if(filterCls){
-    filterCls.innerHTML = '<option value="all">كل الفصول</option>' +
-      data.classes.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-  }
-  const classId = filterCls?.value || 'all';
-  const search = (document.getElementById('mg-st-search')?.value || '').trim();
-  let students = classId==='all' ? [...data.students] : data.students.filter(s=>s.classId===classId);
-  if(search) students = students.filter(s=>s.name.includes(search));
-  students.forEach(s=>{s._stars = data.events.filter(e=>e.studentId===s.id).reduce((sum,e)=>sum+e.points,0);});
-  students.sort((a,b)=>b._stars-a._stars);
-
-  if(!students.length){list.innerHTML=`<div class="empty"><span class="big">👨‍🎓</span>لا يوجد طلاب. أضف طلاباً من الأعلى.</div>`;return}
-  list.innerHTML = students.map(s=>{
-    const cls = data.classes.find(c=>c.id===s.classId);
-    return `<div class="student-card">
-      <div class="left">
-        <div class="avatar">${escapeHtml(s.name.charAt(0))}</div>
-        <div>
-          <div style="font-weight:700">${escapeHtml(s.name)}</div>
-          <div style="font-size:.82rem;color:var(--muted)">${cls?escapeHtml(cls.name):'بدون فصل'} • <span class="stars">${'⭐'.repeat(Math.min(s._stars,15))}</span> <span style="color:var(--accent);font-weight:700">${s._stars}</span></div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn-soft btn-sm" onclick="openModal('student','${s.id}')">✏️ تعديل</button>
-        <button class="btn-danger btn-sm" onclick="deleteStudent('${s.id}')">🗑️ حذف</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function renderManageObservers(){
-  const list = document.getElementById('mg-observers-list');
-  if(!list) return;
-  const obs = data.observers||[];
-  if(!obs.length){list.innerHTML=`<div class="empty"><span class="big">👨‍🏫</span>لا يوجد راصدون. أضف معلمين من الأعلى.</div>`;return}
-  list.innerHTML = obs.map(o=>{
-    const count = data.events.filter(e=>e.observer===o).length;
-    const stars = data.events.filter(e=>e.observer===o).reduce((s,e)=>s+e.points,0);
-    return `<div class="student-card">
-      <div class="left">
-        <div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">👤</div>
-        <div>
-          <div style="font-weight:700">${escapeHtml(o)}</div>
-          <div style="font-size:.82rem;color:var(--muted)">📊 ${count} رصد • <span style="color:var(--accent);font-weight:700">⭐ ${stars}</span> نقطة</div>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn-soft btn-sm" onclick="useObserver('${escapeHtml(o)}')">↩️ تعيين كراصد حالي</button>
-        <button class="btn-danger btn-sm" onclick="deleteObserver('${escapeHtml(o)}')">🗑️ حذف</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function quickAddObserverMg(){
-  const input = document.getElementById('mg-observer-input');
-  if(!input) return;
-  const name = input.value.trim();
-  if(!name){toast('اكتب اسم الراصد','err');return}
-  if(!data.observers) data.observers = [];
-  if(data.observers.includes(name)){toast('هذا الراصد موجود بالفعل','err');return}
-  data.observers.unshift(name);
-  if(data.observers.length>50) data.observers=data.observers.slice(0,50);
-  saveData();
-  input.value='';
-  renderAll();
-  toast(`تمت إضافة "${name}"`);
-}
-
-function useObserver(name){
-  const rec = $('#rec-observer');
-  if(rec) rec.value = name;
-  toast(`تم تعيين "${name}" كراصد حالي`);
-  // الانتقال لتبويب الرصد
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.tab[data-tab="record"]').classList.add('active');
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-record').classList.add('active');
-}
-
-function spawnStar(){
-  const star = document.createElement('div');
-  star.className='star-anim';
-  star.textContent='⭐';
-  star.style.right = (Math.random()*60+20)+'%';
-  star.style.bottom = '60px';
-  document.body.appendChild(star);
-  setTimeout(()=>star.remove(),1200);
-}
-
-function resetRecord(){$('#rec-note').value='';data.selectedBehavior=null;renderRecordPanel()}
-
-function renderRecent(){
-  const out = $('#recent-events');
-  const events = data.events.slice(0,10);
-  if(!events.length){out.innerHTML=`<div class="empty"><span class="big">📭</span>لم تُسجّل أحداث بعد.</div>`;return}
-  out.innerHTML = `<table>
-    <thead><tr><th>التاريخ</th><th>الطالب</th><th>السلوك</th><th>النقاط</th><th>الراصد</th></tr></thead>
-    <tbody>${events.map(e=>{
-      const s = data.students.find(x=>x.id===e.studentId);
-      const d = new Date(e.date);
-      const dateStr = d.toLocaleDateString('ar-EG',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-      return `<tr>
-        <td>${dateStr}</td>
-        <td><strong>${s?escapeHtml(s.name):'محذوف'}</strong></td>
-        <td>${e.emoji||''} ${escapeHtml(e.behaviorName)}${e.note?`<div style="font-size:.8rem;color:var(--muted)">📝 ${escapeHtml(e.note)}</div>`:''}</td>
-        <td><span class="chip chip-good">+${e.points}</span></td>
-        <td style="font-size:.85rem;color:var(--muted)">${e.observer?escapeHtml(e.observer):'-'}</td>
-      </tr>`;
-    }).join('')}</tbody>
-  </table>`;
-}
-
-/* ===================== لوحة الشرف ===================== */
-function renderLeaderboard(){
-  const filter = $('#lb-filter').value;
-  $('#lb-filter').innerHTML = '<option value="all">جميع الفصول</option>' +
-    data.classes.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('');
-  $('#lb-filter').value = filter;
-
-  const scores = data.students.map(s=>({
-    ...s,
-    stars: data.events.filter(e=>e.studentId===s.id).reduce((sum,e)=>sum+e.points,0)
-  })).filter(s=>filter==='all' || s.classId===filter)
-    .sort((a,b)=>b.stars-a.stars);
-
-  const out = $('#leaderboard');
-  if(!scores.length){out.innerHTML=`<div class="empty"><span class="big">🏆</span>لا توجد بيانات لعرضها.</div>`;return}
-
-  out.innerHTML = scores.slice(0,30).map((s,i)=>{
-    const cls = data.classes.find(c=>c.id===s.classId);
-    const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-other';
-    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
-    return `<div class="lb-item">
-      <div class="lb-rank ${rankClass}">${medal}</div>
-      <div class="avatar">${escapeHtml(s.name.charAt(0))}</div>
-      <div style="flex:1">
-        <div style="font-weight:700">${escapeHtml(s.name)}</div>
-        <div style="font-size:.82rem;color:var(--muted)">${cls?escapeHtml(cls.name):''}</div>
-      </div>
-      <div style="text-align:left">
-        <div class="stars" style="font-size:1.1rem">${'⭐'.repeat(Math.min(s.stars,15))}</div>
-        <div style="font-weight:800;color:var(--accent);font-size:1.1rem">${s.stars} نقطة</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-/* ===================== التقرير ===================== */
-function renderReportSelect(){
-  $('#rep-student').innerHTML = data.students.map(s=>{
-    const cls = data.classes.find(c=>c.id===s.classId);
-    return `<option value="${s.id}">${escapeHtml(s.name)} - ${cls?escapeHtml(cls.name):''}</option>`;
-  }).join('');
-}
-
-function generateReport(){
-  const sid = $('#rep-student').value;
-  if(!sid){toast('اختر طالباً','err');return}
-  const student = data.students.find(s=>s.id===sid);
-  if(!student) return;
-  const cls = data.classes.find(c=>c.id===student.classId);
-  const events = data.events.filter(e=>e.studentId===sid);
-  const total = events.reduce((s,e)=>s+e.points,0);
-
-  // تجميع حسب السلوك
-  const byBehavior = {};
-  events.forEach(e=>{
-    byBehavior[e.behaviorName] = byBehavior[e.behaviorName] || {count:0,points:0,emoji:e.emoji};
-    byBehavior[e.behaviorName].count++;
-    byBehavior[e.behaviorName].points += e.points;
-  });
-
-  const out = $('#report-output');
-  out.innerHTML = `
-    <div style="background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-radius:14px;padding:18px;margin-bottom:14px">
-      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-        <div class="avatar" style="width:64px;height:64px;font-size:1.6rem;background:rgba(255,255,255,.25)">${escapeHtml(student.name.charAt(0))}</div>
-        <div style="flex:1">
-          <div style="font-size:1.4rem;font-weight:800">${escapeHtml(student.name)}</div>
-          <div style="opacity:.9">${cls?escapeHtml(cls.name):''}</div>
-        </div>
-        <div style="text-align:center">
-          <div style="font-size:2.2rem;font-weight:800">⭐ ${total}</div>
-          <div style="opacity:.85">إجمالي النجوم</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="grid g3" style="margin-bottom:14px">
-      <div class="stat"><div class="icon i-gold">⭐</div><div><div class="num">${total}</div><div class="lbl">مجموع النجوم</div></div></div>
-      <div class="stat"><div class="icon i-purple">📋</div><div><div class="num">${events.length}</div><div class="lbl">عدد الأحداث</div></div></div>
-      <div class="stat"><div class="icon i-green">🎯</div><div><div class="num">${Object.keys(byBehavior).length}</div><div class="lbl">أنواع سلوك</div></div></div>
-    </div>
-
-    <h4 style="margin:14px 0 8px">📊 تفصيل حسب السلوك</h4>
-    <table><thead><tr><th>السلوك</th><th>عدد المرات</th><th>النقاط</th></tr></thead><tbody>
-      ${Object.entries(byBehavior).sort((a,b)=>b[1].points-a[1].points).map(([name,info])=>`
-        <tr><td>${info.emoji||''} ${escapeHtml(name)}</td><td>${info.count}</td><td><span class="chip chip-good">+${info.points}</span></td></tr>
-      `).join('')||'<tr><td colspan="3" style="text-align:center;color:var(--muted)">لا توجد بيانات</td></tr>'}
-    </tbody></table>
-
-    <h4 style="margin:14px 0 8px">📅 السجل الزمني</h4>
-    <table><thead><tr><th>التاريخ</th><th>السلوك</th><th>النقاط</th><th>الراصد</th><th>ملاحظة</th></tr></thead><tbody>
-      ${events.slice(0,50).map(e=>{
-        const d=new Date(e.date);
-        return `<tr>
-          <td>${d.toLocaleDateString('ar-EG',{year:'numeric',month:'short',day:'numeric'})}</td>
-          <td>${e.emoji||''} ${escapeHtml(e.behaviorName)}</td>
-          <td><span class="chip chip-good">+${e.points}</span></td>
-          <td style="font-size:.85rem;color:var(--muted)">${e.observer?escapeHtml(e.observer):'-'}</td>
-          <td style="font-size:.85rem;color:var(--muted)">${escapeHtml(e.note||'-')}</td>
-        </tr>`;
-      }).join('')||'<tr><td colspan="5" style="text-align:center;color:var(--muted)">لا توجد أحداث</td></tr>'}
-    </tbody></table>
-  `;
-}
-
-/* ===================== التصدير والاستيراد ===================== */
-function exportCSV(){
-  const rows = [['التاريخ','الطالب','الفصل','السلوك','النقاط','الملاحظة','الراصد']];
-  data.events.forEach(e=>{
-    const s = data.students.find(x=>x.id===e.studentId);
-    const c = data.classes.find(x=>x.id===e.classId);
-    rows.push([
-      new Date(e.date).toLocaleString('ar-EG'),
-      s?s.name:'',
-      c?c.name:'',
-      e.behaviorName,
-      e.points,
-      e.note||'',
-      e.observer||''
-    ]);
-  });
-  const csv = '\uFEFF'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  download(csv,'school-stars-events.csv','text/csv;charset=utf-8');
-}
-
-function exportJSON(){
-  download(JSON.stringify(data,null,2),'school-stars-backup.json','application/json');
-  toast('تم تنزيل النسخة الاحتياطية 💾');
-}
-
-function importJSON(event){
-  const file = event.target.files[0];if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e=>{
-    try{
-      const obj = JSON.parse(e.target.result);
-      if(!obj.classes||!obj.students||!obj.behaviors){toast('ملف غير صالح','err');return}
-      if(!confirm('سيتم استبدال كل البيانات الحالية. متابعة؟')) return;
-      data = obj;saveData();renderAll();toast('تم الاستيراد بنجاح');
-    }catch(err){toast('ملف غير صالح','err')}
-  };
-  reader.readAsText(file);
-  event.target.value='';
-}
-
-function resetAllData(){
-  if(!confirm('سيتم مسح كل البيانات. متابعة؟')) return;
-  if(!confirm('تأكيد نهائي: لا يمكن التراجع!')) return;
-  data = structuredClone(DEFAULT_DATA);saveData();renderAll();toast('تم إعادة التعيين');
-}
-
-function download(content,name,type){
-  const blob = new Blob([content],{type});
+function download(content, name, type){
+  const blob = new Blob([content], {type});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href=url;a.download=name;a.click();
+  a.href = url; a.download = name; a.click();
   URL.revokeObjectURL(url);
 }
 
 /* ===================== النوافذ المنبثقة ===================== */
-function openModal(type,id){
-  const modal = $('#modal');
-  const body = $('#modal-body');
-  if(type==='student'){
+function openModal(type, id){
+  const modal = document.getElementById('modal');
+  const body = document.getElementById('modal-body');
+  if(type === 'class'){
     const isEdit = !!id;
-    const s = isEdit ? data.students.find(x=>x.id===id) : {name:'',classId:data.classes[0]?.id||''};
-    $('#modal-title').textContent = isEdit?'تعديل طالب':'إضافة طالب';
-    body.innerHTML = `
-      <label>اسم الطالب/ة</label>
-      <input type="text" id="m-name" value="${escapeHtml(s.name)}" placeholder="الاسم الكامل" />
-      <label style="margin-top:10px">الفصل</label>
-      <select id="m-class">${data.classes.map(c=>`<option value="${c.id}" ${c.id===s.classId?'selected':''}>${escapeHtml(c.name)}</option>`).join('')}</select>
-      <div style="margin-top:14px;display:flex;gap:8px">
-        <button class="btn-primary" onclick="saveStudent('${id||''}')">حفظ</button>
-        <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
-      </div>`;
-  }else if(type==='class'){
+    const c = isEdit ? classes.find(x=>x.id===id) : {name:''};
+    document.getElementById('modal-title').textContent = isEdit ? 'تعديل فصل' : 'إضافة فصل';
+    body.innerHTML = '<label>اسم الفصل</label><input type="text" id="m-name" value="'+esc(c.name)+'" placeholder="مثل: الصف الرابع أ" />' +
+      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveClass(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+  }else if(type === 'student'){
     const isEdit = !!id;
-    const c = isEdit ? data.classes.find(x=>x.id===id) : {name:''};
-    $('#modal-title').textContent = isEdit?'تعديل فصل':'إضافة فصل';
-    body.innerHTML = `
-      <label>اسم الفصل</label>
-      <input type="text" id="m-name" value="${escapeHtml(c.name)}" placeholder="مثل: الصف الرابع أ" />
-      <div style="margin-top:14px;display:flex;gap:8px">
-        <button class="btn-primary" onclick="saveClass('${id||''}')">حفظ</button>
-        <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
-      </div>`;
-  }else if(type==='observer'){
+    const s = isEdit ? students.find(x=>x.id===id) : {name:'', class_id: classes[0] ? classes[0].id : ''};
+    document.getElementById('modal-title').textContent = isEdit ? 'تعديل طالب' : 'إضافة طالب';
+    body.innerHTML = '<label>اسم الطالب/ة</label><input type="text" id="m-name" value="'+esc(s.name)+'" placeholder="الاسم الكامل" />' +
+      '<label style="margin-top:10px">الفصل</label><select id="m-class">' + classes.map(c=>'<option value="'+c.id+'" '+(c.id===s.class_id?'selected':'')+'>'+esc(c.name)+'</option>').join('') + '</select>' +
+      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveStudent(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+  }else if(type === 'observer'){
     const isEdit = !!id;
-    const o = isEdit ? {name:id} : {name:''};
-    $('#modal-title').textContent = isEdit?'تعديل اسم راصد':'إضافة راصد';
-    body.innerHTML = `
-      <label>اسم الراصد</label>
-      <input type="text" id="m-name" value="${escapeHtml(o.name)}" placeholder="مثلاً: أ. محمد العتيبي" />
-      <div style="margin-top:14px;display:flex;gap:8px">
-        <button class="btn-primary" onclick="saveObserver('${id||''}')">حفظ</button>
-        <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
-      </div>`;
-  }else if(type==='bulkStudents'){
-    $('#modal-title').textContent = 'إضافة طلاب جماعية';
-    body.innerHTML = `
-      <label>الفصل</label>
-      <select id="bulk-class">${data.classes.map(c=>`<option value="${c.id}">${escapeHtml(c.name)}</option>`).join('')}</select>
-      <label style="margin-top:10px">أسماء الطلاب (اسم في كل سطر)</label>
-      <textarea id="bulk-names" rows="8" placeholder="أحمد محمد&#10;سارة علي&#10;خالد العتيبي&#10;نورة الشمري"></textarea>
-      <div style="margin-top:14px;display:flex;gap:8px">
-        <button class="btn-primary" onclick="saveBulkStudents()">إضافة الكل</button>
-        <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
-      </div>`;
-  }else if(type==='behavior'){
+    const o = isEdit ? observers.find(x=>String(x.id)===String(id)) : {name:''};
+    document.getElementById('modal-title').textContent = isEdit ? 'تعديل اسم راصد' : 'إضافة راصد';
+    body.innerHTML = '<label>اسم الراصد</label><input type="text" id="m-name" value="'+esc(o.name||'')+'" placeholder="مثلاً: أ. محمد العتيبي" />' +
+      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveObserver(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+  }else if(type === 'bulkStudents'){
+    document.getElementById('modal-title').textContent = 'إضافة طلاب جماعية';
+    body.innerHTML = '<label>الفصل</label><select id="bulk-class">' + classes.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('') + '</select>' +
+      '<label style="margin-top:10px">أسماء الطلاب (اسم في كل سطر)</label>' +
+      '<textarea id="bulk-names" rows="8" placeholder="اكتب اسمًا في كل سطر"></textarea>' +
+      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveBulkStudents()">إضافة الكل</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+  }else if(type === 'behavior'){
     const isEdit = !!id;
-    const b = isEdit ? data.behaviors.find(x=>x.id===id) : {name:'',emoji:'⭐',points:3};
-    $('#modal-title').textContent = isEdit?'تعديل سلوك':'إضافة سلوك متميز';
-    body.innerHTML = `
-      <label>اسم السلوك</label>
-      <input type="text" id="m-name" value="${escapeHtml(b.name)}" placeholder="مثل: التزام بالهدوء" />
-      <div class="grid g2" style="margin-top:10px">
-        <div><label>الإيموجي</label><input type="text" id="m-emoji" value="${b.emoji||'⭐'}" maxlength="4" /></div>
-        <div><label>النقاط</label><input type="number" id="m-points" value="${b.points}" min="1" max="20" /></div>
-      </div>
-      <div style="margin-top:14px;display:flex;gap:8px">
-        <button class="btn-primary" onclick="saveBehavior('${id||''}')">حفظ</button>
-        <button class="btn-ghost" onclick="closeModal()">إلغاء</button>
-      </div>`;
+    const b = isEdit ? behaviors.find(x=>x.id===id) : {name:'', emoji:'⭐', points:3};
+    document.getElementById('modal-title').textContent = isEdit ? 'تعديل سلوك' : 'إضافة سلوك متميز';
+    body.innerHTML = '<label>اسم السلوك</label><input type="text" id="m-name" value="'+esc(b.name)+'" placeholder="مثل: التزام بالهدوء" />' +
+      '<div class="grid g2" style="margin-top:10px"><div><label>الإيموجي</label><input type="text" id="m-emoji" value="'+(b.emoji||'⭐')+'" maxlength="4" /></div>' +
+      '<div><label>النقاط</label><input type="number" id="m-points" value="'+b.points+'" min="1" max="20" /></div></div>' +
+      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveBehavior(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
   }
   modal.classList.add('show');
 }
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
 
-function closeModal(){$('#modal').classList.remove('show')}
-
-function saveStudent(id){
-  const name = $('#m-name').value.trim();
-  const classId = $('#m-class').value;
-  if(!name){toast('اكتب اسم الطالب','err');return}
+async function saveClass(id){
+  const name = document.getElementById('m-name').value.trim();
+  if(!name){ toast('اكتب اسم الفصل','err'); return; }
+  if(id){ await renameClass(id, name); toast('تم الحفظ'); }
+  else{ await addClass(name); toast('تم الحفظ'); }
+  closeModal();
+}
+async function saveStudent(id){
+  const name = document.getElementById('m-name').value.trim();
+  const classId = document.getElementById('m-class').value;
+  if(!name){ toast('اكتب اسم الطالب','err'); return; }
+  if(id){ await updateStudent(id, name, classId); toast('تم الحفظ'); }
+  else{ await addStudent(name, classId); toast('تم الحفظ'); }
+  closeModal();
+}
+async function saveObserver(id){
+  const name = document.getElementById('m-name').value.trim();
+  if(!name){ toast('اكتب اسم الراصد','err'); return; }
   if(id){
-    const s = data.students.find(x=>x.id===id);
-    s.name = name;s.classId = classId;
+    const old = observers.find(x=>String(x.id)===String(id));
+    if(old && old.name !== name){
+      await dbUpdate('observers', 'id', id, { name });
+      // تحديث اسم الراصد في السجلات السابقة ليُحفظ موحداً
+      submissions.filter(e=>e.observer === old.name).forEach(e=>dbUpdate('submissions','id',e.id,{observer:name}));
+    }
   }else{
-    data.students.push({id:uid('s'),name,classId});
+    if(observers.some(o=>o.name === name)){ toast('هذا الاسم موجود بالفعل','err'); return; }
+    await addObserver(name);
   }
-  saveData();closeModal();renderAll();toast('تم الحفظ');
+  toast('تم الحفظ'); closeModal(); await loadAll();
 }
-
-function saveClass(id){
-  const name = $('#m-name').value.trim();
-  if(!name){toast('اكتب اسم الفصل','err');return}
-  if(id){
-    const c = data.classes.find(x=>x.id===id);
-    if(data.classes.some(x=>x.id!==id && x.name===name)){toast('اسم فصل مكرر','err');return}
-    c.name = name;
-  }else{
-    if(data.classes.some(x=>x.name===name)){toast('هذا الفصل موجود بالفعل','err');return}
-    data.classes.push({id:uid('c'),name});
+async function saveBulkStudents(){
+  const classId = document.getElementById('bulk-class').value;
+  const names = document.getElementById('bulk-names').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!names.length){ toast('اكتب أسماء الطلاب','err'); return; }
+  let added = 0, skipped = 0;
+  for(const name of names){
+    if(students.some(s=>s.name===name && s.class_id===classId)){ skipped++; continue; }
+    try{ await addStudent(name, classId); added++; }catch(_){}
   }
-  saveData();closeModal();renderAll();toast('تم الحفظ');
+  toast('تمت إضافة '+added+' طالب'+(skipped ? ' ('+skipped+' مكرر)' : ''));
+  closeModal();
 }
-
-function saveObserver(oldName){
-  const newName = $('#m-name').value.trim();
-  if(!newName){toast('اكتب اسم الراصد','err');return}
-  if(!data.observers) data.observers = [];
-  if(oldName){
-    if(data.observers.includes(newName) && newName!==oldName){toast('هذا الاسم موجود بالفعل','err');return}
-    data.observers = data.observers.map(o=>o===oldName?newName:o);
-    // تحديث الأحداث القديمة
-    data.events.forEach(e=>{if(e.observer===oldName) e.observer=newName;});
-  }else{
-    if(data.observers.includes(newName)){toast('هذا الاسم موجود بالفعل','err');return}
-    data.observers.unshift(newName);
-  }
-  saveData();closeModal();renderAll();toast('تم الحفظ');
-}
-
-function saveBulkStudents(){
-  const classId = $('#bulk-class').value;
-  const text = $('#bulk-names').value;
-  const names = text.split('\n').map(s=>s.trim()).filter(Boolean);
-  if(!names.length){toast('اكتب أسماء الطلاب','err');return}
-  let added=0, skipped=0;
-  names.forEach(name=>{
-    if(data.students.some(s=>s.name===name && s.classId===classId)){skipped++;return;}
-    data.students.push({id:uid('s'),classId,name});
-    added++;
-  });
-  saveData();closeModal();renderAll();
-  toast(`تمت إضافة ${added} طالب${skipped?` (${skipped} مكرر)`:''}`);
-}
-
-function saveBehavior(id){
-  const name = $('#m-name').value.trim();
-  const emoji = $('#m-emoji').value.trim() || '⭐';
-  const points = Math.max(1,Math.min(20,parseInt($('#m-points').value)||3));
-  if(!name){toast('اكتب اسم السلوك','err');return}
-  if(id){
-    const b = data.behaviors.find(x=>x.id===id);
-    b.name = name;b.emoji = emoji;b.points = points;
-  }else{
-    data.behaviors.push({id:uid('b'),name,emoji,points});
-  }
-  saveData();closeModal();renderAll();toast('تم الحفظ');
+async function saveBehavior(id){
+  const name = document.getElementById('m-name').value.trim();
+  const emoji = document.getElementById('m-emoji').value.trim() || '⭐';
+  const points = Math.max(1, Math.min(20, parseInt(document.getElementById('m-points').value)||3));
+  if(!name){ toast('اكتب اسم السلوك','err'); return; }
+  if(id){ await updateBehavior(id, name, emoji, points); toast('تم الحفظ'); }
+  else{ await addBehavior(name, emoji, points); toast('تم الحفظ'); }
+  closeModal();
 }
 
 /* ===================== أدوات مساعدة ===================== */
-function $(s){return document.querySelector(s)}
-function $$(s){return document.querySelectorAll(s)}
-function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c])}
-
-function toast(msg,type='ok'){
-  const t = $('#toast');
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function toast(msg, type){
+  const t = document.getElementById('toast');
   t.textContent = msg;
-  t.style.background = type==='err' ? 'var(--bad)' : '#1f2937';
+  t.style.background = type === 'err' ? 'var(--bad)' : '#1f2937';
   t.classList.add('show');
   clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(()=>t.classList.remove('show'),2500);
+  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
+}
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  document.querySelector('.tab[data-tab="'+name+'"]').classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+  renderAll();
 }
 
+/* ===================== العرض الكلي ===================== */
 function renderAll(){
-  renderStats();
+  const totalStars = submissions.reduce((s,e)=>s+(e.points||0),0);
+  document.getElementById('stat-students').textContent = students.length;
+  document.getElementById('stat-stars').textContent = totalStars;
+  document.getElementById('stat-classes').textContent = classes.length;
+  document.getElementById('stat-events').textContent = submissions.length;
   renderRecordPanel();
   renderLeaderboard();
   renderManage();
-  renderBehaviors();
-  renderReportSelect();
-  renderObserverList();
+  renderBehaviorsList();
+  fillReportSelect();
 }
 
-/* ===================== قاعدة البيانات السحابية (Supabase REST) ===================== */
-const DB_KEY = 'school-stars-db-v1';
-
-function getDbConfig(){
-  try{ return JSON.parse(localStorage.getItem(DB_KEY) || '{}'); }catch(e){ return {}; }
-}
-function saveDbConfig(cfg){
-  try{ localStorage.setItem(DB_KEY, JSON.stringify(cfg)); }catch(e){}
-}
-function dbHeaders(){
-  const cfg = getDbConfig();
-  return {
-    'apikey': cfg.anonKey || '',
-    'Authorization': 'Bearer ' + (cfg.anonKey || ''),
-    'Content-Type': 'application/json'
-  };
-}
-function dbUrl(){
-  const cfg = getDbConfig();
-  return String(cfg.url||'').replace(/\/+$/,'') + '/rest/v1/school_data';
-}
-function dbConnected(){ const c = getDbConfig(); return !!(c.url && c.anonKey); }
-
-async function dbPull(){
-  if(!dbConnected()) return null;
-  const res = await fetch(dbUrl() + '?select=data&id=eq.1', { headers: dbHeaders() });
-  if(!res.ok) throw new Error('HTTP '+res.status);
-  const rows = await res.json();
-  return (rows && rows.length) ? rows[0].data : null;
-}
-
-async function dbPush(){
-  if(!dbConnected()) return {ok:false, reason:'no-config'};
-  try{
-    const res = await fetch(dbUrl(), {
-      method: 'POST',
-      headers: { ...dbHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal' },
-      body: JSON.stringify({ id: 1, data: data, updated_at: new Date().toISOString() })
-    });
-    if(!res.ok) throw new Error('HTTP '+res.status);
-    setDbStatus('✅ متزامنة مع قاعدة البيانات في السحابة');
-    return {ok:true};
-  }catch(e){
-    setDbStatus('⚠️ تعذرت المزامنة (' + (e.message||'خطأ') + ') — المحفوظ محلياً آمن');
-    console.warn('dbPush failed', e);
-    return {ok:false, error:e};
-  }
-}
-
-let dbTimer = null;
-function queueDbPush(){
-  clearTimeout(dbTimer);
-  dbTimer = setTimeout(()=>{ dbPush(); }, 900);
-}
-
-async function initDatabaseSync(){
-  if(!dbConnected()){ setDbStatus('🔌 غير متصلة بقاعدة بيانات — الحفظ حالياً على هذا الجهاز فقط'); return; }
-  setDbStatus('🔄 جارٍ المزامنة مع قاعدة البيانات...');
-  try{
-    const remote = await dbPull();
-    if(remote && typeof remote === 'object'){
-      const remoteCount = (remote.events||[]).length;
-      const localCount = (data.events||[]).length;
-      if(remoteCount >= localCount){
-        data = normalizeData(remote);
-        renderAll();
-        setDbStatus('✅ حمّلت أحدث البيانات من السحابة');
-      } else {
-        const r = await dbPush();
-        setDbStatus(r.ok ? '✅ رفعت البيانات المحلية إلى السحابة' : '⚠️ تعذر الرفع — البيانات محلية فقط');
-      }
-    } else {
-      const r = await dbPush();
-      setDbStatus(r.ok ? '✅ رُبطت قاعدة البيانات ورفعت بياناتك إليها' : '⚠️ تعذر الرفع — البيانات محلية فقط');
-    }
-  }catch(e){
-    setDbStatus('⚠️ تعذر الاتصال بقاعدة البيانات — استخدمت البيانات المحلية');
-    console.warn('initDatabaseSync', e);
-  }
-}
-
-function setDbStatus(txt){
-  const el = document.getElementById('db-status');
-  if(!el) return;
-  el.innerHTML = '<div class="chip chip-neutral" style="margin-top:10px">' + txt + '</div>';
-}
-
-function saveDbSettings(){
-  const url = $('#db-url').value.trim();
-  const anonKey = $('#db-key').value.trim();
-  if(!url || !anonKey){ toast('أدخل رابط المشروع والمفتاح', 'err'); return; }
-  saveDbConfig({ url: url, anonKey: anonKey });
-  toast('تم حفظ إعدادات قاعدة البيانات');
-  initDatabaseSync();
-}
-function testDb(){
-  if(!dbConnected()){ toast('احفظ الإعدادات أولاً','err'); setDbStatus('⚠️ أدخل رابط المشروع والمفتاح ثم اضغط حفظ'); return; }
-  setDbStatus('🔄 جارٍ اختبار الاتصال...');
-  dbPull().then(r=>{
-    setDbStatus(r ? '✅ اتصال ناجح — وجدت بيانات سابقة في السحابة' : '✅ اتصال ناجح — لا توجد بيانات سابقة، ستُرفع عند أول مزامنة');
-  }).catch(e=>{
-    setDbStatus('❌ فشل الاتصال: ' + (e.message||'خطأ') + ' — تأكد من الكود والمفتاح ومن تشغيل SQL');
-  });
-}
-async function pushNow(){
-  toast('جارٍ المزامنة...');
-  const r = await dbPush();
-  if(r.ok) toast('تمت المزامنة مع السحابة ✅');
-}
-function disconnectDb(){
-  if(!confirm('فصل قاعدة البيانات؟ ستبقى البيانات محفوظة محلياً على هذا الجهاز.')) return;
-  saveDbConfig({});
-  setDbStatus('🔌 تم الفصل — الحفظ محلي فقط');
-  toast('تم الفصل');
-}
-function copySql(){
-  const sql = document.getElementById('db-sql');
-  if(!sql) return;
-  if(navigator.clipboard){ navigator.clipboard.writeText(sql.textContent).then(()=>toast('تم نسخ كود SQL 📋')).catch(()=>toast('انسخ الكود يدوياً')); }
-  else{
-    const r = document.createRange(); r.selectNodeContents(sql);
-    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
-    document.execCommand('copy'); toast('تم نسخ كود SQL 📋');
-  }
-}
+/* ===================== التنقل ===================== */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
+  switchTab(t.dataset.tab);
+}));
 
 /* ===================== بدء التشغيل ===================== */
-saveData(); // اختبار التخزين من أول لحظة وإظهار التنبيه إن لزم
-renderAll();
-initDatabaseSync(); // إن كانت إعدادات قاعدة البيانات محفوظة → مزامنة تلقائية
-console.log('✅ نظام رصد السلوك المتميز يعمل بنجاح');
-console.log('البيانات:',data);
+// loadCfg();
+// loadAll();
+// testDbNow();
+ loadCfg();
+
+  console.log('✅ Config loaded');
+  console.log('URL:', DB.url);
+  console.log('Key exists:', !!DB.anonKey);
+
+  loadAll();
+  testDbNow();
+
+  console.log(
+    '✅ نظام رصد السلوك المتميز — يعمل بالكامل من قاعدة البيانات'
+  );
 </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
 </body>

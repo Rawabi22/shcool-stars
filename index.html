@@ -216,6 +216,7 @@
     <div class="tab" data-tab="manage">⚙️ الإدارة</div>
     <div class="tab" data-tab="behaviors">✨ السلوكيات</div>
     <div class="tab" data-tab="report">📊 التقارير</div>
+    <div class="tab" data-tab="db">🗄️ قاعدة البيانات</div>
   </div>
 
   <!-- لوحة الرصد -->
@@ -387,6 +388,67 @@
     </div>
   </section>
 
+  <!-- قاعدة البيانات -->
+  <section class="panel" id="panel-db">
+    <div class="card">
+      <h3 style="margin:0 0 6px">🗄️ قاعدة البيانات السحابية (Supabase)</h3>
+      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">اربط التطبيق بقاعدة بيانات مجانية على Supabase (Postgres) لتُحفظ بياناتك في السحابة وترجع إليها من أي جهاز. حتى بدون اتصال تبقى النسخة المحلية تعمل وتُتزامن لاحقاً تلقائياً.</p>
+      <div class="grid g2">
+        <div>
+          <label>رابط المشروع (Project URL)</label>
+          <input type="text" id="db-url" placeholder="https://abcd1234.supabase.co" dir="ltr" style="text-align:left" />
+        </div>
+        <div>
+          <label>المفتاح العام (anon public key)</label>
+          <input type="text" id="db-key" placeholder="eyJhbGciOiJIUzI1NiIs..." dir="ltr" style="text-align:left" />
+        </div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn-primary" onclick="saveDbSettings()">💾 حفظ الإعدادات</button>
+        <button class="btn-soft" onclick="testDb()">🔌 اختبار الاتصال</button>
+        <button class="btn-gold" onclick="pushNow()">🔄 مزامنة الآن</button>
+        <button class="btn-danger" onclick="disconnectDb()">✖️ فصل قاعدة البيانات</button>
+      </div>
+      <div id="db-status"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px">📋 خطوات الإعداد (مرة واحدة فقط)</h3>
+      <ol style="margin:0;padding-right:20px;line-height:2;font-size:.95rem">
+        <li>سجّل حساباً مجانياً في <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a></li>
+        <li>أنشئ مشروعاً جديداً (New project) وانتظر دقيقة أو دقيقتين حتى يُجهز</li>
+        <li>من القائمة الجانبية افتح <strong>SQL Editor</strong> ثم <strong>New query</strong></li>
+        <li>الصق كود SQL بالأسفل واضغط <strong>Run</strong></li>
+        <li>من <strong>Settings → API</strong> انسخ <strong>Project URL</strong> و<strong>anon public key</strong></li>
+        <li>الصقهما في الحقلين أعلاه واضغط <strong>حفظ الإعدادات</strong> ثم <strong>اختبار الاتصال</strong></li>
+      </ol>
+      <label style="margin-top:14px">كود إنشاء الجدول (شغّله في SQL Editor):</label>
+      <pre id="db-sql" style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.8rem;direction:ltr;text-align:left;line-height:1.7">create table if not exists school_data (
+  id integer primary key,
+  data jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table school_data enable row level security;
+
+drop policy if exists "school_data_select" on school_data;
+create policy "school_data_select" on school_data
+  for select using (true);
+
+drop policy if exists "school_data_insert" on school_data;
+create policy "school_data_insert" on school_data
+  for insert with check (true);
+
+drop policy if exists "school_data_update" on school_data;
+create policy "school_data_update" on school_data
+  for update using (true);</pre>
+      <div class="row" style="margin-top:8px">
+        <button class="btn-soft btn-sm" onclick="copySql()">📋 نسخ كود SQL</button>
+      </div>
+      <p style="margin-top:10px;font-size:.82rem;color:#b45309;background:#fef3c7;padding:8px 12px;border-radius:8px">⚠️ تنبيه أمني: المفتاح العام يسمح لأي شخص يملكه بالقراءة والكتابة — مناسب للاستخدام الداخلي للمدرسة، ويمكن لاحقاً تقييد الصلاحيات أو إضافة كلمة مرور للتطبيق.</p>
+    </div>
+  </section>
+
 </div>
 
 <!-- نافذة منبثقة -->
@@ -436,23 +498,28 @@ const DEFAULT_DATA = {
 
 let data = loadData();
 
+function normalizeData(d){
+  const base = structuredClone(DEFAULT_DATA);
+  if(!d || typeof d !== 'object') return base;
+  return {
+    classes:   Array.isArray(d.classes)   ? d.classes   : base.classes,
+    students:  Array.isArray(d.students)  ? d.students  : base.students,
+    behaviors: Array.isArray(d.behaviors) ? d.behaviors : base.behaviors,
+    events:    Array.isArray(d.events)    ? d.events    : [],
+    observers: Array.isArray(d.observers) ? d.observers : [],
+    selectedBehavior: null
+  };
+}
 function loadData(){
   try{
     // نقرأ أولاً من التخزين الدائم، وإلا من جلسة مؤقتة
     const raw = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
     if(!raw) return structuredClone(DEFAULT_DATA);
-    const d = JSON.parse(raw);
-    // إصلاح أي حقول ناقصة حتى لا يتعطل التطبيق
-    if(!d.observers) d.observers = [];
-    if(!Array.isArray(d.classes)) d.classes = structuredClone(DEFAULT_DATA.classes);
-    if(!Array.isArray(d.students)) d.students = [];
-    if(!Array.isArray(d.behaviors)) d.behaviors = structuredClone(DEFAULT_DATA.behaviors);
-    if(!Array.isArray(d.events)) d.events = [];
-    return d;
+    return normalizeData(JSON.parse(raw));
   }catch(e){
     try{
       const raw = sessionStorage.getItem(STORAGE_KEY);
-      if(raw) return JSON.parse(raw);
+      if(raw) return normalizeData(JSON.parse(raw));
     }catch(_){}
     return structuredClone(DEFAULT_DATA);
   }
@@ -470,6 +537,7 @@ function saveData(){
     if(n) n.style.display = 'block';
     setSaveStatus('⚠️ حفظ مؤقت فقط — استخدم زر النسخة الاحتياطية');
   }
+  queueDbPush(); // مزامنة تلقائية مع قاعدة البيانات السحابية إن كانت مربوطة
 }
 function setSaveStatus(txt){
   const el = document.getElementById('save-status');
@@ -1214,9 +1282,136 @@ function renderAll(){
   renderObserverList();
 }
 
+/* ===================== قاعدة البيانات السحابية (Supabase REST) ===================== */
+const DB_KEY = 'school-stars-db-v1';
+
+function getDbConfig(){
+  try{ return JSON.parse(localStorage.getItem(DB_KEY) || '{}'); }catch(e){ return {}; }
+}
+function saveDbConfig(cfg){
+  try{ localStorage.setItem(DB_KEY, JSON.stringify(cfg)); }catch(e){}
+}
+function dbHeaders(){
+  const cfg = getDbConfig();
+  return {
+    'apikey': cfg.anonKey || '',
+    'Authorization': 'Bearer ' + (cfg.anonKey || ''),
+    'Content-Type': 'application/json'
+  };
+}
+function dbUrl(){
+  const cfg = getDbConfig();
+  return String(cfg.url||'').replace(/\/+$/,'') + '/rest/v1/school_data';
+}
+function dbConnected(){ const c = getDbConfig(); return !!(c.url && c.anonKey); }
+
+async function dbPull(){
+  if(!dbConnected()) return null;
+  const res = await fetch(dbUrl() + '?select=data&id=eq.1', { headers: dbHeaders() });
+  if(!res.ok) throw new Error('HTTP '+res.status);
+  const rows = await res.json();
+  return (rows && rows.length) ? rows[0].data : null;
+}
+
+async function dbPush(){
+  if(!dbConnected()) return {ok:false, reason:'no-config'};
+  try{
+    const res = await fetch(dbUrl(), {
+      method: 'POST',
+      headers: { ...dbHeaders(), 'Prefer': 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ id: 1, data: data, updated_at: new Date().toISOString() })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    setDbStatus('✅ متزامنة مع قاعدة البيانات في السحابة');
+    return {ok:true};
+  }catch(e){
+    setDbStatus('⚠️ تعذرت المزامنة (' + (e.message||'خطأ') + ') — المحفوظ محلياً آمن');
+    console.warn('dbPush failed', e);
+    return {ok:false, error:e};
+  }
+}
+
+let dbTimer = null;
+function queueDbPush(){
+  clearTimeout(dbTimer);
+  dbTimer = setTimeout(()=>{ dbPush(); }, 900);
+}
+
+async function initDatabaseSync(){
+  if(!dbConnected()){ setDbStatus('🔌 غير متصلة بقاعدة بيانات — الحفظ حالياً على هذا الجهاز فقط'); return; }
+  setDbStatus('🔄 جارٍ المزامنة مع قاعدة البيانات...');
+  try{
+    const remote = await dbPull();
+    if(remote && typeof remote === 'object'){
+      const remoteCount = (remote.events||[]).length;
+      const localCount = (data.events||[]).length;
+      if(remoteCount >= localCount){
+        data = normalizeData(remote);
+        renderAll();
+        setDbStatus('✅ حمّلت أحدث البيانات من السحابة');
+      } else {
+        const r = await dbPush();
+        setDbStatus(r.ok ? '✅ رفعت البيانات المحلية إلى السحابة' : '⚠️ تعذر الرفع — البيانات محلية فقط');
+      }
+    } else {
+      const r = await dbPush();
+      setDbStatus(r.ok ? '✅ رُبطت قاعدة البيانات ورفعت بياناتك إليها' : '⚠️ تعذر الرفع — البيانات محلية فقط');
+    }
+  }catch(e){
+    setDbStatus('⚠️ تعذر الاتصال بقاعدة البيانات — استخدمت البيانات المحلية');
+    console.warn('initDatabaseSync', e);
+  }
+}
+
+function setDbStatus(txt){
+  const el = document.getElementById('db-status');
+  if(!el) return;
+  el.innerHTML = '<div class="chip chip-neutral" style="margin-top:10px">' + txt + '</div>';
+}
+
+function saveDbSettings(){
+  const url = $('#db-url').value.trim();
+  const anonKey = $('#db-key').value.trim();
+  if(!url || !anonKey){ toast('أدخل رابط المشروع والمفتاح', 'err'); return; }
+  saveDbConfig({ url: url, anonKey: anonKey });
+  toast('تم حفظ إعدادات قاعدة البيانات');
+  initDatabaseSync();
+}
+function testDb(){
+  if(!dbConnected()){ toast('احفظ الإعدادات أولاً','err'); setDbStatus('⚠️ أدخل رابط المشروع والمفتاح ثم اضغط حفظ'); return; }
+  setDbStatus('🔄 جارٍ اختبار الاتصال...');
+  dbPull().then(r=>{
+    setDbStatus(r ? '✅ اتصال ناجح — وجدت بيانات سابقة في السحابة' : '✅ اتصال ناجح — لا توجد بيانات سابقة، ستُرفع عند أول مزامنة');
+  }).catch(e=>{
+    setDbStatus('❌ فشل الاتصال: ' + (e.message||'خطأ') + ' — تأكد من الكود والمفتاح ومن تشغيل SQL');
+  });
+}
+async function pushNow(){
+  toast('جارٍ المزامنة...');
+  const r = await dbPush();
+  if(r.ok) toast('تمت المزامنة مع السحابة ✅');
+}
+function disconnectDb(){
+  if(!confirm('فصل قاعدة البيانات؟ ستبقى البيانات محفوظة محلياً على هذا الجهاز.')) return;
+  saveDbConfig({});
+  setDbStatus('🔌 تم الفصل — الحفظ محلي فقط');
+  toast('تم الفصل');
+}
+function copySql(){
+  const sql = document.getElementById('db-sql');
+  if(!sql) return;
+  if(navigator.clipboard){ navigator.clipboard.writeText(sql.textContent).then(()=>toast('تم نسخ كود SQL 📋')).catch(()=>toast('انسخ الكود يدوياً')); }
+  else{
+    const r = document.createRange(); r.selectNodeContents(sql);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    document.execCommand('copy'); toast('تم نسخ كود SQL 📋');
+  }
+}
+
 /* ===================== بدء التشغيل ===================== */
 saveData(); // اختبار التخزين من أول لحظة وإظهار التنبيه إن لزم
 renderAll();
+initDatabaseSync(); // إن كانت إعدادات قاعدة البيانات محفوظة → مزامنة تلقائية
 console.log('✅ نظام رصد السلوك المتميز يعمل بنجاح');
 console.log('البيانات:',data);
 </script>

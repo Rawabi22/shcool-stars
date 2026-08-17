@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -188,10 +189,12 @@
 
 <header class="app">
   <div class="logo">⭐</div>
-  <div>
+  <div style="flex:1">
     <h1>نظام رصد السلوك المتميز</h1>
     <div class="sub">أداة بسيطة لمتابعة الطلاب المتميزين في المدرسة</div>
+    <div class="sub" id="save-status" style="margin-top:4px;font-weight:700">💾 ...</div>
   </div>
+  <button class="btn-gold btn-sm" onclick="exportJSON()" title="حفظ نسخة احتياطية من بياناتك">💾 نسخة احتياطية</button>
 </header>
 
 <div id="storage-notice" style="display:none;background:#fef3c7;color:#92400e;padding:10px 16px;font-weight:700;text-align:center;border-bottom:2px solid #f59e0b;font-size:.9rem">
@@ -459,12 +462,19 @@ function saveData(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     const n = document.getElementById('storage-notice');
     if(n) n.style.display = 'none';
+    setSaveStatus('✅ البيانات محفوظة في هذا المتصفح');
   }catch(e){
     // التخزين الدائم غير متاح (مثل وضع المعاينة) → نحاول جلسة مؤقتة على الأقل
     try{ sessionStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }catch(_){}
     const n = document.getElementById('storage-notice');
     if(n) n.style.display = 'block';
+    setSaveStatus('⚠️ حفظ مؤقت فقط — استخدم زر النسخة الاحتياطية');
   }
+}
+function setSaveStatus(txt){
+  const el = document.getElementById('save-status');
+  if(!el) return;
+  el.textContent = '💾 ' + txt + ' • ' + new Date().toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 
 function uid(p='id'){return p+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
@@ -1005,6 +1015,7 @@ function exportCSV(){
 
 function exportJSON(){
   download(JSON.stringify(data,null,2),'school-stars-backup.json','application/json');
+  toast('تم تنزيل النسخة الاحتياطية 💾');
 }
 
 function importJSON(event){

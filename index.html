@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>نظام رصد السلوك المتميز</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
@@ -82,6 +83,61 @@
   .modal h3{margin:0 0 14px;font-size:1.2rem}
   .close-btn{background:#f3f4f6;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;cursor:pointer}
   .star-anim{position:fixed;font-size:32px;pointer-events:none;z-index:60;animation:starFloat 1.2s ease-out forwards}
+  .collapsible-card{
+  background:var(--card);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  margin-bottom:16px;
+  overflow:hidden;
+}
+
+.collapsible-card summary{
+  list-style:none;
+  cursor:pointer;
+  padding:18px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-size:1rem;
+  font-weight:800;
+  color:var(--ink);
+  user-select:none;
+  transition:.2s;
+}
+
+.collapsible-card summary::-webkit-details-marker{
+  display:none;
+}
+
+.collapsible-card summary:hover{
+  background:#f8fafc;
+}
+
+.collapsible-card summary::after{
+  content:'＋';
+  width:30px;
+  height:30px;
+  border-radius:8px;
+  background:#eef2ff;
+  color:var(--primary);
+  display:grid;
+  place-items:center;
+  font-size:1.1rem;
+  flex-shrink:0;
+}
+
+.collapsible-card[open] summary::after{
+  content:'−';
+}
+
+.collapsible-card[open] summary{
+  border-bottom:1px solid var(--line);
+}
+
+.collapsible-body{
+  padding:18px;
+}
   @keyframes starFloat{0%{transform:translateY(0) scale(.5);opacity:1}100%{transform:translateY(-80px) scale(1.4);opacity:0}}
   @media(max-width:600px){.container{padding:12px}.tab{font-size:.85rem;padding:8px 4px}th,td{padding:8px;font-size:.88rem}header.app h1{font-size:1.05rem}}
 </style>
@@ -91,10 +147,11 @@
   <div class="logo">⭐</div>
   <div style="flex:1">
     <h1>نظام رصد السلوك المتميز</h1>
-    <div class="sub">متابعة الطلاب المتميزين في المدرسة</div>
+    <div class="sub">متابعة الطلبة المتميزين في المدرسة</div>
     <div class="sub" id="save-status">🔄 جارٍ الاتصال بقاعدة البيانات...</div>
   </div>
-  <button class="btn-soft btn-sm" onclick="loadAll()">🔄 تحديث</button></header>
+  <!-- <button class="btn-soft btn-sm" onclick="loadAll()">🔄 تحديث</button> -->
+</header>
 
 <div class="container">
   <div class="banner" id="setup-banner">
@@ -102,14 +159,15 @@
   </div>
 
   <div class="stats">
+    <div class="stat"><div class="icon i-green">📒</div><div><div class="num" id="stat-classes">0</div><div class="lbl">فصل</div></div></div>
     <div class="stat"><div class="icon i-purple">👨‍🎓</div><div><div class="num" id="stat-students">0</div><div class="lbl">طالب/ة</div></div></div>
-    <div class="stat"><div class="icon i-gold">⭐</div><div><div class="num" id="stat-stars">0</div><div class="lbl">إجمالي النجوم</div></div></div>
-    <div class="stat"><div class="icon i-green">📒</div><div><div class="num" id="stat-classes">0</div><div class="lbl">الفصول</div></div></div>
-    <div class="stat"><div class="icon i-pink">🎯</div><div><div class="num" id="stat-events">0</div><div class="lbl">حدث مسجّل</div></div></div>
+    <div class="stat"><div class="icon i-gold">👩‍🏫</div><div><div class="num" id="mg-observers">0</div><div class="lbl">راصدة (معلمة)</div></div></div>
+    <div class="stat"><div class="icon i-gold">⭐</div><div><div class="num" id="stat-stars">0</div><div class="lbl">نجمات</div></div></div>
+    <div class="stat"><div class="icon i-pink">🎯</div><div><div class="num" id="stat-events">0</div><div class="lbl">سجلات</div></div></div>
   </div>
 
   <div class="tabs">
-    <div class="tab active" data-tab="record">🎯 رصد سريع</div>
+    <div class="tab active" data-tab="record">🎯 سجل جديد</div>
     <div class="tab" data-tab="leader">🏆 لوحة الشرف</div>
     <div class="tab" data-tab="manage">⚙️ الإدارة</div>
     <div class="tab" data-tab="behaviors">✨ السلوكيات</div>
@@ -120,12 +178,12 @@
   <!-- الرصد السريع -->
   <section class="panel active" id="panel-record">
     <div class="card">
-      <h3 style="margin:0 0 12px">⚡ رصد سلوك جديد</h3>
+      <h3 style="margin:0 0 12px">⚡ رصد سجل جديد</h3>
       <div class="grid g2">
         <div><label>الفصل</label><select id="rec-class"></select></div>
         <div><label>الطالب/ة</label><select id="rec-student"></select></div>
       </div>
-      <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
+      <!-- <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
         <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">⚡ إضافة سريعة عند الحاجة:</div>
         <div class="row">
           <input type="text" id="quick-record-class" placeholder="فصل جديد" style="flex:1;min-width:140px" />
@@ -133,13 +191,13 @@
           <input type="text" id="quick-record-student" placeholder="طالب/ة جديد/ة" style="flex:1;min-width:140px" />
           <button class="btn-soft btn-sm" onclick="quickAddStudent()">➕ طالب</button>
         </div>
-      </div>
+      </div> -->
       <div style="margin-top:14px">
-        <label>اختر السلوك المتميز</label>
+        <label> السلوك المتميز</label>
         <div id="rec-behaviors" class="behaviors-grid"></div>
       </div>
       <div style="margin-top:14px">
-        <label>اسم الراصد (المعلم/ة)</label>
+        <label>اسم الراصدة (المعلمة)</label>
         <input type="text" id="rec-observer" placeholder="مثلاً: أ. محمد العتيبي" list="observer-list" />
         <datalist id="observer-list"></datalist>
       </div>
@@ -173,50 +231,135 @@
   <section class="panel" id="panel-manage">
     <div class="card">
       <h3 style="margin:0 0 6px">⚙️ الإدارة</h3>
-      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">إضافة وتعديل وحذف الفصول والطلاب والراصدين — كلها تُحفظ مباشرة في قاعدة البيانات.</p>
-      <div class="stats" style="margin-bottom:16px">
-        <div class="stat"><div class="icon i-green">🏫</div><div><div class="num" id="mg-classes">0</div><div class="lbl">فصل</div></div></div>
-        <div class="stat"><div class="icon i-purple">👨‍🎓</div><div><div class="num" id="mg-students">0</div><div class="lbl">طالب/ة</div></div></div>
-        <div class="stat"><div class="icon i-gold">👨‍🏫</div><div><div class="num" id="mg-observers">0</div><div class="lbl">راصد</div></div></div>
-        <div class="stat"><div class="icon i-pink">🎯</div><div><div class="num" id="mg-events">0</div><div class="lbl">رصد</div></div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <h3 style="margin:0">🏫 الفصول</h3>
-        <button class="btn-primary" onclick="openModal('class')">➕ إضافة فصل</button>
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
-        <input type="text" id="quick-class-input" placeholder="اكتب اسم فصل جديد" style="flex:1;min-width:200px" />
-        <button class="btn-soft" onclick="quickAddClass('quick-class-input')">➕ إضافة سريعة</button>
-      </div>
-      <div id="classes-list" class="student-list"></div>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <h3 style="margin:0">👨‍🎓 الطلاب</h3>
+      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">إدارة بيانات الفصول والطلبة والراصدات والسجلات المرصودة</p>
+      <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">⚡ إضافة سريعة عند الحاجة:</div>
         <div class="row">
-          <button class="btn-primary" onclick="openModal('student')">➕ إضافة طالب</button>
-          <button class="btn-soft" onclick="openModal('bulkStudents')">📋 إضافة جماعية</button>
+          <input type="text" id="quick-record-class" placeholder="فصل جديد" style="flex:1;min-width:140px" />
+          <button class="btn-soft btn-sm" onclick="quickAddClass('quick-record-class')">➕ فصل</button>
+          <input type="text" id="quick-record-student" placeholder="طالب/ة جديد/ة" style="flex:1;min-width:140px" />
+          <button class="btn-soft btn-sm" onclick="quickAddStudent()">➕ طالب</button>
         </div>
       </div>
-      <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
-        <select id="mg-st-class" style="width:auto;min-width:160px" onchange="renderStudents()"><option value="all">كل الفصول</option></select>
-        <input type="text" id="mg-st-search" placeholder="🔍 بحث عن طالب..." style="flex:1;min-width:200px" oninput="renderStudents()" />
-      </div>
-      <div id="students-list" class="student-list"></div>
     </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <h3 style="margin:0">👨‍🏫 الراصدون (المعلمون)</h3>
-        <button class="btn-primary" onclick="openModal('observer')">➕ إضافة راصد</button>
+    <details class="collapsible-card">
+      <summary>🏫 الفصول</summary>
+    
+      <div class="collapsible-body">
+    
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <h3 style="margin:0">🏫 الفصول</h3>
+    
+          <!-- <button class="btn-primary" onclick="openModal('class')">
+            ➕ إضافة فصل
+          </button> -->
+        </div>
+    
+        <div
+          style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
+          <input type="text" id="quick-class-input" placeholder="اكتب اسم فصل جديد" style="flex:1;min-width:200px" />
+    
+          <button class="btn-primary" onclick="quickAddClass('quick-class-input')">
+            ➕ إضافة
+          </button>
+        </div>
+    
+        <div id="classes-list" class="student-list"></div>
+    
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
-        <input type="text" id="quick-observer-input" placeholder="اسم المعلم/ة" style="flex:1;min-width:200px" />
-        <button class="btn-soft" onclick="quickAddObserver()">➕ إضافة سريعة</button>
+    </details>
+    
+    
+    <details class="collapsible-card">
+      <summary>👨‍🎓 الطلبة</summary>
+    
+      <div class="collapsible-body">
+    
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <h3 style="margin:0">👨‍🎓 الطلبة</h3>
+    
+          <div class="row">
+            <button class="btn-primary" onclick="openModal('student')">
+              ➕ إضافة طالب/ة
+            </button>
+    
+            <button class="btn-soft" onclick="openModal('bulkStudents')">
+              📋 إضافة جماعية
+            </button>
+          </div>
+        </div>
+    
+        <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
+          <select id="mg-st-class" style="width:auto;min-width:160px" onchange="renderStudents()">
+            <option value="all">كل الفصول</option>
+          </select>
+    
+          <input type="text" id="mg-st-search" placeholder="🔍 بحث عن طالب/ة..." style="flex:1;min-width:200px"
+            oninput="renderStudents()" />
+        </div>
+    
+        <div id="students-list" class="student-list"></div>
+    
       </div>
-      <div id="observers-list" class="student-list"></div>
-    </div>
+    </details>
+    
+    
+    <details class="collapsible-card">
+      <summary>👩‍🏫 الراصدات (المعلمات)</summary>
+    
+      <div class="collapsible-body">
+    
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <h3 style="margin:0">👩‍🏫 الراصدات (المعلمات)</h3>
+    
+          <!-- <button class="btn-primary" onclick="openModal('observer')">
+            ➕ إضافة راصدة
+          </button> -->
+        </div>
+    
+        <div
+          style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
+          <input type="text" id="quick-observer-input" placeholder="اسم الراصدة" style="flex:1;min-width:200px"
+            oninput="renderObservers()" />
+    
+          <button class="btn-primary" onclick="quickAddObserver()">
+            ➕ إضافة
+          </button>
+        </div>
+    
+        <div id="observers-list" class="student-list"></div>
+    
+      </div>
+    </details>
+    
+    
+    <details class="collapsible-card">
+      <summary>🎯 السجلات المرصودة</summary>
+    
+      <div class="collapsible-body">
+    
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <div>
+            <h3 style="margin:0">🎯 السجلات المرصودة</h3>
+    
+            <!-- <p style="margin:4px 0 0;color:var(--muted);font-size:.85rem">
+              عرض جميع السجلات مع إمكانية التعديل والحذف
+            </p> -->
+          </div>
+    
+          <!-- <button class="btn-soft" onclick="renderSubmissions()">
+            🔄 تحديث
+          </button> -->
+        </div>
+    
+        <div id="submissions-list"></div>
+    
+      </div>
+    </details>
   </section>
 
   <!-- السلوكيات -->
@@ -233,8 +376,8 @@
   <!-- التقارير -->
   <section class="panel" id="panel-report">
     <div class="card">
-      <h3 style="margin:0 0 14px">📊 تقرير طالب</h3>
-      <div class="row">
+      <h3 style="margin:0 0 14px">📊 تقرير طالب/ة</h3>
+      <div class="row" style="align-items:flex-end">
         <div style="flex:1;min-width:220px"><label>اختر الطالب/ة</label><select id="rep-student"></select></div>
         <button class="btn-soft" onclick="generateReport()">إنشاء التقرير</button>
       </div>
@@ -243,12 +386,12 @@
     <div class="card">
       <h3 style="margin:0 0 14px">💾 تصدير البيانات</h3>
       <div class="row">
-        <button class="btn-primary" onclick="exportCSV()">📥 تصدير CSV</button>
-        <button class="btn-soft" onclick="exportJSON()">📥 تصدير JSON</button>
-        <label class="btn-ghost" style="cursor:pointer;padding:10px 16px;border-radius:10px;font-weight:700;display:inline-flex;align-items:center;gap:6px">
+        <button class="btn-primary" onclick="exportCSV()">📥 تصدير جميع السجلات</button>
+        <!-- <button class="btn-soft" onclick="exportJSON()">📥 تصدير JSON</button> -->
+        <!-- <label class="btn-ghost" style="cursor:pointer;padding:10px 16px;border-radius:10px;font-weight:700;display:inline-flex;align-items:center;gap:6px">
           📤 استيراد JSON
           <input type="file" accept="application/json" onchange="importJSON(event)" style="display:none" />
-        </label>
+        </label> -->
         <button class="btn-danger" onclick="resetAllData()">🗑️ مسح كل البيانات</button>
       </div>
     </div>
@@ -498,7 +641,7 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
       classes = await getTable(
         'classes',
-        '?select=*&order=name'
+        '?select=*&order=order'
       );
 
       students = await getTable(
@@ -747,26 +890,92 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
   /* ===================== الرصد السريع ===================== */
   function renderRecordPanel() {
-    const rc = document.getElementById('rec-class');
-    rc.innerHTML = classes.map(c => '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>').join('');
-    rc.onchange = updateRecStudents;
-    updateRecStudents();
-    document.getElementById('rec-behaviors').innerHTML = behaviors.map(b =>
-      '<div class="behavior-card" data-bid="' + b.id + '" onclick="pickBehavior(\'' + b.id + '\')">' +
-      '<span class="emoji">' + (b.emoji || '⭐') + '</span>' +
-      '<div class="name">' + esc(b.name) + '</div>' +
-      '<span class="pts">+' + b.points + ' نجوم</span>' +
-      '</div>').join('');
-    document.getElementById('observer-list').innerHTML = observers.slice(0, 20).map(o => '<option value="' + esc(o.name) + '"></option>').join('');
-    renderRecent();
-  }
-  function updateRecStudents() {
-    const cid = document.getElementById('rec-class').value;
-    const list = students.filter(s => s.class_id === cid);
-    document.getElementById('rec-student').innerHTML = list.length
-      ? list.map(s => '<option value="' + s.id + '">' + esc(s.name) + '</option>').join('')
-      : '<option value="">لا يوجد طلاب في هذا الفصل</option>';
-  }
+
+      const rc = document.getElementById('rec-class');
+
+      rc.innerHTML =
+        '<option value="">اختر الفصل</option>' +
+        classes.map(c =>
+          '<option value="' + esc(c.id) + '">' +
+          esc(c.name) +
+          '</option>'
+        ).join('');
+
+      rc.value = '';
+
+      rc.onchange = updateRecStudents;
+
+      // Start with no student selected
+      document.getElementById('rec-student').innerHTML =
+        '<option value="">اختر الطالب/ة</option>';
+
+      document.getElementById('rec-behaviors').innerHTML =
+        behaviors.map(b =>
+          '<div class="behavior-card" data-bid="' + b.id +
+          '" onclick="pickBehavior(\'' + b.id + '\')">' +
+
+          '<span class="emoji">' +
+          (b.emoji || '⭐') +
+          '</span>' +
+
+          '<div class="name">' +
+          esc(b.name) +
+          '</div>' +
+
+          '<span class="pts">' +
+          '+' + b.points + ' نجوم' +
+          '</span>' +
+
+          '</div>'
+        ).join('');
+
+      document.getElementById('observer-list').innerHTML =
+        observers.slice(0, 20).map(o =>
+          '<option value="' +
+          esc(o.name) +
+          '"></option>'
+        ).join('');
+
+      renderRecent();
+    }
+
+
+    function updateRecStudents() {
+
+      const rc = document.getElementById('rec-class');
+      const studentSelect =
+        document.getElementById('rec-student');
+
+      const cid = rc.value;
+
+      // No class selected yet
+      if (!cid) {
+
+        studentSelect.innerHTML =
+          '<option value="">اختر الطالب/ة</option>';
+
+        studentSelect.value = '';
+
+        return;
+      }
+
+      const list =
+        students.filter(
+          s => s.class_id === cid
+        );
+
+      studentSelect.innerHTML =
+        '<option value="">اختر الطالب/ة</option>' +
+
+        list.map(s =>
+          '<option value="' + esc(s.id) + '">' +
+          esc(s.name) +
+          '</option>'
+        ).join('');
+
+      studentSelect.value = '';
+    }
+  
   function pickBehavior(id) {
     selectedBehavior = id;
     document.querySelectorAll('#rec-behaviors .behavior-card').forEach(el => {
@@ -779,7 +988,7 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
     const studentId = document.getElementById('rec-student').value;
     const observer = document.getElementById('rec-observer').value.trim();
     const bid = selectedBehavior;
-    if (!studentId) { toast('اختر طالباً أولاً', 'err'); return; }
+    if (!studentId) { toast('اختر الفصل والطالب/ة أولاً','err'); return; }
     if (!bid) { toast('اختر سلوكاً متميزاً', 'err'); return; }
     if (!observer) { toast('اكتب اسم الراصد', 'err'); return; }
     const student = students.find(x => x.id === studentId);
@@ -840,6 +1049,7 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
   }
   function resetRecord() {
     document.getElementById('rec-note').value = '';
+    document.getElementById('rec-observer').value = '';
     selectedBehavior = null;
     renderRecordPanel();
   }
@@ -871,37 +1081,125 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
   /* ===================== لوحة الشرف ===================== */
   function renderLeaderboard() {
-    const f = document.getElementById('lb-filter');
-    f.innerHTML = '<option value="all">جميع الفصول</option>' + classes.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('');
-    const scores = students.map(s => ({
-      ...s,
-      stars: submissions.filter(e => e.student_id === s.id).reduce((sum, e) => sum + (e.points || 0), 0)
-    })).filter(s => f.value === 'all' || s.class_id === f.value)
-      .sort((a, b) => b.stars - a.stars);
-    const out = document.getElementById('leaderboard');
-    if (!scores.length) { out.innerHTML = '<div class="empty"><span class="big">🏆</span>لا توجد بيانات لعرضها.</div>'; return; }
-    out.innerHTML = scores.slice(0, 30).map((s, i) => {
-      const cls = classes.find(c => c.id === s.class_id);
-      const rc = i === 0 ? 'rank-1' : i === 1 ? 'rank-2' : i === 2 ? 'rank-3' : 'rank-other';
-      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
-      return '<div class="lb-item">' +
-        '<div class="lb-rank ' + rc + '">' + medal + '</div>' +
-        '<div class="avatar">' + esc(s.name.charAt(0)) + '</div>' +
-        '<div style="flex:1"><div style="font-weight:700">' + esc(s.name) + '</div><div style="font-size:.82rem;color:var(--muted)">' + (cls ? esc(cls.name) : '') + '</div></div>' +
-        '<div style="text-align:left"><div class="stars">' + '⭐'.repeat(Math.min(s.stars, 15)) + '</div><div style="font-weight:800;color:var(--accent);font-size:1.1rem">' + s.stars + ' نقطة</div></div>' +
-        '</div>';
-    }).join('');
-  }
+
+      const f = document.getElementById('lb-filter');
+
+      // Save current selection
+      const currentValue = f.value || 'all';
+
+      // Build options only when needed
+      f.innerHTML =
+        '<option value="all">جميع الفصول</option>' +
+        classes.map(c =>
+          '<option value="' + esc(c.id) + '">' +
+          esc(c.name) +
+          '</option>'
+        ).join('');
+
+      // Restore selection
+      if (
+        currentValue === 'all' ||
+        classes.some(c => c.id === currentValue)
+      ) {
+        f.value = currentValue;
+      } else {
+        f.value = 'all';
+      }
+
+      const selectedClass = f.value;
+
+      const scores = students
+        .map(s => ({
+          ...s,
+          stars: submissions
+            .filter(e => e.student_id === s.id)
+            .reduce(
+              (sum, e) => sum + (e.points || 0),
+              0
+            )
+        }))
+        .filter(s =>
+          selectedClass === 'all' ||
+          s.class_id === selectedClass
+        )
+        .sort((a, b) => b.stars - a.stars);
+
+      const out =
+        document.getElementById('leaderboard');
+
+      if (!scores.length) {
+        out.innerHTML =
+          '<div class="empty">' +
+          '<span class="big">🏆</span>' +
+          'لا توجد بيانات لعرضها.' +
+          '</div>';
+        return;
+      }
+
+      out.innerHTML = scores
+        .slice(0, 30)
+        .map((s, i) => {
+
+          const cls =
+            classes.find(c => c.id === s.class_id);
+
+          const rc =
+            i === 0 ? 'rank-1' :
+              i === 1 ? 'rank-2' :
+                i === 2 ? 'rank-3' :
+                  'rank-other';
+
+          const medal =
+            i === 0 ? '🥇' :
+              i === 1 ? '🥈' :
+                i === 2 ? '🥉' :
+                  (i + 1);
+
+          return (
+            '<div class="lb-item">' +
+
+            '<div class="lb-rank ' + rc + '">' +
+            medal +
+            '</div>' +
+
+            '<div class="avatar">' +
+            esc(s.name.charAt(0)) +
+            '</div>' +
+
+            '<div style="flex:1">' +
+            '<div style="font-weight:700">' +
+            esc(s.name) +
+            '</div>' +
+
+            '<div style="font-size:.82rem;color:var(--muted)">' +
+            (cls ? esc(cls.name) : '') +
+            '</div>' +
+            '</div>' +
+
+            '<div style="text-align:left">' +
+            '<div class="stars">' +
+            '⭐'.repeat(Math.min(s.stars, 15)) +
+            '</div>' +
+
+            '<div style="font-weight:800;color:var(--accent);font-size:1.1rem">' +
+            s.stars +
+            ' نقطة' +
+            '</div>' +
+            '</div>' +
+
+            '</div>'
+          );
+
+        }).join('');
+    }
 
   /* ===================== الإدارة ===================== */
   function renderManage() {
-    document.getElementById('mg-classes').textContent = classes.length;
-    document.getElementById('mg-students').textContent = students.length;
     document.getElementById('mg-observers').textContent = observers.length;
-    document.getElementById('mg-events').textContent = submissions.length;
     renderClasses();
     renderStudents();
     renderObservers();
+    renderSubmissions();
   }
   function renderClasses() {
     const list = document.getElementById('classes-list');
@@ -917,37 +1215,343 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
     }).join('');
   }
   function renderStudents() {
-    const f = document.getElementById('mg-st-class');
-    f.innerHTML = '<option value="all">كل الفصول</option>' + classes.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('');
-    const search = document.getElementById('mg-st-search').value.trim();
-    let list = f.value === 'all' ? [...students] : students.filter(s => s.class_id === f.value);
-    if (search) list = list.filter(s => s.name.includes(search));
-    list.forEach(s => { s._stars = submissions.filter(e => e.student_id === s.id).reduce((sum, e) => sum + (e.points || 0), 0); });
-    list.sort((a, b) => b._stars - a._stars);
-    const out = document.getElementById('students-list');
-    if (!list.length) { out.innerHTML = '<div class="empty"><span class="big">👨‍🎓</span>لا يوجد طلاب.</div>'; return; }
-    out.innerHTML = list.map(s => {
-      const cls = classes.find(c => c.id === s.class_id);
-      return '<div class="student-card">' +
-        '<div class="left"><div class="avatar">' + esc(s.name.charAt(0)) + '</div>' +
-        '<div><div style="font-weight:700">' + esc(s.name) + '</div><div style="font-size:.82rem;color:var(--muted)">' + (cls ? esc(cls.name) : 'بدون فصل') + ' • <span class="stars">' + '⭐'.repeat(Math.min(s._stars, 15)) + '</span> <span style="color:var(--accent);font-weight:700">' + s._stars + '</span></div></div></div>' +
-        '<div class="actions"><button class="btn-soft btn-sm" onclick="openModal(\'student\',\'' + s.id + '\')">✏️ تعديل</button>' +
-        '<button class="btn-danger btn-sm" onclick="deleteStudent(\'' + s.id + '\')">🗑️ حذف</button></div></div>';
-    }).join('');
-  }
-  function renderObservers() {
+
+      const f =
+        document.getElementById('mg-st-class');
+
+      // Save current filter
+      const currentClass =
+        f.value || 'all';
+
+      // Rebuild class options
+      f.innerHTML =
+        '<option value="all">كل الفصول</option>' +
+        classes.map(c =>
+          '<option value="' + esc(c.id) + '">' +
+          esc(c.name) +
+          '</option>'
+        ).join('');
+
+      // Restore filter
+      if (
+        currentClass === 'all' ||
+        classes.some(c => c.id === currentClass)
+      ) {
+        f.value = currentClass;
+      } else {
+        f.value = 'all';
+      }
+
+      const selectedClass = f.value;
+
+      const search =
+        document
+          .getElementById('mg-st-search')
+          .value
+          .trim();
+
+      let list =
+        selectedClass === 'all'
+          ? [...students]
+          : students.filter(
+            s => s.class_id === selectedClass
+          );
+
+      if (search) {
+        list = list.filter(
+          s => s.name.includes(search)
+        );
+      }
+
+      list.forEach(s => {
+        s._stars =
+          submissions
+            .filter(
+              e => e.student_id === s.id
+            )
+            .reduce(
+              (sum, e) => sum + (e.points || 0),
+              0
+            );
+      });
+
+      list.sort(
+        (a, b) => b._stars - a._stars
+      );
+
+      const out =
+        document.getElementById('students-list');
+
+      if (!list.length) {
+        out.innerHTML =
+          '<div class="empty">' +
+          '<span class="big">👨‍🎓</span>' +
+          'لا يوجد طلاب.' +
+          '</div>';
+        return;
+      }
+
+      out.innerHTML = list.map(s => {
+
+        const cls =
+          classes.find(
+            c => c.id === s.class_id
+          );
+
+        return (
+          '<div class="student-card">' +
+
+          '<div class="left">' +
+
+          '<div class="avatar">' +
+          esc(s.name.charAt(0)) +
+          '</div>' +
+
+          '<div>' +
+
+          '<div style="font-weight:700">' +
+          esc(s.name) +
+          '</div>' +
+
+          '<div style="font-size:.82rem;color:var(--muted)">' +
+          (cls
+            ? esc(cls.name)
+            : 'بدون فصل') +
+
+          ' • ' +
+
+          '<span class="stars">' +
+          '⭐'.repeat(
+            Math.min(s._stars, 15)
+          ) +
+          '</span> ' +
+
+          '<span style="color:var(--accent);font-weight:700">' +
+          s._stars +
+          '</span>' +
+
+          '</div>' +
+
+          '</div>' +
+
+          '</div>' +
+
+          '<div class="actions">' +
+
+          '<button class="btn-soft btn-sm" ' +
+          'onclick="openModal(\'student\',\'' +
+          s.id +
+          '\')">' +
+          '✏️ تعديل' +
+          '</button>' +
+
+          '<button class="btn-danger btn-sm" ' +
+          'onclick="deleteStudent(\'' +
+          s.id +
+          '\')">' +
+          '🗑️ حذف' +
+          '</button>' +
+
+          '</div>' +
+
+          '</div>'
+        );
+
+      }).join('');
+    }
+ function renderObservers() {
+
     const out = document.getElementById('observers-list');
-    if (!observers.length) { out.innerHTML = '<div class="empty"><span class="big">👨‍🏫</span>لا يوجد راصدون.</div>'; return; }
-    out.innerHTML = observers.map(o => {
-      const count = submissions.filter(e => e.observer === o.name).length;
-      const stars = submissions.filter(e => e.observer === o.name).reduce((s, e) => s + (e.points || 0), 0);
-      return '<div class="student-card">' +
-        '<div class="left"><div class="avatar" style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">👤</div>' +
-        '<div><div style="font-weight:700">' + esc(o.name) + '</div><div style="font-size:.82rem;color:var(--muted)">📊 ' + count + ' رصد • <span style="color:var(--accent);font-weight:700">⭐ ' + stars + '</span> نقطة</div></div></div>' +
-        '<div class="actions"><button class="btn-soft btn-sm" onclick="useObserver(\'' + esc(o.name) + '\')">↩️ تعيين كراصد حالي</button>' +
-        '<button class="btn-danger btn-sm" onclick="deleteObserver(\'' + o.id + '\')">🗑️ حذف</button></div></div>';
+
+    const search =
+      document
+        .getElementById('quick-observer-input')
+        .value
+        .trim()
+        .toLowerCase();
+
+    const filtered = observers.filter(o =>
+      o.name.toLowerCase().includes(search)
+    );
+
+    if (!filtered.length) {
+
+      out.innerHTML =
+        '<div class="empty">' +
+        '<span class="big">👩‍🏫</span>' +
+        (search
+          ? 'لا توجد راصدة بهذا الاسم.'
+          : 'لا توجد راصدات.') +
+        '</div>';
+
+      return;
+    }
+
+    out.innerHTML = filtered.map(o => {
+
+      const count =
+        submissions.filter(
+          e => e.observer === o.name
+        ).length;
+
+      const stars =
+        submissions
+          .filter(e => e.observer === o.name)
+          .reduce(
+            (s, e) => s + (e.points || 0),
+            0
+          );
+
+      return `
+      <div class="student-card">
+
+        <div class="left">
+
+          <div
+            class="avatar"
+            style="background:linear-gradient(135deg,#f59e0b,#fbbf24)">
+            👩‍🏫
+          </div>
+
+          <div>
+            <div style="font-weight:700">
+              ${esc(o.name)}
+            </div>
+
+            <div style="font-size:.82rem;color:var(--muted)">
+              📊 ${count} رصد •
+              <span style="color:var(--accent);font-weight:700">
+                ⭐ ${stars}
+              </span>
+              نقطة
+            </div>
+          </div>
+
+        </div>
+
+        <div class="actions">
+
+          <button
+            class="btn-soft btn-sm"
+            onclick="useObserver('${esc(o.name)}')">
+            ↩️ تعيين كراصد حالي
+          </button>
+
+          <button
+            class="btn-danger btn-sm"
+            onclick="deleteObserver('${o.id}')">
+            🗑️ حذف
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
     }).join('');
   }
+  function renderSubmissions() {
+
+      const out = document.getElementById('submissions-list');
+
+      if (!out) return;
+
+      if (!submissions.length) {
+        out.innerHTML =
+          '<div class="empty">' +
+          '<span class="big">📭</span>' +
+          'لا توجد سجلات مرصودة.' +
+          '</div>';
+        return;
+      }
+
+      const sorted = [...submissions].sort(
+        (a, b) =>
+          new Date(b.recorded_at) - new Date(a.recorded_at)
+      );
+
+      out.innerHTML = sorted.map(e => {
+
+        const student =
+          students.find(s => s.id === e.student_id);
+
+        const cls =
+          classes.find(c => c.id === e.class_id);
+
+        const date =
+          new Date(e.recorded_at).toLocaleString(
+            'ar-SA',
+            {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            }
+          );
+
+        return `
+      <div class="student-card" style="align-items:flex-start">
+
+        <div class="left" style="align-items:flex-start">
+
+          <div class="avatar">
+            ${e.emoji || '⭐'}
+          </div>
+
+          <div>
+
+            <div style="font-weight:800">
+              ${esc(student ? student.name : 'طالب محذوف')}
+            </div>
+
+            <div style="font-size:.82rem;color:var(--muted);margin-top:3px">
+              ${esc(cls ? cls.name : '')}
+            </div>
+
+            <div style="margin-top:6px">
+              <span class="chip chip-good">
+                ${e.emoji || '⭐'} ${esc(e.behavior_name || '')}
+                +${e.points || 0}
+              </span>
+            </div>
+
+            <div style="font-size:.82rem;color:var(--muted);margin-top:6px">
+              👩‍🏫 ${esc(e.observer || '-')}
+            </div>
+
+            ${e.note
+            ? `<div style="font-size:.82rem;color:var(--muted);margin-top:4px">
+                    📝 ${esc(e.note)}
+                   </div>`
+            : ''
+          }
+
+            <div style="font-size:.78rem;color:var(--muted);margin-top:5px">
+              🕒 ${date}
+            </div>
+
+          </div>
+        </div>
+
+        <div class="actions">
+          <button
+            class="btn-soft btn-sm"
+            onclick="openModal('submission','${e.id}')">
+            ✏️ تعديل
+          </button>
+
+          <button
+            class="btn-danger btn-sm"
+            onclick="deleteSubmission('${e.id}')">
+            🗑️ حذف
+          </button>
+        </div>
+
+      </div>
+    `;
+      }).join('');
+    }
   function useObserver(name) {
     document.getElementById('rec-observer').value = name;
     toast('تم تعيين "' + name + '" كراصد حالي');
@@ -1011,14 +1615,14 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
   /* ===================== التصدير والاستيراد ===================== */
   async function exportCSV() {
-    const rows = [['التاريخ', 'الطالب', 'الفصل', 'السلوك', 'النقاط', 'الملاحظة', 'الراصد']];
+    const rows = [['التاريخ', 'الطالب/ة', 'الفصل', 'السلوك', 'النقاط', 'الملاحظة', 'الراصدة']];
     submissions.forEach(e => {
       const s = students.find(x => x.id === e.student_id);
       const c = classes.find(x => x.id === e.class_id);
       rows.push([new Date(e.recorded_at).toLocaleString('ar-EG'), s ? s.name : '', c ? c.name : '', e.behavior_name, e.points, e.note || '', e.observer || '']);
     });
     const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
-    download(csv, 'school-stars-events.csv', 'text/csv;charset=utf-8');
+    download(csv, 'رصد السلوك المتميز.csv', 'text/csv;charset=utf-8');
   }
   async function exportJSON() {
     const bundle = { classes, students, behaviors, observers, submissions, exported_at: new Date().toISOString() };
@@ -1211,6 +1815,85 @@ function openModal(type, id){
       '<div class="grid g2" style="margin-top:10px"><div><label>الإيموجي</label><input type="text" id="m-emoji" value="'+(b.emoji||'⭐')+'" maxlength="4" /></div>' +
       '<div><label>النقاط</label><input type="number" id="m-points" value="'+b.points+'" min="1" max="20" /></div></div>' +
       '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveBehavior(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+  } else if (type === 'submission') {
+
+    const e = submissions.find(x => x.id === id);
+
+    if (!e) {
+      toast('السجل غير موجود', 'err');
+      return;
+    }
+
+    document.getElementById('modal-title').textContent =
+      'تعديل السجل المرصود';
+
+    const studentOptions = students.map(s =>
+      '<option value="' + s.id + '" ' +
+      (s.id === e.student_id ? 'selected' : '') +
+      '>' +
+      esc(s.name) +
+      '</option>'
+    ).join('');
+
+    const behaviorOptions = behaviors.map(b =>
+      '<option value="' + b.id + '" ' +
+      (b.id === e.behavior_id ? 'selected' : '') +
+      '>' +
+      (b.emoji || '⭐') +
+      ' ' +
+      esc(b.name) +
+      ' (+' + b.points + ')' +
+      '</option>'
+    ).join('');
+
+    const observerOptions = observers.map(o =>
+      '<option value="' + esc(o.name) + '" ' +
+      (o.name === e.observer ? 'selected' : '') +
+      '>' +
+      esc(o.name) +
+      '</option>'
+    ).join('');
+
+    const dateValue = e.recorded_at
+      ? new Date(e.recorded_at).toISOString().slice(0, 16)
+      : '';
+
+    body.innerHTML =
+
+      '<label>الطالب/ة</label>' +
+      '<select id="m-sub-student">' +
+      studentOptions +
+      '</select>' +
+
+      '<label style="margin-top:10px">السلوك</label>' +
+      '<select id="m-sub-behavior">' +
+      behaviorOptions +
+      '</select>' +
+
+      '<label style="margin-top:10px">الراصد</label>' +
+      '<select id="m-sub-observer">' +
+      observerOptions +
+      '</select>' +
+
+      '<label style="margin-top:10px">الملاحظة</label>' +
+      '<input type="text" id="m-sub-note" value="' +
+      esc(e.note || '') +
+      '" placeholder="ملاحظة اختيارية" />' +
+
+      '<label style="margin-top:10px">التاريخ والوقت</label>' +
+      '<input type="datetime-local" id="m-sub-date" value="' +
+      dateValue +
+      '" />' +
+
+      '<div style="margin-top:14px;display:flex;gap:8px">' +
+      '<button class="btn-primary" onclick="saveSubmission(\'' +
+      id +
+      '\')">حفظ</button>' +
+
+      '<button class="btn-ghost" onclick="closeModal()">' +
+      'إلغاء' +
+      '</button>' +
+      '</div>';
   }
   modal.classList.add('show');
 }
@@ -1268,7 +1951,131 @@ async function saveBehavior(id){
   else{ await addBehavior(name, emoji, points); toast('تم الحفظ'); }
   closeModal();
 }
+async function saveSubmission(id) {
 
+    const studentId =
+      document.getElementById('m-sub-student').value;
+
+    const behaviorId =
+      document.getElementById('m-sub-behavior').value;
+
+    const observer =
+      document.getElementById('m-sub-observer').value;
+
+    const note =
+      document.getElementById('m-sub-note').value.trim();
+
+    const date =
+      document.getElementById('m-sub-date').value;
+
+    const student =
+      students.find(s => s.id === studentId);
+
+    const behavior =
+      behaviors.find(b => b.id === behaviorId);
+
+    if (!student) {
+      toast('اختر طالباً', 'err');
+      return;
+    }
+
+    if (!behavior) {
+      toast('اختر سلوكاً', 'err');
+      return;
+    }
+
+    if (!observer) {
+      toast('اختر الراصد', 'err');
+      return;
+    }
+
+    try {
+
+      await dbUpdate(
+        'submissions',
+        'id',
+        id,
+        {
+          student_id: student.id,
+          class_id: student.class_id,
+
+          behavior_id: behavior.id,
+          behavior_name: behavior.name,
+          emoji: behavior.emoji || '⭐',
+          points: behavior.points,
+
+          observer: observer,
+          note: note,
+
+          recorded_at:
+            date
+              ? new Date(date).toISOString()
+              : new Date().toISOString()
+        }
+      );
+
+      toast('تم تعديل السجل ✅');
+
+      closeModal();
+
+      await loadAll();
+
+    } catch (error) {
+
+      console.error(
+        'saveSubmission',
+        error
+      );
+
+      toast(
+        'تعذر تعديل السجل',
+        'err'
+      );
+    }
+  }
+  async function deleteSubmission(id) {
+
+      const submission =
+        submissions.find(e => e.id === id);
+
+      if (!submission) return;
+
+      const student =
+        students.find(s => s.id === submission.student_id);
+
+      const confirmed = confirm(
+        'هل أنت متأكد من حذف سجل ' +
+        (student ? student.name : 'هذا الطالب') +
+        '؟\n\nلا يمكن التراجع عن الحذف.'
+      );
+
+      if (!confirmed) return;
+
+      try {
+
+        await dbDelete(
+          'submissions',
+          'id',
+          id
+        );
+
+        toast('تم حذف السجل ✅');
+
+        await loadAll();
+
+      } catch (error) {
+
+        console.error(
+          'deleteSubmission',
+          error
+        );
+
+        toast(
+          'تعذر حذف السجل',
+          'err'
+        );
+      }
+    }
 /* ===================== أدوات مساعدة ===================== */
 function $(s){ return document.querySelector(s); }
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }

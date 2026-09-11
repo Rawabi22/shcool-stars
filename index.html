@@ -1,189 +1,778 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>نظام رصد السلوك المتميز</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root{--bg:#f5f7fb;--card:#ffffff;--ink:#1f2937;--muted:#6b7280;--line:#e5e7eb;--primary:#4f46e5;--primary-2:#6366f1;--accent:#f59e0b;--accent-2:#fbbf24;--good:#10b981;--bad:#ef4444;--shadow:0 10px 25px -10px rgba(79,70,229,.25),0 2px 6px rgba(0,0,0,.04)}
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Tajawal','Cairo',system-ui,sans-serif}
-  a{color:var(--primary)}
-  header.app{background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;padding:16px 22px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 20px rgba(79,70,229,.25)}
-  header.app .logo{width:46px;height:46px;border-radius:12px;background:rgba(255,255,255,.18);display:grid;place-items:center;font-size:24px;flex-shrink:0}
-  header.app h1{margin:0;font-size:1.3rem;font-weight:800}
-  header.app .sub{font-size:.85rem;opacity:.85;margin-top:2px}
-  #save-status{font-size:.78rem;opacity:.95;font-weight:700;margin-top:3px}
-  .container{max-width:1200px;margin:0 auto;padding:18px}
-  .banner{background:#fef3c7;color:#92400e;border:1.5px solid #f59e0b;border-radius:12px;padding:12px 16px;font-weight:700;margin-bottom:16px;display:none;font-size:.92rem}
-  .tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px;background:var(--card);padding:8px;border-radius:14px;box-shadow:var(--shadow)}
-  .tab{flex:1 1 120px;text-align:center;padding:10px 12px;border-radius:10px;cursor:pointer;font-weight:700;color:var(--muted);transition:.2s;border:1px solid transparent;user-select:none}
-  .tab.active{background:var(--primary);color:#fff;box-shadow:0 6px 16px -6px rgba(79,70,229,.6)}
-  .tab:not(.active):hover{background:#f1f5f9}
-  .panel{display:none;animation:fade .25s ease}
-  .panel.active{display:block}
-  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
-  .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-  .grid{display:grid;gap:14px}
-  .g2{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-  .g3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
-  .stat{background:var(--card);border-radius:14px;padding:16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px}
-  .stat .icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex-shrink:0}
-  .stat .num{font-size:1.5rem;font-weight:800;line-height:1}
-  .stat .lbl{font-size:.82rem;color:var(--muted);margin-top:2px}
-  .i-purple{background:#ede9fe;color:var(--primary)}.i-gold{background:#fef3c7;color:var(--accent)}.i-green{background:#d1fae5;color:var(--good)}.i-pink{background:#fce7f3;color:#db2777}
-  label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:6px;font-weight:600}
-  input[type=text],input[type=number],select,textarea{width:100%;padding:11px 12px;border:1.5px solid var(--line);border-radius:10px;font-family:inherit;font-size:1rem;background:#fff;transition:.2s;color:var(--ink)}
-  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.15)}
-  button{cursor:pointer;border:none;font-family:inherit;font-weight:700;border-radius:10px;padding:10px 16px;font-size:.95rem;transition:.2s;display:inline-flex;align-items:center;gap:6px}
-  .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-2)}
-  .btn-soft{background:#eef2ff;color:var(--primary)}.btn-soft:hover{background:#e0e7ff}
-  .btn-gold{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff}
-  .btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--line)}.btn-ghost:hover{background:#f1f5f9}
-  .btn-danger{background:#fee2e2;color:var(--bad)}.btn-danger:hover{background:#fecaca}
-  .btn-sm{padding:6px 10px;font-size:.85rem;border-radius:8px}
-  .student-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-  .student-list{display:grid;gap:10px}
-  .student-card .left{display:flex;align-items:center;gap:12px}
-  .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;font-weight:800;font-size:.95rem;flex-shrink:0}
-  .stars{color:var(--accent);font-size:.95rem;letter-spacing:1px}
-  .actions{display:flex;gap:6px;flex-wrap:wrap}
-  .behaviors-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
-  .behavior-card{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:.15s;position:relative}
-  .behavior-card:hover{border-color:var(--primary);transform:translateY(-2px);box-shadow:var(--shadow)}
-  .behavior-card .emoji{font-size:30px;display:block;margin-bottom:6px}
-  .behavior-card .name{font-weight:700;font-size:.95rem}
-  .behavior-card .pts{display:inline-block;margin-top:6px;background:#fef3c7;color:#92400e;border-radius:999px;padding:3px 10px;font-size:.78rem;font-weight:700}
-  .leaderboard{display:flex;flex-direction:column;gap:10px}
-  .lb-item{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:12px;display:flex;align-items:center;gap:12px}
-  .lb-rank{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;font-weight:800;flex-shrink:0}
-  .rank-1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#fff}
-  .rank-2{background:linear-gradient(135deg,#cbd5e1,#94a3b8);color:#fff}
-  .rank-3{background:linear-gradient(135deg,#d6a87a,#a1734a);color:#fff}
-  .rank-other{background:#eef2ff;color:var(--primary)}
-  table{width:100%;border-collapse:collapse;font-size:.95rem}
-  th,td{text-align:right;padding:10px 12px;border-bottom:1px solid var(--line)}
-  th{color:var(--muted);font-weight:700;font-size:.82rem;letter-spacing:.3px}
-  tr:hover td{background:#f9fafb}
-  .chip{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:.82rem;font-weight:700}
-  .chip-good{background:#d1fae5;color:#047857}.chip-neutral{background:#e0e7ff;color:#4338ca}.chip-warn{background:#fef3c7;color:#92400e}
-  .empty{text-align:center;padding:30px 20px;color:var(--muted)}
-  .empty .big{font-size:42px;display:block;margin-bottom:10px;opacity:.6}
-  .toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:10px;font-weight:600;box-shadow:0 10px 25px rgba(0,0,0,.2);z-index:99;transform:translateY(20px);opacity:0;transition:.3s;pointer-events:none}
-  .toast.show{transform:none;opacity:1}
-  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
-  .modal-bg.show{display:flex}
-  .modal{background:#fff;border-radius:16px;width:100%;max-width:520px;padding:20px;max-height:90vh;overflow:auto}
-  .modal h3{margin:0 0 14px;font-size:1.2rem}
-  .close-btn{background:#f3f4f6;border-radius:8px;width:32px;height:32px;display:grid;place-items:center;cursor:pointer}
-  .star-anim{position:fixed;font-size:32px;pointer-events:none;z-index:60;animation:starFloat 1.2s ease-out forwards}
-  .collapsible-card{
-  background:var(--card);
-  border-radius:16px;
-  box-shadow:var(--shadow);
-  margin-bottom:16px;
-  overflow:hidden;
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>نظام رصد السلوك المتميز</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭐</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Tajawal:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --muted: #6b7280;
+      --line: #e5e7eb;
+      --primary: #4f46e5;
+      --primary-2: #6366f1;
+      --accent: #f59e0b;
+      --accent-2: #fbbf24;
+      --good: #10b981;
+      --bad: #ef4444;
+      --shadow: 0 10px 25px -10px rgba(79, 70, 229, .25), 0 2px 6px rgba(0, 0, 0, .04)
+    }
 
-.collapsible-card summary{
-  list-style:none;
-  cursor:pointer;
-  padding:18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  font-size:1rem;
-  font-weight:800;
-  color:var(--ink);
-  user-select:none;
-  transition:.2s;
-}
+    * {
+      box-sizing: border-box
+    }
 
-.collapsible-card summary::-webkit-details-marker{
-  display:none;
-}
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Tajawal', 'Cairo', system-ui, sans-serif
+    }
 
-.collapsible-card summary:hover{
-  background:#f8fafc;
-}
+    a {
+      color: var(--primary)
+    }
 
-.collapsible-card summary::after{
-  content:'＋';
-  width:30px;
-  height:30px;
-  border-radius:8px;
-  background:#eef2ff;
-  color:var(--primary);
-  display:grid;
-  place-items:center;
-  font-size:1.1rem;
-  flex-shrink:0;
-}
+    header.app {
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      padding: 16px 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 20px rgba(79, 70, 229, .25)
+    }
 
-.collapsible-card[open] summary::after{
-  content:'−';
-}
+    header.app .logo {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, .18);
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      flex-shrink: 0
+    }
 
-.collapsible-card[open] summary{
-  border-bottom:1px solid var(--line);
-}
+    header.app h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 800
+    }
 
-.collapsible-body{
-  padding:18px;
-}
-  @keyframes starFloat{0%{transform:translateY(0) scale(.5);opacity:1}100%{transform:translateY(-80px) scale(1.4);opacity:0}}
-  @media(max-width:600px){.container{padding:12px}.tab{font-size:.85rem;padding:8px 4px}th,td{padding:8px;font-size:.88rem}header.app h1{font-size:1.05rem}}
-</style>
+    header.app .sub {
+      font-size: .85rem;
+      opacity: .85;
+      margin-top: 2px
+    }
+
+    #save-status {
+      font-size: .78rem;
+      opacity: .95;
+      font-weight: 700;
+      margin-top: 3px
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 18px
+    }
+
+    .banner {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1.5px solid #f59e0b;
+      border-radius: 12px;
+      padding: 12px 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: none;
+      font-size: .92rem
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: var(--card);
+      padding: 8px;
+      border-radius: 14px;
+      box-shadow: var(--shadow)
+    }
+
+    .tab {
+      flex: 1 1 120px;
+      text-align: center;
+      padding: 10px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--muted);
+      transition: .2s;
+      border: 1px solid transparent;
+      user-select: none
+    }
+
+    .tab.active {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 6px 16px -6px rgba(79, 70, 229, .6)
+    }
+
+    .tab:not(.active):hover {
+      background: #f1f5f9
+    }
+
+    .panel {
+      display: none;
+      animation: fade .25s ease
+    }
+
+    .panel.active {
+      display: block
+    }
+
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px
+    }
+
+    .g2 {
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr))
+    }
+
+    .g3 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr))
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px
+    }
+
+    .stat {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .stat .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 22px;
+      flex-shrink: 0
+    }
+
+    .stat .num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      line-height: 1
+    }
+
+    .stat .lbl {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: 2px
+    }
+
+    .i-purple {
+      background: #ede9fe;
+      color: var(--primary)
+    }
+
+    .i-gold {
+      background: #fef3c7;
+      color: var(--accent)
+    }
+
+    .i-green {
+      background: #d1fae5;
+      color: var(--good)
+    }
+
+    .i-pink {
+      background: #fce7f3;
+      color: #db2777
+    }
+
+    label {
+      font-size: .85rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600
+    }
+
+    input[type=text],
+    input[type=number],
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1rem;
+      background: #fff;
+      transition: .2s;
+      color: var(--ink)
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, .15)
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      font-weight: 700;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: .95rem;
+      transition: .2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-2)
+    }
+
+    .btn-soft {
+      background: #eef2ff;
+      color: var(--primary)
+    }
+
+    .btn-soft:hover {
+      background: #e0e7ff
+    }
+
+    .btn-gold {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1.5px solid var(--line)
+    }
+
+    .btn-ghost:hover {
+      background: #f1f5f9
+    }
+
+    .btn-danger {
+      background: #fee2e2;
+      color: var(--bad)
+    }
+
+    .btn-danger:hover {
+      background: #fecaca
+    }
+
+    .btn-sm {
+      padding: 6px 10px;
+      font-size: .85rem;
+      border-radius: 8px
+    }
+
+    .student-card {
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .student-list {
+      display: grid;
+      gap: 10px
+    }
+
+    .student-card .left {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      font-weight: 800;
+      font-size: .95rem;
+      flex-shrink: 0
+    }
+
+    .stars {
+      color: var(--accent);
+      font-size: .95rem;
+      letter-spacing: 1px
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    .behaviors-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 10px
+    }
+
+    .behavior-card {
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: .15s;
+      position: relative
+    }
+
+    .behavior-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow)
+    }
+
+    .behavior-card .emoji {
+      font-size: 30px;
+      display: block;
+      margin-bottom: 6px
+    }
+
+    .behavior-card .name {
+      font-weight: 700;
+      font-size: .95rem
+    }
+
+    .behavior-card .pts {
+      display: inline-block;
+      margin-top: 6px;
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: .78rem;
+      font-weight: 700
+    }
+
+    .leaderboard {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .lb-item {
+      background: #fff;
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .lb-rank {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      flex-shrink: 0
+    }
+
+    .rank-1 {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #fff
+    }
+
+    .rank-2 {
+      background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+      color: #fff
+    }
+
+    .rank-3 {
+      background: linear-gradient(135deg, #d6a87a, #a1734a);
+      color: #fff
+    }
+
+    .rank-other {
+      background: #eef2ff;
+      color: var(--primary)
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .95rem
+    }
+
+    th,
+    td {
+      text-align: right;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 700;
+      font-size: .82rem;
+      letter-spacing: .3px
+    }
+
+    tr:hover td {
+      background: #f9fafb
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: .82rem;
+      font-weight: 700
+    }
+
+    .chip-good {
+      background: #d1fae5;
+      color: #047857
+    }
+
+    .chip-neutral {
+      background: #e0e7ff;
+      color: #4338ca
+    }
+
+    .chip-warn {
+      background: #fef3c7;
+      color: #92400e
+    }
+
+    .empty {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--muted)
+    }
+
+    .empty .big {
+      font-size: 42px;
+      display: block;
+      margin-bottom: 10px;
+      opacity: .6
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--ink);
+      color: #fff;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, .2);
+      z-index: 99;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: .3s;
+      pointer-events: none
+    }
+
+    .toast.show {
+      transform: none;
+      opacity: 1
+    }
+
+    .modal-bg {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 16px
+    }
+
+    .modal-bg.show {
+      display: flex
+    }
+
+    .modal {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 520px;
+      padding: 20px;
+      max-height: 90vh;
+      overflow: auto
+    }
+
+    .modal h3 {
+      margin: 0 0 14px;
+      font-size: 1.2rem
+    }
+
+    .close-btn {
+      background: #f3f4f6;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      cursor: pointer
+    }
+
+    .star-anim {
+      position: fixed;
+      font-size: 32px;
+      pointer-events: none;
+      z-index: 60;
+      animation: starFloat 1.2s ease-out forwards
+    }
+
+    .collapsible-card {
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+
+    .collapsible-card summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--ink);
+      user-select: none;
+      transition: .2s;
+    }
+
+    .collapsible-card summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .collapsible-card summary:hover {
+      background: #f8fafc;
+    }
+
+    .collapsible-card summary::after {
+      content: '＋';
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: #eef2ff;
+      color: var(--primary);
+      display: grid;
+      place-items: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .collapsible-card[open] summary::after {
+      content: '−';
+    }
+
+    .collapsible-card[open] summary {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .collapsible-body {
+      padding: 18px;
+    }
+
+    @keyframes starFloat {
+      0% {
+        transform: translateY(0) scale(.5);
+        opacity: 1
+      }
+
+      100% {
+        transform: translateY(-80px) scale(1.4);
+        opacity: 0
+      }
+    }
+
+    @media(max-width:600px) {
+      .container {
+        padding: 12px
+      }
+
+      .tab {
+        font-size: .85rem;
+        padding: 8px 4px
+      }
+
+      th,
+      td {
+        padding: 8px;
+        font-size: .88rem
+      }
+
+      header.app h1 {
+        font-size: 1.05rem
+      }
+    }
+  </style>
 </head>
+
 <body>
-<header class="app">
-  <div class="logo">⭐</div>
-  <div style="flex:1">
-    <h1>نظام رصد السلوك المتميز</h1>
-    <div class="sub">متابعة الطلبة المتميزين في المدرسة</div>
-    <div class="sub" id="save-status">🔄 جارٍ الاتصال بقاعدة البيانات...</div>
-  </div>
-  <!-- <button class="btn-soft btn-sm" onclick="loadAll()">🔄 تحديث</button> -->
-</header>
+  <header class="app">
+    <div class="logo">⭐</div>
+    <div style="flex:1">
+      <h1>نظام رصد السلوك المتميز</h1>
+      <div class="sub">متابعة الطلبة المتميزين في المدرسة</div>
+      <div class="sub" id="save-status">🔄 جارٍ الاتصال بقاعدة البيانات...</div>
+    </div>
+    <!-- <button class="btn-soft btn-sm" onclick="loadAll()">🔄 تحديث</button> -->
+  </header>
 
-<div class="container">
-  <div class="banner" id="setup-banner">
-    ⚠️ لم تُهيّأ جداول قاعدة البيانات بعد. شغّل كود الإعداد من <a href="#" id="banner-admin-link" target="_blank" rel="noopener"><strong>صفحة إدارة قاعدة البيانات</strong></a> (مرة واحدة فقط)، ثم اضغط تحديث.
-  </div>
+  <div class="container">
+    <div class="banner" id="setup-banner">
+      ⚠️ لم تُهيّأ جداول قاعدة البيانات بعد. شغّل كود الإعداد من <a href="#" id="banner-admin-link" target="_blank"
+        rel="noopener"><strong>صفحة إدارة قاعدة البيانات</strong></a> (مرة واحدة فقط)، ثم اضغط تحديث.
+    </div>
 
-  <div class="stats">
-    <div class="stat"><div class="icon i-green">📒</div><div><div class="num" id="stat-classes">0</div><div class="lbl">فصل</div></div></div>
-    <div class="stat"><div class="icon i-purple">👨‍🎓</div><div><div class="num" id="stat-students">0</div><div class="lbl">طالب/ة</div></div></div>
-    <div class="stat"><div class="icon i-gold">👩‍🏫</div><div><div class="num" id="mg-observers">0</div><div class="lbl">راصدة (معلمة)</div></div></div>
-    <div class="stat"><div class="icon i-gold">⭐</div><div><div class="num" id="stat-stars">0</div><div class="lbl">نجمات</div></div></div>
-    <div class="stat"><div class="icon i-pink">🎯</div><div><div class="num" id="stat-events">0</div><div class="lbl">سجلات</div></div></div>
-  </div>
-
-  <div class="tabs">
-    <div class="tab active" data-tab="record">🎯 سجل جديد</div>
-    <div class="tab" data-tab="leader">🏆 لوحة الشرف</div>
-    <div class="tab" data-tab="manage">⚙️ الإدارة</div>
-    <div class="tab" data-tab="behaviors">✨ السلوكيات</div>
-    <div class="tab" data-tab="report">📊 التقارير</div>
-    <!-- <div class="tab" data-tab="db">🗄️ قاعدة البيانات</div> -->
-  </div>
-
-  <!-- الرصد السريع -->
-  <section class="panel active" id="panel-record">
-    <div class="card">
-      <h3 style="margin:0 0 12px">⚡ رصد سجل جديد</h3>
-      <div class="grid g2">
-        <div><label>الفصل</label><select id="rec-class"></select></div>
-        <div><label>الطالب/ة</label><select id="rec-student"></select></div>
+    <div class="stats">
+      <div class="stat">
+        <div class="icon i-green">📒</div>
+        <div>
+          <div class="num" id="stat-classes">0</div>
+          <div class="lbl">فصل</div>
+        </div>
       </div>
-      <!-- <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
+      <div class="stat">
+        <div class="icon i-purple">👨‍🎓</div>
+        <div>
+          <div class="num" id="stat-students">0</div>
+          <div class="lbl">طالب/ة</div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="icon i-gold">👩‍🏫</div>
+        <div>
+          <div class="num" id="mg-observers">0</div>
+          <div class="lbl">راصدة (معلمة)</div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="icon i-gold">⭐</div>
+        <div>
+          <div class="num" id="stat-stars">0</div>
+          <div class="lbl">نجمات</div>
+        </div>
+      </div>
+      <div class="stat">
+        <div class="icon i-pink">🎯</div>
+        <div>
+          <div class="num" id="stat-events">0</div>
+          <div class="lbl">سجلات</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab active" data-tab="record">🎯 سجل جديد</div>
+      <div class="tab" data-tab="leader">🏆 لوحة الشرف</div>
+      <div class="tab" data-tab="manage">⚙️ الإدارة</div>
+      <div class="tab" data-tab="behaviors">✨ السلوكيات</div>
+      <div class="tab" data-tab="report">📊 التقارير</div>
+      <!-- <div class="tab" data-tab="db">🗄️ قاعدة البيانات</div> -->
+    </div>
+
+    <!-- الرصد السريع -->
+    <section class="panel active" id="panel-record">
+      <div class="card">
+        <h3 style="margin:0 0 12px">⚡ رصد سجل جديد</h3>
+        <div class="grid g2">
+          <div><label>الفصل</label><select id="rec-class"></select></div>
+          <div><label>الطالب/ة</label><select id="rec-student"></select></div>
+        </div>
+        <!-- <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
         <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">⚡ إضافة سريعة عند الحاجة:</div>
         <div class="row">
           <input type="text" id="quick-record-class" placeholder="فصل جديد" style="flex:1;min-width:140px" />
@@ -192,226 +781,256 @@
           <button class="btn-soft btn-sm" onclick="quickAddStudent()">➕ طالب</button>
         </div>
       </div> -->
-      <div style="margin-top:14px">
-        <label> السلوك المتميز</label>
-        <div id="rec-behaviors" class="behaviors-grid"></div>
-      </div>
-      <div style="margin-top:14px">
-        <label>اسم الراصدة (المعلمة)</label>
-        <input type="text" id="rec-observer" placeholder="مثلاً: أ. محمد العتيبي" list="observer-list" />
-        <datalist id="observer-list"></datalist>
-      </div>
-      <div style="margin-top:14px">
-        <label>ملاحظة (اختياري)</label>
-        <input type="text" id="rec-note" placeholder="مثلاً: ساعد زميله في حل واجب..." />
-      </div>
-      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn-gold" onclick="recordBehavior()">⭐ رصد النجوم</button>
-        <button class="btn-ghost" onclick="resetRecord()">تفريغ</button>
-      </div>
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 12px">📝 آخر الأحداث</h3>
-      <div id="recent-events"></div>
-    </div>
-  </section>
-
-  <!-- لوحة الشرف -->
-  <section class="panel" id="panel-leader">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <h3 style="margin:0">🏆 لوحة الشرف</h3>
-        <div class="row"><label style="margin:0">تصفية:</label><select id="lb-filter" style="width:auto" onchange="renderLeaderboard()"><option value="all">جميع الفصول</option></select></div>
-      </div>
-      <div id="leaderboard" class="leaderboard"></div>
-    </div>
-  </section>
-
-  <!-- الإدارة -->
-  <section class="panel" id="panel-manage">
-    <div class="card">
-      <h3 style="margin:0 0 6px">⚙️ الإدارة</h3>
-      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">إدارة بيانات الفصول والطلبة والراصدات والسجلات المرصودة</p>
-      <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
-        <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">⚡ إضافة سريعة عند الحاجة:</div>
-        <div class="row">
-          <input type="text" id="quick-record-class" placeholder="فصل جديد" style="flex:1;min-width:140px" />
-          <button class="btn-soft btn-sm" onclick="quickAddClass('quick-record-class')">➕ فصل</button>
-          <input type="text" id="quick-record-student" placeholder="طالب/ة جديد/ة" style="flex:1;min-width:140px" />
-          <button class="btn-soft btn-sm" onclick="quickAddStudent()">➕ طالب</button>
+        <div style="margin-top:14px">
+          <label> السلوك المتميز</label>
+          <div id="rec-behaviors" class="behaviors-grid"></div>
+        </div>
+        <div style="margin-top:14px">
+          <label>اسم الراصدة (المعلمة)</label>
+          <input type="text" id="rec-observer" placeholder="مثلاً: أ. محمد العتيبي" list="observer-list" />
+          <datalist id="observer-list"></datalist>
+        </div>
+        <div style="margin-top:14px">
+          <label>ملاحظة (اختياري)</label>
+          <input type="text" id="rec-note" placeholder="مثلاً: ساعد زميله في حل واجب..." />
+        </div>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn-gold" onclick="recordBehavior()">⭐ رصد النجوم</button>
+          <button class="btn-ghost" onclick="resetRecord()">تفريغ</button>
         </div>
       </div>
-    </div>
-    <details class="collapsible-card">
-      <summary>🏫 الفصول</summary>
-    
-      <div class="collapsible-body">
-    
+      <div class="card">
+        <h3 style="margin:0 0 12px">📝 آخر الأحداث</h3>
+        <div id="recent-events"></div>
+      </div>
+    </section>
+
+    <!-- لوحة الشرف -->
+    <section class="panel" id="panel-leader">
+      <div class="card">
         <div
           style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-          <h3 style="margin:0">🏫 الفصول</h3>
-    
-          <!-- <button class="btn-primary" onclick="openModal('class')">
+          <h3 style="margin:0">🏆 لوحة الشرف</h3>
+          <div class="row"><label style="margin:0">تصفية:</label><select id="lb-filter" style="width:auto"
+              onchange="renderLeaderboard()">
+              <option value="all">جميع الفصول</option>
+            </select></div>
+        </div>
+        <div id="leaderboard" class="leaderboard"></div>
+      </div>
+    </section>
+
+    <!-- الإدارة -->
+    <section class="panel" id="panel-manage">
+      <div class="card">
+        <h3 style="margin:0 0 6px">⚙️ الإدارة</h3>
+        <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">إدارة بيانات الفصول والطلبة والراصدات والسجلات
+          المرصودة</p>
+        <div style="margin-top:10px;background:#f9fafb;padding:10px;border-radius:10px">
+          <div style="font-size:.82rem;color:var(--muted);margin-bottom:6px">⚡ إضافة سريعة عند الحاجة:</div>
+          <div class="row">
+            <input type="text" id="quick-record-class" placeholder="فصل جديد" style="flex:1;min-width:140px" />
+            <button class="btn-soft btn-sm" onclick="quickAddClass('quick-record-class')">➕ فصل</button>
+            <input type="text" id="quick-record-student" placeholder="طالب/ة جديد/ة" style="flex:1;min-width:140px" />
+            <button class="btn-soft btn-sm" onclick="quickAddStudent()">➕ طالب</button>
+          </div>
+        </div>
+      </div>
+      <details class="collapsible-card">
+        <summary>🏫 الفصول</summary>
+
+        <div class="collapsible-body">
+
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <h3 style="margin:0">🏫 الفصول</h3>
+
+            <!-- <button class="btn-primary" onclick="openModal('class')">
             ➕ إضافة فصل
           </button> -->
-        </div>
-    
-        <div
-          style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
-          <input type="text" id="quick-class-input" placeholder="اكتب اسم فصل جديد" style="flex:1;min-width:200px" />
-    
-          <button class="btn-primary" onclick="quickAddClass('quick-class-input')">
-            ➕ إضافة
-          </button>
-        </div>
-    
-        <div id="classes-list" class="student-list"></div>
-    
-      </div>
-    </details>
-    
-    
-    <details class="collapsible-card">
-      <summary>👨‍🎓 الطلبة</summary>
-    
-      <div class="collapsible-body">
-    
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-          <h3 style="margin:0">👨‍🎓 الطلبة</h3>
-    
-          <div class="row">
-            <button class="btn-primary" onclick="openModal('student')">
-              ➕ إضافة طالب/ة
-            </button>
-    
-            <button class="btn-soft" onclick="openModal('bulkStudents')">
-              📋 إضافة جماعية
+          </div>
+
+          <div
+            style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
+            <input type="text" id="quick-class-input" placeholder="اكتب اسم فصل جديد" style="flex:1;min-width:200px" />
+
+            <button class="btn-primary" onclick="quickAddClass('quick-class-input')">
+              ➕ إضافة
             </button>
           </div>
+
+          <div id="classes-list" class="student-list"></div>
+
         </div>
-    
-        <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
-          <select id="mg-st-class" style="width:auto;min-width:160px" onchange="renderStudents()">
-            <option value="all">كل الفصول</option>
-          </select>
-    
-          <input type="text" id="mg-st-search" placeholder="🔍 بحث عن طالب/ة..." style="flex:1;min-width:200px"
-            oninput="renderStudents()" />
+      </details>
+
+
+      <details class="collapsible-card">
+        <summary>👨‍🎓 الطلبة</summary>
+
+        <div class="collapsible-body">
+
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <h3 style="margin:0">👨‍🎓 الطلبة</h3>
+
+            <div class="row">
+              <button class="btn-primary" onclick="openModal('student')">
+                ➕ إضافة طالب/ة
+              </button>
+
+              <button class="btn-soft" onclick="openModal('bulkStudents')">
+                📋 إضافة جماعية
+              </button>
+            </div>
+          </div>
+
+          <div class="row" style="margin-bottom:14px;flex-wrap:wrap">
+            <select id="mg-st-class" style="width:auto;min-width:160px" onchange="renderStudents()">
+              <option value="all">كل الفصول</option>
+            </select>
+
+            <input type="text" id="mg-st-search" placeholder="🔍 بحث عن طالب/ة..." style="flex:1;min-width:200px"
+              oninput="renderStudents()" />
+          </div>
+
+          <div id="students-list" class="student-list"></div>
+
         </div>
-    
-        <div id="students-list" class="student-list"></div>
-    
-      </div>
-    </details>
-    
-    
-    <details class="collapsible-card">
-      <summary>👩‍🏫 الراصدات (المعلمات)</summary>
-    
-      <div class="collapsible-body">
-    
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-          <h3 style="margin:0">👩‍🏫 الراصدات (المعلمات)</h3>
-    
-          <!-- <button class="btn-primary" onclick="openModal('observer')">
+      </details>
+
+
+      <details class="collapsible-card">
+        <summary>👩‍🏫 الراصدات (المعلمات)</summary>
+
+        <div class="collapsible-body">
+
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <h3 style="margin:0">👩‍🏫 الراصدات (المعلمات)</h3>
+
+            <!-- <button class="btn-primary" onclick="openModal('observer')">
             ➕ إضافة راصدة
           </button> -->
+          </div>
+
+          <div
+            style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
+            <input type="text" id="quick-observer-input" placeholder="اسم الراصدة" style="flex:1;min-width:200px"
+              oninput="renderObservers()" />
+
+            <button class="btn-primary" onclick="quickAddObserver()">
+              ➕ إضافة
+            </button>
+          </div>
+
+          <div id="observers-list" class="student-list"></div>
+
         </div>
-    
-        <div
-          style="display:flex;gap:8px;margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
-          <input type="text" id="quick-observer-input" placeholder="اسم الراصدة" style="flex:1;min-width:200px"
-            oninput="renderObservers()" />
-    
-          <button class="btn-primary" onclick="quickAddObserver()">
-            ➕ إضافة
-          </button>
-        </div>
-    
-        <div id="observers-list" class="student-list"></div>
-    
-      </div>
-    </details>
-    
-    
-    <details class="collapsible-card">
-      <summary>🎯 السجلات المرصودة</summary>
-    
-      <div class="collapsible-body">
-    
-        <div
-          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-          <div>
-            <h3 style="margin:0">🎯 السجلات المرصودة</h3>
-    
-            <!-- <p style="margin:4px 0 0;color:var(--muted);font-size:.85rem">
+      </details>
+
+
+      <details class="collapsible-card">
+        <summary>🎯 السجلات المرصودة</summary>
+
+        <div class="collapsible-body">
+
+          <div
+            style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+            <div>
+              <h3 style="margin:0">🎯 السجلات المرصودة</h3>
+
+              <!-- <p style="margin:4px 0 0;color:var(--muted);font-size:.85rem">
               عرض جميع السجلات مع إمكانية التعديل والحذف
             </p> -->
-          </div>
-    
-          <!-- <button class="btn-soft" onclick="renderSubmissions()">
+            </div>
+
+            <!-- <button class="btn-soft" onclick="renderSubmissions()">
             🔄 تحديث
           </button> -->
+          </div>
+
+          <div class="row" style="margin-bottom:14px;background:#f9fafb;padding:10px;border-radius:10px;flex-wrap:wrap">
+            <select id="mg-sub-class" style="flex:1;min-width:160px" onchange="renderSubmissions()">
+              <option value="all">كل الفصول</option>
+            </select>
+
+            <select id="mg-sub-student" style="flex:1;min-width:180px" onchange="renderSubmissions()">
+              <option value="all">كل الطلاب/الطالبات</option>
+            </select>
+
+            <select id="mg-sub-observer" style="flex:1;min-width:180px" onchange="renderSubmissions()">
+              <option value="all">كل الراصدات</option>
+            </select>
+
+            <select id="mg-sub-behavior" style="flex:1;min-width:180px" onchange="renderSubmissions()">
+              <option value="all">كل السلوكيات</option>
+            </select>
+
+            <button class="btn-ghost btn-sm" onclick="resetSubmissionFilters()">
+              مسح الفلاتر
+            </button>
+          </div>
+
+          <div id="submissions-list"></div>
+
         </div>
-    
-        <div id="submissions-list"></div>
-    
-      </div>
-    </details>
-  </section>
+      </details>
+    </section>
 
-  <!-- السلوكيات -->
-  <section class="panel" id="panel-behaviors">
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <h3 style="margin:0">✨ مكتبة السلوكيات</h3>
-        <button class="btn-primary" onclick="openModal('behavior')">➕ إضافة سلوك</button>
+    <!-- السلوكيات -->
+    <section class="panel" id="panel-behaviors">
+      <div class="card">
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+          <h3 style="margin:0">✨ مكتبة السلوكيات</h3>
+          <button class="btn-primary" onclick="openModal('behavior')">➕ إضافة سلوك</button>
+        </div>
+        <div id="behaviors-list" class="behaviors-grid"></div>
       </div>
-      <div id="behaviors-list" class="behaviors-grid"></div>
-    </div>
-  </section>
+    </section>
 
-  <!-- التقارير -->
-  <section class="panel" id="panel-report">
-    <div class="card">
-      <h3 style="margin:0 0 14px">📊 تقرير طالب/ة</h3>
-      <div class="row" style="align-items:flex-end">
-        <div style="flex:1;min-width:220px"><label>اختر الطالب/ة</label><select id="rep-student"></select></div>
-        <button class="btn-soft" onclick="generateReport()">إنشاء التقرير</button>
+    <!-- التقارير -->
+    <section class="panel" id="panel-report">
+      <div class="card">
+        <h3 style="margin:0 0 14px">📊 تقرير طالب/ة</h3>
+        <div class="row" style="align-items:flex-end">
+          <div style="flex:1;min-width:220px"><label>اختر الطالب/ة</label><select id="rep-student"></select></div>
+          <button class="btn-soft" onclick="generateReport()">إنشاء التقرير</button>
+        </div>
+        <div id="report-output" style="margin-top:14px"></div>
       </div>
-      <div id="report-output" style="margin-top:14px"></div>
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 14px">💾 تصدير البيانات</h3>
-      <div class="row">
-        <button class="btn-primary" onclick="exportCSV()">📥 تصدير جميع السجلات</button>
-        <!-- <button class="btn-soft" onclick="exportJSON()">📥 تصدير JSON</button> -->
-        <!-- <label class="btn-ghost" style="cursor:pointer;padding:10px 16px;border-radius:10px;font-weight:700;display:inline-flex;align-items:center;gap:6px">
+      <div class="card">
+        <h3 style="margin:0 0 14px">💾 تصدير البيانات</h3>
+        <div class="row">
+          <button class="btn-primary" onclick="exportCSV()">📥 تصدير جميع السجلات</button>
+          <!-- <button class="btn-soft" onclick="exportJSON()">📥 تصدير JSON</button> -->
+          <!-- <label class="btn-ghost" style="cursor:pointer;padding:10px 16px;border-radius:10px;font-weight:700;display:inline-flex;align-items:center;gap:6px">
           📤 استيراد JSON
           <input type="file" accept="application/json" onchange="importJSON(event)" style="display:none" />
         </label> -->
-        <button class="btn-danger" onclick="resetAllData()">🗑️ مسح كل البيانات</button>
+          <button class="btn-danger" onclick="resetAllData()">🗑️ مسح كل البيانات</button>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- قاعدة البيانات -->
-  <section class="panel" id="panel-db">
-    <div class="card">
-      <h3 style="margin:0 0 6px">🗄️ إدارة قاعدة البيانات</h3>
-      <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">هذه الصفحة مخصصة لك لإدارة بنية قاعدة البيانات. شغّل الكودين في Supabase SQL Editor مرة واحدة فقط، وبعدها تعمل كل الجداول تلقائياً من التطبيق.</p>
-      <div class="row" style="margin-bottom:12px">
-        <button class="btn-soft" onclick="testDbNow()">🔌 اختبار الاتصال</button>
-        <button class="btn-soft" onclick="copyText('db-setup-sql')">📋 نسخ كود الإعداد</button>
-        <button class="btn-soft" onclick="copyText('db-seed-sql')">📋 نسخ كود بياناتك</button>
+    <!-- قاعدة البيانات -->
+    <section class="panel" id="panel-db">
+      <div class="card">
+        <h3 style="margin:0 0 6px">🗄️ إدارة قاعدة البيانات</h3>
+        <p style="margin:0 0 14px;color:var(--muted);font-size:.9rem">هذه الصفحة مخصصة لك لإدارة بنية قاعدة البيانات.
+          شغّل الكودين في Supabase SQL Editor مرة واحدة فقط، وبعدها تعمل كل الجداول تلقائياً من التطبيق.</p>
+        <div class="row" style="margin-bottom:12px">
+          <button class="btn-soft" onclick="testDbNow()">🔌 اختبار الاتصال</button>
+          <button class="btn-soft" onclick="copyText('db-setup-sql')">📋 نسخ كود الإعداد</button>
+          <button class="btn-soft" onclick="copyText('db-seed-sql')">📋 نسخ كود بياناتك</button>
+        </div>
+        <div id="db-test-result"></div>
       </div>
-      <div id="db-test-result"></div>
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 8px">1️⃣ كود إنشاء الجداول (شغّله أولاً)</h3>
-      <pre id="db-setup-sql" style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.78rem;direction:ltr;text-align:left;line-height:1.6;max-height:340px">
+      <div class="card">
+        <h3 style="margin:0 0 8px">1️⃣ كود إنشاء الجداول (شغّله أولاً)</h3>
+        <pre id="db-setup-sql"
+          style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.78rem;direction:ltr;text-align:left;line-height:1.6;max-height:340px">
 -- ===== إعداد الجداول (شغّله مرة واحدة في SQL Editor ثم Run) =====
 create table if not exists classes (
   id text primary key,
@@ -463,10 +1082,11 @@ do $ declare t text; begin
   end loop;
 end $;
 </pre>
-    </div>
-    <div class="card">
-      <h3 style="margin:0 0 8px">2️⃣ كود بياناتك الحالية (بذر — شغّله بعد ذلك)</h3>
-      <pre id="db-seed-sql" style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.78rem;;direction:ltr;text-align:left;line-height:1.6;max-height:340px">
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 8px">2️⃣ كود بياناتك الحالية (بذر — شغّله بعد ذلك)</h3>
+        <pre id="db-seed-sql"
+          style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:10px;overflow:auto;font-size:.78rem;;direction:ltr;text-align:left;line-height:1.6;max-height:340px">
 -- ===== بياناتك الحالية (بذر) ======
 
 -- الفصول
@@ -500,396 +1120,399 @@ insert into observers (name) values ('rawabi1') on conflict (name) do nothing;
 insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,points,observer,note,recorded_at) values ('emsx8ttfuekym','s1','c1','b8','واجب متميز','📝',3,'rawabi1','','2026-08-17T13:02:07.434Z') on conflict (id) do nothing;
 insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,points,observer,note,recorded_at) values ('emsx9lcgnpgap','s4','c2','b8','واجب متميز','📝',3,'rawabi1','','2026-08-17T13:23:31.799Z') on conflict (id) do nothing;
 </pre>
-      <p style="margin-top:10px;font-size:.82rem;color:#b45309;background:#fef3c7;;padding:8px 12px;border-radius:8px">⚠️ بعد تشغيل الكودين اضغط "🔄 تحديث" في أعلى الصفحة — ستظهر الفصول والطلاب والسلوكيات والراصدين والسجل من قاعدة البيانات مباشرة.</p>
-    </div>
-  </section>
+        <p
+          style="margin-top:10px;font-size:.82rem;color:#b45309;background:#fef3c7;;padding:8px 12px;border-radius:8px">
+          ⚠️ بعد تشغيل الكودين اضغط "🔄 تحديث" في أعلى الصفحة — ستظهر الفصول والطلاب والسلوكيات والراصدين والسجل من
+          قاعدة البيانات مباشرة.</p>
+      </div>
+    </section>
 
-</div>
-
-<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-      <h3 id="modal-title">إضافة</h3>
-      <div class="close-btn" onclick="closeModal()">✕</div>
-    </div>
-    <div id="modal-body"></div>
   </div>
-</div>
-<div class="toast" id="toast"></div>
 
-<script>
-/* ===================== إعداد الاتصال بقاعدة البيانات ===================== */
-  /* ===================== DATABASE CONNECTION ===================== */
+  <div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <h3 id="modal-title">إضافة</h3>
+        <div class="close-btn" onclick="closeModal()">✕</div>
+      </div>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
 
-  const CFG_KEY = 'school-stars-db-v1';
+  <script>
+    /* ===================== إعداد الاتصال بقاعدة البيانات ===================== */
+    /* ===================== DATABASE CONNECTION ===================== */
 
-  const DEFAULT_CFG = {
-    url: 'https://radltqjqjvgfoeqganhs.supabase.co',
-    anonKey: 'sb_publishable_mkxBGfRasN19DRBUHH-EzA_2NjAo4hl'
-  };
+    const CFG_KEY = 'school-stars-db-v1';
 
-  let DB = {};
-
-  /* ===================== CONFIG ===================== */
-
-  function loadCfg() {
-    try {
-      const c = JSON.parse(localStorage.getItem(CFG_KEY) || '');
-
-      DB = (c && c.url && c.anonKey)
-        ? c
-        : { ...DEFAULT_CFG };
-
-    } catch (e) {
-      DB = { ...DEFAULT_CFG };
-    }
-  }
-
-  function saveCfg() {
-    try {
-      localStorage.setItem(
-        CFG_KEY,
-        JSON.stringify(DB)
-      );
-    } catch (e) {
-      console.warn('Could not save config:', e);
-    }
-  }
-
-  /* ===================== SUPABASE API ===================== */
-
-  function api(table) {
-    return (
-      String(DB.url).replace(/\/+$/, '') +
-      '/rest/v1/' +
-      table
-    );
-  }
-
-  function h() {
-    return {
-      'apikey': DB.anonKey,
-      'Content-Type': 'application/json'
+    const DEFAULT_CFG = {
+      url: 'https://radltqjqjvgfoeqganhs.supabase.co',
+      anonKey: 'sb_publishable_mkxBGfRasN19DRBUHH-EzA_2NjAo4hl'
     };
-  }
 
-  /* ===================== STATUS ===================== */
+    let DB = {};
 
-  function setStatus(txt, kind) {
-    const el = document.getElementById('save-status');
+    /* ===================== CONFIG ===================== */
 
-    if (!el) return;
+    function loadCfg() {
+      try {
+        const c = JSON.parse(localStorage.getItem(CFG_KEY) || '');
 
-    el.textContent = txt;
+        DB = (c && c.url && c.anonKey)
+          ? c
+          : { ...DEFAULT_CFG };
 
-    el.style.color =
-      kind === 'warn'
-        ? '#fef08a'
-        : 'rgba(255,255,255,.95)';
-  }
-
-  /* ===================== STATE ===================== */
-
-  let classes = [];
-  let students = [];
-  let behaviors = [];
-  let observers = [];
-  let submissions = [];
-
-  let selectedBehavior = null;
-
-  /* ===================== GET TABLE ===================== */
-
-  async function getTable(table, query = '?select=*') {
-
-    const response = await fetch(
-      api(table) + query,
-      {
-        method: 'GET',
-        headers: h()
+      } catch (e) {
+        DB = { ...DEFAULT_CFG };
       }
-    );
+    }
 
-    const text = await response.text();
+    function saveCfg() {
+      try {
+        localStorage.setItem(
+          CFG_KEY,
+          JSON.stringify(DB)
+        );
+      } catch (e) {
+        console.warn('Could not save config:', e);
+      }
+    }
 
-    console.log(
-      `📦 ${table} → HTTP ${response.status}`,
-      text
-    );
+    /* ===================== SUPABASE API ===================== */
 
-    if (!response.ok) {
-      throw new Error(
-        `${table} → HTTP ${response.status}: ${text}`
+    function api(table) {
+      return (
+        String(DB.url).replace(/\/+$/, '') +
+        '/rest/v1/' +
+        table
       );
     }
 
-    return JSON.parse(text);
-  }
+    function h() {
+      return {
+        'apikey': DB.anonKey,
+        'Content-Type': 'application/json'
+      };
+    }
 
-  /* ===================== LOAD ALL DATA ===================== */
+    /* ===================== STATUS ===================== */
 
-  async function loadAll() {
+    function setStatus(txt, kind) {
+      const el = document.getElementById('save-status');
 
-    console.log('🚀 loadAll started');
+      if (!el) return;
 
-    setStatus(
-      '🔄 جارٍ التحميل من قاعدة البيانات...',
-      ''
-    );
+      el.textContent = txt;
 
-    try {
+      el.style.color =
+        kind === 'warn'
+          ? '#fef08a'
+          : 'rgba(255,255,255,.95)';
+    }
 
-      classes = await getTable(
-        'classes',
-        '?select=*&order=order'
+    /* ===================== STATE ===================== */
+
+    let classes = [];
+    let students = [];
+    let behaviors = [];
+    let observers = [];
+    let submissions = [];
+
+    let selectedBehavior = null;
+
+    /* ===================== GET TABLE ===================== */
+
+    async function getTable(table, query = '?select=*') {
+
+      const response = await fetch(
+        api(table) + query,
+        {
+          method: 'GET',
+          headers: h()
+        }
       );
 
-      students = await getTable(
-        'students',
-        '?select=*&order=name'
+      const text = await response.text();
+
+      console.log(
+        `📦 ${table} → HTTP ${response.status}`,
+        text
       );
 
-      behaviors = await getTable(
-        'behaviors',
-        '?select=*&order=name'
-      );
-
-      observers = await getTable(
-        'observers',
-        '?select=*&order=name'
-      );
-
-      submissions = await getTable(
-        'submissions',
-        '?select=*&order=recorded_at.desc'
-      );
-
-      console.log('✅ All data loaded successfully');
-
-      const banner =
-        document.getElementById('setup-banner');
-
-      if (banner) {
-        banner.style.display = 'none';
+      if (!response.ok) {
+        throw new Error(
+          `${table} → HTTP ${response.status}: ${text}`
+        );
       }
+
+      return JSON.parse(text);
+    }
+
+    /* ===================== LOAD ALL DATA ===================== */
+
+    async function loadAll() {
+
+      console.log('🚀 loadAll started');
 
       setStatus(
-        '✅ متصل بقاعدة البيانات — البيانات محدّثة',
+        '🔄 جارٍ التحميل من قاعدة البيانات...',
         ''
       );
 
-      renderAll();
+      try {
 
-    } catch (error) {
+        classes = await getTable(
+          'classes',
+          '?select=*&order=order'
+        );
 
-      console.error(
-        '❌ loadAll failed:',
-        error
-      );
+        students = await getTable(
+          'students',
+          '?select=*&order=name'
+        );
 
-      setStatus(
-        '❌ حدث خطأ في قاعدة البيانات',
-        'warn'
-      );
+        behaviors = await getTable(
+          'behaviors',
+          '?select=*&order=name'
+        );
 
-      const banner =
-        document.getElementById('setup-banner');
+        observers = await getTable(
+          'observers',
+          '?select=*&order=name'
+        );
 
-      if (banner) {
+        submissions = await getTable(
+          'submissions',
+          '?select=*&order=recorded_at.desc'
+        );
 
-        banner.style.display = 'block';
+        console.log('✅ All data loaded successfully');
 
-        banner.innerHTML =
-          '❌ <strong>خطأ قاعدة البيانات:</strong><br>' +
-          '<code style="direction:ltr;display:block;' +
-          'margin-top:8px;white-space:pre-wrap;">' +
-          esc(error.message) +
-          '</code>';
-      }
-    }
-  }
+        const banner =
+          document.getElementById('setup-banner');
 
-  /* ===================== INSERT ===================== */
+        if (banner) {
+          banner.style.display = 'none';
+        }
 
-  async function dbInsert(table, row) {
+        setStatus(
+          '✅ متصل بقاعدة البيانات — البيانات محدّثة',
+          ''
+        );
 
-    const response = await fetch(
-      api(table),
-      {
-        method: 'POST',
-        headers: {
-          ...h(),
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify(row)
-      }
-    );
+        renderAll();
 
-    const text = await response.text();
+      } catch (error) {
 
-    console.log(
-      `INSERT ${table} → HTTP ${response.status}`,
-      text
-    );
+        console.error(
+          '❌ loadAll failed:',
+          error
+        );
 
-    if (!response.ok) {
-      throw new Error(
-        `${table} insert → HTTP ${response.status}: ${text}`
-      );
-    }
-  }
+        setStatus(
+          '❌ حدث خطأ في قاعدة البيانات',
+          'warn'
+        );
 
-  /* ===================== UPDATE ===================== */
+        const banner =
+          document.getElementById('setup-banner');
 
-  async function dbUpdate(
-    table,
-    col,
-    val,
-    patch
-  ) {
+        if (banner) {
 
-    const url =
-      api(table) +
-      '?' +
-      encodeURIComponent(col) +
-      '=eq.' +
-      encodeURIComponent(val);
+          banner.style.display = 'block';
 
-    const response = await fetch(
-      url,
-      {
-        method: 'PATCH',
-        headers: h(),
-        body: JSON.stringify(patch)
-      }
-    );
-
-    const text = await response.text();
-
-    console.log(
-      `UPDATE ${table} → HTTP ${response.status}`,
-      text
-    );
-
-    if (!response.ok) {
-      throw new Error(
-        `${table} update → HTTP ${response.status}: ${text}`
-      );
-    }
-  }
-
-  /* ===================== DELETE ===================== */
-
-  async function dbDelete(
-    table,
-    col,
-    val
-  ) {
-
-    const url =
-      api(table) +
-      '?' +
-      encodeURIComponent(col) +
-      '=eq.' +
-      encodeURIComponent(val);
-
-    const response = await fetch(
-      url,
-      {
-        method: 'DELETE',
-        headers: {
-          ...h(),
-          'Prefer': 'return=minimal'
+          banner.innerHTML =
+            '❌ <strong>خطأ قاعدة البيانات:</strong><br>' +
+            '<code style="direction:ltr;display:block;' +
+            'margin-top:8px;white-space:pre-wrap;">' +
+            esc(error.message) +
+            '</code>';
         }
       }
-    );
+    }
 
-    const text = await response.text();
+    /* ===================== INSERT ===================== */
 
-    console.log(
-      `DELETE ${table} → HTTP ${response.status}`,
-      text
-    );
+    async function dbInsert(table, row) {
 
-    if (!response.ok) {
-      throw new Error(
-        `${table} delete → HTTP ${response.status}: ${text}`
+      const response = await fetch(
+        api(table),
+        {
+          method: 'POST',
+          headers: {
+            ...h(),
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(row)
+        }
+      );
+
+      const text = await response.text();
+
+      console.log(
+        `INSERT ${table} → HTTP ${response.status}`,
+        text
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `${table} insert → HTTP ${response.status}: ${text}`
+        );
+      }
+    }
+
+    /* ===================== UPDATE ===================== */
+
+    async function dbUpdate(
+      table,
+      col,
+      val,
+      patch
+    ) {
+
+      const url =
+        api(table) +
+        '?' +
+        encodeURIComponent(col) +
+        '=eq.' +
+        encodeURIComponent(val);
+
+      const response = await fetch(
+        url,
+        {
+          method: 'PATCH',
+          headers: h(),
+          body: JSON.stringify(patch)
+        }
+      );
+
+      const text = await response.text();
+
+      console.log(
+        `UPDATE ${table} → HTTP ${response.status}`,
+        text
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `${table} update → HTTP ${response.status}: ${text}`
+        );
+      }
+    }
+
+    /* ===================== DELETE ===================== */
+
+    async function dbDelete(
+      table,
+      col,
+      val
+    ) {
+
+      const url =
+        api(table) +
+        '?' +
+        encodeURIComponent(col) +
+        '=eq.' +
+        encodeURIComponent(val);
+
+      const response = await fetch(
+        url,
+        {
+          method: 'DELETE',
+          headers: {
+            ...h(),
+            'Prefer': 'return=minimal'
+          }
+        }
+      );
+
+      const text = await response.text();
+
+      console.log(
+        `DELETE ${table} → HTTP ${response.status}`,
+        text
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `${table} delete → HTTP ${response.status}: ${text}`
+        );
+      }
+    }
+
+    /* ===================== ID GENERATOR ===================== */
+
+    function uid(p) {
+      return (
+        p +
+        Date.now().toString(36) +
+        Math.random()
+          .toString(36)
+          .slice(2, 6)
       );
     }
-  }
+    /* ===================== الفصول ===================== */
+    async function addClass(name) {
+      const id = uid('c');
+      await dbInsert('classes', { id, name });
+      await loadAll();
+    }
+    async function renameClass(id, name) {
+      await dbUpdate('classes', 'id', id, { name });
+      await loadAll();
+    }
+    async function deleteClass(id) {
+      if (!confirm('حذف هذا الفصل؟ سيُحذف كل طلابه أيضاً. سجل الرصد يبقى محفوظاً.')) return;
+      await dbDelete('classes', 'id', id);
+      toast('تم حذف الفصل'); await loadAll();
+    }
 
-  /* ===================== ID GENERATOR ===================== */
+    /* ===================== الطلاب ===================== */
+    async function addStudent(name, classId) {
+      const id = uid('s');
+      await dbInsert('students', { id, name, class_id: classId });
+      await loadAll();
+    }
+    async function updateStudent(id, name, classId) {
+      await dbUpdate('students', 'id', id, { name, class_id: classId });
+      await loadAll();
+    }
+    async function deleteStudent(id) {
+      if (!confirm('حذف هذا الطالب/ة وكل سجل رصده؟')) return;
+      await dbDelete('students', 'id', id);
+      toast('تم حذف الطالب'); await loadAll();
+    }
 
-  function uid(p) {
-    return (
-      p +
-      Date.now().toString(36) +
-      Math.random()
-        .toString(36)
-        .slice(2, 6)
-    );
-  }
-  /* ===================== الفصول ===================== */
-  async function addClass(name) {
-    const id = uid('c');
-    await dbInsert('classes', { id, name });
-    await loadAll();
-  }
-  async function renameClass(id, name) {
-    await dbUpdate('classes', 'id', id, { name });
-    await loadAll();
-  }
-  async function deleteClass(id) {
-    if (!confirm('حذف هذا الفصل؟ سيُحذف كل طلابه أيضاً. سجل الرصد يبقى محفوظاً.')) return;
-    await dbDelete('classes', 'id', id);
-    toast('تم حذف الفصل'); await loadAll();
-  }
+    /* ===================== السلوكيات ===================== */
+    async function addBehavior(name, emoji, points) {
+      const id = uid('b');
+      await dbInsert('behaviors', { id, name, emoji, points });
+      await loadAll();
+    }
+    async function updateBehavior(id, name, emoji, points) {
+      await dbUpdate('behaviors', 'id', id, { name, emoji, points });
+      await loadAll();
+    }
+    async function deleteBehavior(id) {
+      if (!confirm('حذف هذا السلوك؟ (السجلات السابقة تبقى محفوظة بنص السلوك)')) return;
+      await dbDelete('behaviors', 'id', id);
+      toast('تم حذف السلوك'); await loadAll();
+    }
 
-  /* ===================== الطلاب ===================== */
-  async function addStudent(name, classId) {
-    const id = uid('s');
-    await dbInsert('students', { id, name, class_id: classId });
-    await loadAll();
-  }
-  async function updateStudent(id, name, classId) {
-    await dbUpdate('students', 'id', id, { name, class_id: classId });
-    await loadAll();
-  }
-  async function deleteStudent(id) {
-    if (!confirm('حذف هذا الطالب/ة وكل سجل رصده؟')) return;
-    await dbDelete('students', 'id', id);
-    toast('تم حذف الطالب'); await loadAll();
-  }
+    /* ===================== الراصدون ===================== */
+    async function addObserver(name) {
+      await dbInsert('observers', { name });
+      await loadAll();
+    }
+    async function deleteObserver(id) {
+      if (!confirm('حذف هذا الراصد؟ (السجلات السابقة تبقى محفوظة بالاسم)')) return;
+      await dbDelete('observers', 'id', id);
+      toast('تم الحذف'); await loadAll();
+    }
 
-  /* ===================== السلوكيات ===================== */
-  async function addBehavior(name, emoji, points) {
-    const id = uid('b');
-    await dbInsert('behaviors', { id, name, emoji, points });
-    await loadAll();
-  }
-  async function updateBehavior(id, name, emoji, points) {
-    await dbUpdate('behaviors', 'id', id, { name, emoji, points });
-    await loadAll();
-  }
-  async function deleteBehavior(id) {
-    if (!confirm('حذف هذا السلوك؟ (السجلات السابقة تبقى محفوظة بنص السلوك)')) return;
-    await dbDelete('behaviors', 'id', id);
-    toast('تم حذف السلوك'); await loadAll();
-  }
-
-  /* ===================== الراصدون ===================== */
-  async function addObserver(name) {
-    await dbInsert('observers', { name });
-    await loadAll();
-  }
-  async function deleteObserver(id) {
-    if (!confirm('حذف هذا الراصد؟ (السجلات السابقة تبقى محفوظة بالاسم)')) return;
-    await dbDelete('observers', 'id', id);
-    toast('تم الحذف'); await loadAll();
-  }
-
-  /* ===================== الرصد السريع ===================== */
-  function renderRecordPanel() {
+    /* ===================== الرصد السريع ===================== */
+    function renderRecordPanel() {
 
       const rc = document.getElementById('rec-class');
 
@@ -907,7 +1530,8 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
       // Start with no student selected
       document.getElementById('rec-student').innerHTML =
-        '<option value="">اختر الطالب/ة</option>';
+        '<option value="">اختر الطالب/ة</option>' +
+        '<option value="all">👥 كل الطلاب/الطالبات</option>';
 
       document.getElementById('rec-behaviors').innerHTML =
         behaviors.map(b =>
@@ -966,6 +1590,7 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
       studentSelect.innerHTML =
         '<option value="">اختر الطالب/ة</option>' +
+        '<option value="all">👥 كل الطلاب/الطالبات</option>' +
 
         list.map(s =>
           '<option value="' + esc(s.id) + '">' +
@@ -975,112 +1600,138 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
       studentSelect.value = '';
     }
-  
-  function pickBehavior(id) {
-    selectedBehavior = id;
-    document.querySelectorAll('#rec-behaviors .behavior-card').forEach(el => {
-      const on = el.dataset.bid === id;
-      el.style.borderColor = on ? 'var(--primary)' : 'var(--line)';
-      el.style.background = on ? '#eef2ff' : '#fff';
-    });
-  }
-  async function recordBehavior() {
-    const studentId = document.getElementById('rec-student').value;
-    const observer = document.getElementById('rec-observer').value.trim();
-    const bid = selectedBehavior;
-    if (!studentId) { toast('اختر الفصل والطالب/ة أولاً','err'); return; }
-    if (!bid) { toast('اختر سلوكاً متميزاً', 'err'); return; }
-    if (!observer) { toast('اكتب اسم الراصد', 'err'); return; }
-    const student = students.find(x => x.id === studentId);
-    const behavior = behaviors.find(x => x.id === bid);
-    if (!student || !behavior) { toast('خطأ في البيانات', 'err'); return; }
-    try {
-      await dbInsert('submissions', {
-        id: uid('e'),
-        student_id: student.id,
-        class_id: student.class_id,
-        behavior_id: behavior.id,
-        behavior_name: behavior.name,
-        emoji: behavior.emoji || '⭐',
-        points: behavior.points,
-        observer: observer,
-        note: document.getElementById('rec-note').value.trim(),
-        recorded_at: new Date().toISOString()
-      });
-      spawnStar();
-      toast('+' + behavior.points + ' ⭐ لـ ' + student.name);
-      document.getElementById('rec-note').value = '';
-      selectedBehavior = null;
-      await loadAll();
-    } catch (e) { toast('تعذر الحفظ في قاعدة البيانات', 'err'); console.error(e); }
-  }
-  async function quickAddClass(inputId) {
-    const input = document.getElementById(inputId);
-    if (!input) return;
-    const name = input.value.trim();
-    if (!name) { toast('اكتب اسم الفصل', 'err'); return; }
-    if (classes.some(c => c.name === name)) { toast('هذا الفصل موجود بالفعل', 'err'); return; }
-    await addClass(name);
-    input.value = '';
-    if (inputId === 'quick-record-class') {
-      const nc = classes.find(c => c.name === name);
-      if (nc) { document.getElementById('rec-class').value = nc.id; updateRecStudents(); }
-    }
-  }
-  async function quickAddStudent() {
-    const name = document.getElementById('quick-record-student').value.trim();
-    const classId = document.getElementById('rec-class').value;
-    if (!name) { toast('اكتب اسم الطالب/ة', 'err'); return; }
-    if (!classId) { toast('اختر فصلاً أولاً', 'err'); return; }
-    if (students.some(s => s.name === name && s.class_id === classId)) { toast('الطالب موجود في هذا الفصل', 'err'); return; }
-    await addStudent(name, classId);
-    document.getElementById('quick-record-student').value = '';
-    const ns = students.find(s => s.name === name && s.class_id === classId);
-    if (ns) { document.getElementById('rec-student').value = ns.id; }
-  }
-  async function quickAddObserver() {
-    const input = document.getElementById('quick-observer-input');
-    const name = input.value.trim();
-    if (!name) { toast('اكتب اسم الراصد', 'err'); return; }
-    if (observers.some(o => o.name === name)) { toast('هذا الراصد موجود بالفعل', 'err'); return; }
-    await addObserver(name);
-    input.value = '';
-    document.getElementById('rec-observer').value = name;
-  }
-  function resetRecord() {
-    document.getElementById('rec-note').value = '';
-    document.getElementById('rec-observer').value = '';
-    selectedBehavior = null;
-    renderRecordPanel();
-  }
-  function spawnStar() {
-    const star = document.createElement('div');
-    star.className = 'star-anim';
-    star.textContent = '⭐';
-    star.style.right = (Math.random() * 60 + 20) + '%';
-    star.style.bottom = '60px';
-    document.body.appendChild(star);
-    setTimeout(() => star.remove(), 1200);
-  }
-  function renderRecent() {
-    const out = document.getElementById('recent-events');
-    const evs = submissions.slice(0, 10);
-    if (!evs.length) { out.innerHTML = '<div class="empty"><span class="big">📭</span>لم تُسجّل أحداث بعد.</div>'; return; }
-    out.innerHTML = '<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>السلوك</th><th>النقاط</th><th>الراصد</th></tr></thead><tbody>' +
-      evs.map(e => {
-        const s = students.find(x => x.id === e.student_id);
-        const d = new Date(e.recorded_at);
-        const dateStr = d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-        return '<tr><td>' + dateStr + '</td>' +
-          '<td><strong>' + (s ? esc(s.name) : 'محذوف') + '</strong></td>' +
-          '<td>' + (e.emoji || '') + ' ' + esc(e.behavior_name) + (e.note ? '<div style="font-size:.8rem;color:var(--muted)">📝 ' + esc(e.note) + '</div>' : '') + '</td>' +
-          '<td><span class="chip chip-good">+' + e.points + '</span></td>' +
-          '<td style="font-size:.85rem;color:var(--muted)">' + (e.observer ? esc(e.observer) : '-') + '</td></tr>';
-      }).join('') + '</tbody></table>';
-  }
 
-  /* ===================== لوحة الشرف ===================== */
-  function renderLeaderboard() {
+    function pickBehavior(id) {
+      selectedBehavior = id;
+      document.querySelectorAll('#rec-behaviors .behavior-card').forEach(el => {
+        const on = el.dataset.bid === id;
+        el.style.borderColor = on ? 'var(--primary)' : 'var(--line)';
+        el.style.background = on ? '#eef2ff' : '#fff';
+      });
+    }
+    async function recordBehavior() {
+      const studentId = document.getElementById('rec-student').value;
+      const classId = document.getElementById('rec-class').value;
+      const observer = document.getElementById('rec-observer').value.trim();
+      const bid = selectedBehavior;
+
+      if (!classId) { toast('اختر الفصل أولاً', 'err'); return; }
+      if (!studentId) { toast('اختر الطالب/ة أولاً', 'err'); return; }
+      if (!bid) { toast('اختر سلوكاً متميزاً', 'err'); return; }
+      if (!observer) { toast('اكتب اسم الراصد', 'err'); return; }
+
+      const behavior = behaviors.find(x => x.id === bid);
+      if (!behavior) { toast('خطأ في البيانات', 'err'); return; }
+
+      // If "all students" is selected, record the same behavior for every student in the selected class
+      const selectedStudents = studentId === 'all'
+        ? students.filter(s => s.class_id === classId)
+        : students.filter(s => s.id === studentId);
+
+      if (!selectedStudents.length) {
+        toast('لا يوجد طلاب في هذا الفصل', 'err');
+        return;
+      }
+
+      try {
+        const note = document.getElementById('rec-note').value.trim();
+        const recordedAt = new Date().toISOString();
+
+        for (const student of selectedStudents) {
+          await dbInsert('submissions', {
+            id: uid('e'),
+            student_id: student.id,
+            class_id: student.class_id,
+            behavior_id: behavior.id,
+            behavior_name: behavior.name,
+            emoji: behavior.emoji || '⭐',
+            points: behavior.points,
+            observer: observer,
+            note: note,
+            recorded_at: recordedAt
+          });
+        }
+
+        spawnStar();
+        toast(studentId === 'all'
+          ? '+' + behavior.points + ' ⭐ لكل ' + selectedStudents.length + ' طالب/ة'
+          : '+' + behavior.points + ' ⭐ لـ ' + selectedStudents[0].name);
+
+        document.getElementById('rec-note').value = '';
+        selectedBehavior = null;
+        await loadAll();
+      } catch (e) {
+        toast('تعذر الحفظ في قاعدة البيانات', 'err');
+        console.error(e);
+      }
+    }
+    async function quickAddClass(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const name = input.value.trim();
+      if (!name) { toast('اكتب اسم الفصل', 'err'); return; }
+      if (classes.some(c => c.name === name)) { toast('هذا الفصل موجود بالفعل', 'err'); return; }
+      await addClass(name);
+      input.value = '';
+      if (inputId === 'quick-record-class') {
+        const nc = classes.find(c => c.name === name);
+        if (nc) { document.getElementById('rec-class').value = nc.id; updateRecStudents(); }
+      }
+    }
+    async function quickAddStudent() {
+      const name = document.getElementById('quick-record-student').value.trim();
+      const classId = document.getElementById('rec-class').value;
+      if (!name) { toast('اكتب اسم الطالب/ة', 'err'); return; }
+      if (!classId) { toast('اختر فصلاً أولاً', 'err'); return; }
+      if (students.some(s => s.name === name && s.class_id === classId)) { toast('الطالب موجود في هذا الفصل', 'err'); return; }
+      await addStudent(name, classId);
+      document.getElementById('quick-record-student').value = '';
+      const ns = students.find(s => s.name === name && s.class_id === classId);
+      if (ns) { document.getElementById('rec-student').value = ns.id; }
+    }
+    async function quickAddObserver() {
+      const input = document.getElementById('quick-observer-input');
+      const name = input.value.trim();
+      if (!name) { toast('اكتب اسم الراصد', 'err'); return; }
+      if (observers.some(o => o.name === name)) { toast('هذا الراصد موجود بالفعل', 'err'); return; }
+      await addObserver(name);
+      input.value = '';
+      document.getElementById('rec-observer').value = name;
+    }
+    function resetRecord() {
+      document.getElementById('rec-note').value = '';
+      document.getElementById('rec-observer').value = '';
+      selectedBehavior = null;
+      renderRecordPanel();
+    }
+    function spawnStar() {
+      const star = document.createElement('div');
+      star.className = 'star-anim';
+      star.textContent = '⭐';
+      star.style.right = (Math.random() * 60 + 20) + '%';
+      star.style.bottom = '60px';
+      document.body.appendChild(star);
+      setTimeout(() => star.remove(), 1200);
+    }
+    function renderRecent() {
+      const out = document.getElementById('recent-events');
+      const evs = submissions.slice(0, 10);
+      if (!evs.length) { out.innerHTML = '<div class="empty"><span class="big">📭</span>لم تُسجّل أحداث بعد.</div>'; return; }
+      out.innerHTML = '<table><thead><tr><th>التاريخ</th><th>الطالب</th><th>السلوك</th><th>النقاط</th><th>الراصد</th></tr></thead><tbody>' +
+        evs.map(e => {
+          const s = students.find(x => x.id === e.student_id);
+          const d = new Date(e.recorded_at);
+          const dateStr = d.toLocaleDateString('ar-EG', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+          return '<tr><td>' + dateStr + '</td>' +
+            '<td><strong>' + (s ? esc(s.name) : 'محذوف') + '</strong></td>' +
+            '<td>' + (e.emoji || '') + ' ' + esc(e.behavior_name) + (e.note ? '<div style="font-size:.8rem;color:var(--muted)">📝 ' + esc(e.note) + '</div>' : '') + '</td>' +
+            '<td><span class="chip chip-good">+' + e.points + '</span></td>' +
+            '<td style="font-size:.85rem;color:var(--muted)">' + (e.observer ? esc(e.observer) : '-') + '</td></tr>';
+        }).join('') + '</tbody></table>';
+    }
+
+    /* ===================== لوحة الشرف ===================== */
+    function renderLeaderboard() {
 
       const f = document.getElementById('lb-filter');
 
@@ -1193,28 +1844,28 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
         }).join('');
     }
 
-  /* ===================== الإدارة ===================== */
-  function renderManage() {
-    document.getElementById('mg-observers').textContent = observers.length;
-    renderClasses();
-    renderStudents();
-    renderObservers();
-    renderSubmissions();
-  }
-  function renderClasses() {
-    const list = document.getElementById('classes-list');
-    if (!classes.length) { list.innerHTML = '<div class="empty"><span class="big">🏫</span>لا توجد فصول. أضف فصلاً من الأعلى.</div>'; return; }
-    list.innerHTML = classes.map(c => {
-      const count = students.filter(s => s.class_id === c.id).length;
-      const stars = submissions.filter(e => e.class_id === c.id).reduce((s, e) => s + (e.points || 0), 0);
-      return '<div class="student-card">' +
-        '<div class="left"><div class="avatar" style="background:linear-gradient(135deg,#10b981,#34d399)">🏫</div>' +
-        '<div><div style="font-weight:700">' + esc(c.name) + '</div><div style="font-size:.82rem;color:var(--muted)">' + count + ' طالب/ة • <span style="color:var(--accent);font-weight:700">⭐ ' + stars + '</span> نقطة</div></div></div>' +
-        '<div class="actions"><button class="btn-soft btn-sm" onclick="openModal(\'class\',\'' + c.id + '\')">✏️ تعديل</button>' +
-        '<button class="btn-danger btn-sm" onclick="deleteClass(\'' + c.id + '\')">🗑️ حذف</button></div></div>';
-    }).join('');
-  }
-  function renderStudents() {
+    /* ===================== الإدارة ===================== */
+    function renderManage() {
+      document.getElementById('mg-observers').textContent = observers.length;
+      renderClasses();
+      renderStudents();
+      renderObservers();
+      renderSubmissions();
+    }
+    function renderClasses() {
+      const list = document.getElementById('classes-list');
+      if (!classes.length) { list.innerHTML = '<div class="empty"><span class="big">🏫</span>لا توجد فصول. أضف فصلاً من الأعلى.</div>'; return; }
+      list.innerHTML = classes.map(c => {
+        const count = students.filter(s => s.class_id === c.id).length;
+        const stars = submissions.filter(e => e.class_id === c.id).reduce((s, e) => s + (e.points || 0), 0);
+        return '<div class="student-card">' +
+          '<div class="left"><div class="avatar" style="background:linear-gradient(135deg,#10b981,#34d399)">🏫</div>' +
+          '<div><div style="font-weight:700">' + esc(c.name) + '</div><div style="font-size:.82rem;color:var(--muted)">' + count + ' طالب/ة • <span style="color:var(--accent);font-weight:700">⭐ ' + stars + '</span> نقطة</div></div></div>' +
+          '<div class="actions"><button class="btn-soft btn-sm" onclick="openModal(\'class\',\'' + c.id + '\')">✏️ تعديل</button>' +
+          '<button class="btn-danger btn-sm" onclick="deleteClass(\'' + c.id + '\')">🗑️ حذف</button></div></div>';
+      }).join('');
+    }
+    function renderStudents() {
 
       const f =
         document.getElementById('mg-st-class');
@@ -1359,50 +2010,50 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
       }).join('');
     }
- function renderObservers() {
+    function renderObservers() {
 
-    const out = document.getElementById('observers-list');
+      const out = document.getElementById('observers-list');
 
-    const search =
-      document
-        .getElementById('quick-observer-input')
-        .value
-        .trim()
-        .toLowerCase();
+      const search =
+        document
+          .getElementById('quick-observer-input')
+          .value
+          .trim()
+          .toLowerCase();
 
-    const filtered = observers.filter(o =>
-      o.name.toLowerCase().includes(search)
-    );
+      const filtered = observers.filter(o =>
+        o.name.toLowerCase().includes(search)
+      );
 
-    if (!filtered.length) {
+      if (!filtered.length) {
 
-      out.innerHTML =
-        '<div class="empty">' +
-        '<span class="big">👩‍🏫</span>' +
-        (search
-          ? 'لا توجد راصدة بهذا الاسم.'
-          : 'لا توجد راصدات.') +
-        '</div>';
+        out.innerHTML =
+          '<div class="empty">' +
+          '<span class="big">👩‍🏫</span>' +
+          (search
+            ? 'لا توجد راصدة بهذا الاسم.'
+            : 'لا توجد راصدات.') +
+          '</div>';
 
-      return;
-    }
+        return;
+      }
 
-    out.innerHTML = filtered.map(o => {
+      out.innerHTML = filtered.map(o => {
 
-      const count =
-        submissions.filter(
-          e => e.observer === o.name
-        ).length;
+        const count =
+          submissions.filter(
+            e => e.observer === o.name
+          ).length;
 
-      const stars =
-        submissions
-          .filter(e => e.observer === o.name)
-          .reduce(
-            (s, e) => s + (e.points || 0),
-            0
-          );
+        const stars =
+          submissions
+            .filter(e => e.observer === o.name)
+            .reduce(
+              (s, e) => s + (e.points || 0),
+              0
+            );
 
-      return `
+        return `
       <div class="student-card">
 
         <div class="left">
@@ -1448,29 +2099,121 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
       </div>
     `;
 
-    }).join('');
-  }
-  function renderSubmissions() {
+      }).join('');
+    }
+    function renderSubmissions() {
 
       const out = document.getElementById('submissions-list');
-
       if (!out) return;
 
-      if (!submissions.length) {
+      // Build filter options while keeping current selections
+      const classFilter = document.getElementById('mg-sub-class');
+      const studentFilter = document.getElementById('mg-sub-student');
+      const observerFilter = document.getElementById('mg-sub-observer');
+      const behaviorFilter = document.getElementById('mg-sub-behavior');
+
+      if (!classFilter || !studentFilter || !observerFilter || !behaviorFilter) return;
+
+      const currentClass = classFilter.value || 'all';
+      const currentStudent = studentFilter.value || 'all';
+      const currentObserver = observerFilter.value || 'all';
+      const currentBehavior = behaviorFilter.value || 'all';
+
+      classFilter.innerHTML =
+        '<option value="all">كل الفصول</option>' +
+        classes.map(c =>
+          '<option value="' + esc(c.id) + '">' +
+          esc(c.name) +
+          '</option>'
+        ).join('');
+
+      classFilter.value =
+        currentClass === 'all' || classes.some(c => c.id === currentClass)
+          ? currentClass
+          : 'all';
+
+      // Students are limited by the selected class
+      const selectedClass = classFilter.value;
+      const studentOptions =
+        selectedClass === 'all'
+          ? students
+          : students.filter(s => s.class_id === selectedClass);
+
+      studentFilter.innerHTML =
+        '<option value="all">كل الطلاب/الطالبات</option>' +
+        studentOptions.map(s =>
+          '<option value="' + esc(s.id) + '">' +
+          esc(s.name) +
+          '</option>'
+        ).join('');
+
+      studentFilter.value =
+        currentStudent === 'all' ||
+          studentOptions.some(s => s.id === currentStudent)
+          ? currentStudent
+          : 'all';
+
+      observerFilter.innerHTML =
+        '<option value="all">كل الراصدات</option>' +
+        observers.map(o =>
+          '<option value="' + esc(o.name) + '">' +
+          esc(o.name) +
+          '</option>'
+        ).join('');
+
+      observerFilter.value =
+        currentObserver === 'all' ||
+          observers.some(o => o.name === currentObserver)
+          ? currentObserver
+          : 'all';
+
+      behaviorFilter.innerHTML =
+        '<option value="all">كل السلوكيات</option>' +
+        behaviors.map(b =>
+          '<option value="' + esc(b.id) + '">' +
+          esc(b.name) +
+          '</option>'
+        ).join('');
+
+      behaviorFilter.value =
+        currentBehavior === 'all' ||
+          behaviors.some(b => b.id === currentBehavior)
+          ? currentBehavior
+          : 'all';
+
+      // Apply filters
+      let filtered = [...submissions];
+
+      if (classFilter.value !== 'all') {
+        filtered = filtered.filter(e => e.class_id === classFilter.value);
+      }
+
+      if (studentFilter.value !== 'all') {
+        filtered = filtered.filter(e => e.student_id === studentFilter.value);
+      }
+
+      if (observerFilter.value !== 'all') {
+        filtered = filtered.filter(e => e.observer === observerFilter.value);
+      }
+
+      if (behaviorFilter.value !== 'all') {
+        filtered = filtered.filter(e => e.behavior_id === behaviorFilter.value);
+      }
+
+      filtered.sort(
+        (a, b) => new Date(b.recorded_at) - new Date(a.recorded_at)
+      );
+
+      if (!filtered.length) {
         out.innerHTML =
           '<div class="empty">' +
           '<span class="big">📭</span>' +
-          'لا توجد سجلات مرصودة.' +
+          'لا توجد سجلات مطابقة للفلاتر المحددة.' +
           '</div>';
         return;
       }
 
-      const sorted = [...submissions].sort(
-        (a, b) =>
-          new Date(b.recorded_at) - new Date(a.recorded_at)
-      );
-
-      out.innerHTML = sorted.map(e => {
+      out.innerHTML = filtered.map(e => {
 
         const student =
           students.find(s => s.id === e.student_id);
@@ -1537,7 +2280,7 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
         <div class="actions">
           <button
             class="btn-soft btn-sm"
-            onclick="openModal('submission','${e.id}')">
+            onclick="openEditSubmission('${e.id}')">
             ✏️ تعديل
           </button>
 
@@ -1550,490 +2293,502 @@ insert into submissions (id,student_id,class_id,behavior_id,behavior_name,emoji,
 
       </div>
     `;
+
       }).join('');
     }
-  function useObserver(name) {
-    document.getElementById('rec-observer').value = name;
-    toast('تم تعيين "' + name + '" كراصد حالي');
-    switchTab('record');
-  }
 
-  /* ===================== السلوكيات (قائمة) ===================== */
-  function renderBehaviorsList() {
-    const list = document.getElementById('behaviors-list');
-    if (!behaviors.length) { list.innerHTML = '<div class="empty"><span class="big">✨</span>لا توجد سلوكيات. أضف سلوكيات من الزر بالأعلى.</div>'; return; }
-    list.innerHTML = behaviors.map(b =>
-      '<div class="behavior-card" style="cursor:default">' +
-      '<span class="emoji">' + (b.emoji || '⭐') + '</span>' +
-      '<div class="name">' + esc(b.name) + '</div>' +
-      '<span class="pts">+' + b.points + ' نجوم</span>' +
-      '<div style="margin-top:8px;display:flex;justify-content:center;gap:4px">' +
-      '<button class="btn-soft btn-sm" onclick="openModal(\'behavior\',\'' + b.id + '\')">✏️</button>' +
-      '<button class="btn-danger btn-sm" onclick="deleteBehavior(\'' + b.id + '\')">🗑️</button>' +
-      '</div></div>').join('');
-  }
+    function resetSubmissionFilters() {
+      const ids = [
+        'mg-sub-class',
+        'mg-sub-student',
+        'mg-sub-observer',
+        'mg-sub-behavior'
+      ];
 
-  /* ===================== التقارير ===================== */
-  function fillReportSelect() {
-    document.getElementById('rep-student').innerHTML = students.map(s => {
-      const cls = classes.find(c => c.id === s.class_id);
-      return '<option value="' + s.id + '">' + esc(s.name) + (cls ? ' - ' + esc(cls.name) : '') + '</option>';
-    }).join('');
-  }
-  function generateReport() {
-    const sid = document.getElementById('rep-student').value;
-    if (!sid) { toast('اختر طالباً', 'err'); return; }
-    const student = students.find(s => s.id === sid);
-    if (!student) return;
-    const cls = classes.find(c => c.id === student.class_id);
-    const evs = submissions.filter(e => e.student_id === sid);
-    const total = evs.reduce((s, e) => s + (e.points || 0), 0);
-    const by = {};
-    evs.forEach(e => { by[e.behavior_name] = by[e.behavior_name] || { count: 0, points: 0, emoji: e.emoji }; by[e.behavior_name].count++; by[e.behavior_name].points += e.points; });
-    const rows = Object.entries(by).sort((a, b) => b[1].points - a[1].points)
-      .map(([n, info]) => '<tr><td>' + (info.emoji || '') + ' ' + esc(n) + '</td><td>' + info.count + '</td><td><span class="chip chip-good">+' + info.points + '</span></td></tr>').join('');
-    const tl = evs.slice(0, 50).map(e => {
-      const d = new Date(e.recorded_at);
-      return '<tr><td>' + d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' }) + '</td>' +
-        '<td>' + (e.emoji || '') + ' ' + esc(e.behavior_name) + '</td>' +
-        '<td><span class="chip chip-good">+' + e.points + '</span></td>' +
-        '<td style="font-size:.85rem;color:var(--muted)">' + (e.observer ? esc(e.observer) : '-') + '</td>' +
-        '<td style="font-size:.85rem;color:var(--muted)">' + esc(e.note || '-') + '</td></tr>';
-    }).join('');
-    document.getElementById('report-output').innerHTML =
-      '<div style="background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-radius:14px;padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">' +
-      '<div class="avatar" style="width:64px;height:64px;font-size:1.6rem;background:rgba(255,255,255,.25)">' + esc(student.name.charAt(0)) + '</div>' +
-      '<div style="flex:1"><div style="font-size:1.4rem;font-weight:800">' + esc(student.name) + '</div><div style="opacity:.9">' + (cls ? esc(cls.name) : '') + '</div></div>' +
-      '<div style="text-align:center"><div style="font-size:2.2rem;font-weight:800">⭐ ' + total + '</div><div style="opacity:.85">إجمالي النجوم</div></div></div>' +
-      '<h4 style="margin:14px 0 8px">📊 تفصيل حسب السلوك</h4>' +
-      '<table><thead><tr><th>السلوك</th><th>عدد المرات</th><th>النقاط</th></tr></thead><tbody>' +
-      (rows || '<tr><td colspan="3" style="text-align:center;color:var(--muted)">لا توجد بيانات</td></tr>') + '</tbody></table>' +
-      '<h4 style="margin:14px 0 8px">📅 السجل الزمني</h4>' +
-      '<table><thead><tr><th>التاريخ</th><th>السلوك</th><th>النقاط</th><th>الراصد</th><th>ملاحظة</th></tr></thead><tbody>' +
-      (tl || '<tr><td colspan="5" style="text-align:center;color:var(--muted)">لا توجد أحداث</td></tr>') + '</tbody></table>';
-  }
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = 'all';
+      });
 
-  /* ===================== التصدير والاستيراد ===================== */
-  async function exportCSV() {
-    const rows = [['التاريخ', 'الطالب/ة', 'الفصل', 'السلوك', 'النقاط', 'الملاحظة', 'الراصدة']];
-    submissions.forEach(e => {
-      const s = students.find(x => x.id === e.student_id);
-      const c = classes.find(x => x.id === e.class_id);
-      rows.push([new Date(e.recorded_at).toLocaleString('ar-EG'), s ? s.name : '', c ? c.name : '', e.behavior_name, e.points, e.note || '', e.observer || '']);
-    });
-    const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
-    download(csv, 'رصد السلوك المتميز.csv', 'text/csv;charset=utf-8');
-  }
-  async function exportJSON() {
-    const bundle = { classes, students, behaviors, observers, submissions, exported_at: new Date().toISOString() };
-    download(JSON.stringify(bundle, null, 2), 'school-stars-backup.json', 'application/json');
-    toast('تم تنزيل النسخة الاحتياطية 💾');
-  }
-  async function importJSON(event) {
-    const file = event.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async e => {
-      try {
-        const obj = JSON.parse(e.target.result);
-        if (!confirm('سيتم دمج البيانات المستوردة مع الحالية (المكرر يُتجاهل). متابعة؟')) return;
-        // دعم صيغة النسخ القديمة (events) والصيغة الجديدة (submissions)
-        const st = obj.submissions || (obj.events ? obj.events.map(ev => ({ id: ev.id || uid('e'), student_id: ev.studentId, class_id: ev.classId, behavior_id: ev.behaviorId || null, behavior_name: ev.behaviorName, emoji: ev.emoji || '⭐', points: ev.points, observer: ev.observer || '', note: ev.note || '', recorded_at: ev.date || new Date().toISOString() })) : []);
-        const cl = obj.classes || [], sd = obj.students || [], bh = obj.behaviors || [], ob = obj.observers || [];
-        let added = 0;
-        for (const c of cl) { try { await dbInsert('classes', { id: c.id, name: c.name }); added++; } catch (_) { } }
-        for (const s of sd) { try { await dbInsert('students', { id: s.id, name: s.name, class_id: s.classId || s.class_id }); added++; } catch (_) { } }
-        for (const b of bh) { try { await dbInsert('behaviors', { id: b.id, name: b.name, emoji: b.emoji || '⭐', points: b.points }); added++; } catch (_) { } }
-        for (const o of ob) { const n = typeof o === 'string' ? o : (o.name || ''); if (n) { try { await dbInsert('observers', { name: n }); added++; } catch (_) { } } }
-        for (const e2 of st) { try { await dbInsert('submissions', e2); added++; } catch (_) { } }
-        toast('تم الاستيراد: أُضيف ' + added + ' سجلاً جديداً');
-        await loadAll();
-      } catch (err) { toast('ملف غير صالح', 'err'); }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-  }
-  async function resetAllData() {
-    if (!confirm('سيتم مسح كل البيانات من قاعدة البيانات. متابعة؟')) return;
-    if (!confirm('تأكيد نهائي: لا يمكن التراجع!')) return;
-    try {
-      await fetch(api('submissions') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
-      await fetch(api('students') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
-      await fetch(api('classes') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
-      await fetch(api('behaviors') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
-      await fetch(api('observers') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
-      toast('تم مسح كل البيانات'); await loadAll();
-    } catch (err) { toast('تعذر المسح', 'err'); }
-  }
-  function download(content, name, type) {
-    const blob = new Blob([content], { type });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = name; a.click();
-    URL.revokeObjectURL(url);
-  }
-  /* ===================== DATABASE TEST ===================== */
-
-  async function testDbNow() {
-
-    const el =
-      document.getElementById('db-test-result');
-
-    if (el) {
-      el.innerHTML =
-        '<span class="chip chip-neutral">' +
-        '🔄 جارٍ الاختبار...</span>';
+      renderSubmissions();
     }
 
-    console.log('🔌 Starting database test...');
+    /* ===================== السلوكيات (قائمة) ===================== */
+    function renderBehaviorsList() {
+      const list = document.getElementById('behaviors-list');
+      if (!behaviors.length) { list.innerHTML = '<div class="empty"><span class="big">✨</span>لا توجد سلوكيات. أضف سلوكيات من الزر بالأعلى.</div>'; return; }
+      list.innerHTML = behaviors.map(b =>
+        '<div class="behavior-card" style="cursor:default">' +
+        '<span class="emoji">' + (b.emoji || '⭐') + '</span>' +
+        '<div class="name">' + esc(b.name) + '</div>' +
+        '<span class="pts">+' + b.points + ' نجوم</span>' +
+        '<div style="margin-top:8px;display:flex;justify-content:center;gap:4px">' +
+        '<button class="btn-soft btn-sm" onclick="openModal(\'behavior\',\'' + b.id + '\')">✏️</button>' +
+        '<button class="btn-danger btn-sm" onclick="deleteBehavior(\'' + b.id + '\')">🗑️</button>' +
+        '</div></div>').join('');
+    }
 
-    const tables = [
-      'classes',
-      'students',
-      'behaviors',
-      'observers',
-      'submissions'
-    ];
+    /* ===================== التقارير ===================== */
+    function fillReportSelect() {
+      document.getElementById('rep-student').innerHTML = students.map(s => {
+        const cls = classes.find(c => c.id === s.class_id);
+        return '<option value="' + s.id + '">' + esc(s.name) + (cls ? ' - ' + esc(cls.name) : '') + '</option>';
+      }).join('');
+    }
+    function generateReport() {
+      const sid = document.getElementById('rep-student').value;
+      if (!sid) { toast('اختر طالباً', 'err'); return; }
+      const student = students.find(s => s.id === sid);
+      if (!student) return;
+      const cls = classes.find(c => c.id === student.class_id);
+      const evs = submissions.filter(e => e.student_id === sid);
+      const total = evs.reduce((s, e) => s + (e.points || 0), 0);
+      const by = {};
+      evs.forEach(e => { by[e.behavior_name] = by[e.behavior_name] || { count: 0, points: 0, emoji: e.emoji }; by[e.behavior_name].count++; by[e.behavior_name].points += e.points; });
+      const rows = Object.entries(by).sort((a, b) => b[1].points - a[1].points)
+        .map(([n, info]) => '<tr><td>' + (info.emoji || '') + ' ' + esc(n) + '</td><td>' + info.count + '</td><td><span class="chip chip-good">+' + info.points + '</span></td></tr>').join('');
+      const tl = evs.slice(0, 50).map(e => {
+        const d = new Date(e.recorded_at);
+        return '<tr><td>' + d.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' }) + '</td>' +
+          '<td>' + (e.emoji || '') + ' ' + esc(e.behavior_name) + '</td>' +
+          '<td><span class="chip chip-good">+' + e.points + '</span></td>' +
+          '<td style="font-size:.85rem;color:var(--muted)">' + (e.observer ? esc(e.observer) : '-') + '</td>' +
+          '<td style="font-size:.85rem;color:var(--muted)">' + esc(e.note || '-') + '</td></tr>';
+      }).join('');
+      document.getElementById('report-output').innerHTML =
+        '<div style="background:linear-gradient(135deg,var(--primary),var(--primary-2));color:#fff;border-radius:14px;padding:18px;margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">' +
+        '<div class="avatar" style="width:64px;height:64px;font-size:1.6rem;background:rgba(255,255,255,.25)">' + esc(student.name.charAt(0)) + '</div>' +
+        '<div style="flex:1"><div style="font-size:1.4rem;font-weight:800">' + esc(student.name) + '</div><div style="opacity:.9">' + (cls ? esc(cls.name) : '') + '</div></div>' +
+        '<div style="text-align:center"><div style="font-size:2.2rem;font-weight:800">⭐ ' + total + '</div><div style="opacity:.85">إجمالي النجوم</div></div></div>' +
+        '<h4 style="margin:14px 0 8px">📊 تفصيل حسب السلوك</h4>' +
+        '<table><thead><tr><th>السلوك</th><th>عدد المرات</th><th>النقاط</th></tr></thead><tbody>' +
+        (rows || '<tr><td colspan="3" style="text-align:center;color:var(--muted)">لا توجد بيانات</td></tr>') + '</tbody></table>' +
+        '<h4 style="margin:14px 0 8px">📅 السجل الزمني</h4>' +
+        '<table><thead><tr><th>التاريخ</th><th>السلوك</th><th>النقاط</th><th>الراصد</th><th>ملاحظة</th></tr></thead><tbody>' +
+        (tl || '<tr><td colspan="5" style="text-align:center;color:var(--muted)">لا توجد أحداث</td></tr>') + '</tbody></table>';
+    }
 
-    let allGood = true;
-
-    for (const table of tables) {
-
+    /* ===================== التصدير والاستيراد ===================== */
+    async function exportCSV() {
+      const rows = [['التاريخ', 'الطالب/ة', 'الفصل', 'السلوك', 'النقاط', 'الملاحظة', 'الراصدة']];
+      submissions.forEach(e => {
+        const s = students.find(x => x.id === e.student_id);
+        const c = classes.find(x => x.id === e.class_id);
+        rows.push([new Date(e.recorded_at).toLocaleString('ar-EG'), s ? s.name : '', c ? c.name : '', e.behavior_name, e.points, e.note || '', e.observer || '']);
+      });
+      const csv = '\uFEFF' + rows.map(r => r.map(v => '"' + String(v).replace(/"/g, '""') + '"').join(',')).join('\n');
+      download(csv, 'رصد السلوك المتميز.csv', 'text/csv;charset=utf-8');
+    }
+    async function exportJSON() {
+      const bundle = { classes, students, behaviors, observers, submissions, exported_at: new Date().toISOString() };
+      download(JSON.stringify(bundle, null, 2), 'school-stars-backup.json', 'application/json');
+      toast('تم تنزيل النسخة الاحتياطية 💾');
+    }
+    async function importJSON(event) {
+      const file = event.target.files[0]; if (!file) return;
+      const reader = new FileReader();
+      reader.onload = async e => {
+        try {
+          const obj = JSON.parse(e.target.result);
+          if (!confirm('سيتم دمج البيانات المستوردة مع الحالية (المكرر يُتجاهل). متابعة؟')) return;
+          // دعم صيغة النسخ القديمة (events) والصيغة الجديدة (submissions)
+          const st = obj.submissions || (obj.events ? obj.events.map(ev => ({ id: ev.id || uid('e'), student_id: ev.studentId, class_id: ev.classId, behavior_id: ev.behaviorId || null, behavior_name: ev.behaviorName, emoji: ev.emoji || '⭐', points: ev.points, observer: ev.observer || '', note: ev.note || '', recorded_at: ev.date || new Date().toISOString() })) : []);
+          const cl = obj.classes || [], sd = obj.students || [], bh = obj.behaviors || [], ob = obj.observers || [];
+          let added = 0;
+          for (const c of cl) { try { await dbInsert('classes', { id: c.id, name: c.name }); added++; } catch (_) { } }
+          for (const s of sd) { try { await dbInsert('students', { id: s.id, name: s.name, class_id: s.classId || s.class_id }); added++; } catch (_) { } }
+          for (const b of bh) { try { await dbInsert('behaviors', { id: b.id, name: b.name, emoji: b.emoji || '⭐', points: b.points }); added++; } catch (_) { } }
+          for (const o of ob) { const n = typeof o === 'string' ? o : (o.name || ''); if (n) { try { await dbInsert('observers', { name: n }); added++; } catch (_) { } } }
+          for (const e2 of st) { try { await dbInsert('submissions', e2); added++; } catch (_) { } }
+          toast('تم الاستيراد: أُضيف ' + added + ' سجلاً جديداً');
+          await loadAll();
+        } catch (err) { toast('ملف غير صالح', 'err'); }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+    async function resetAllData() {
+      if (!confirm('سيتم مسح كل البيانات من قاعدة البيانات. متابعة؟')) return;
+      if (!confirm('تأكيد نهائي: لا يمكن التراجع!')) return;
       try {
+        await fetch(api('submissions') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+        await fetch(api('students') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+        await fetch(api('classes') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+        await fetch(api('behaviors') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+        await fetch(api('observers') + '?select=id', { method: 'DELETE', headers: { ...h(), 'Prefer': 'return=minimal' } });
+        toast('تم مسح كل البيانات'); await loadAll();
+      } catch (err) { toast('تعذر المسح', 'err'); }
+    }
+    function download(content, name, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; a.click();
+      URL.revokeObjectURL(url);
+    }
+    /* ===================== DATABASE TEST ===================== */
 
-        console.log(
-          `🔍 Testing ${table}...`
-        );
+    async function testDbNow() {
 
-        const response = await fetch(
-          api(table) +
-          '?select=*&limit=1',
-          {
-            method: 'GET',
-            headers: {
-              'apikey': DB.anonKey
+      const el =
+        document.getElementById('db-test-result');
+
+      if (el) {
+        el.innerHTML =
+          '<span class="chip chip-neutral">' +
+          '🔄 جارٍ الاختبار...</span>';
+      }
+
+      console.log('🔌 Starting database test...');
+
+      const tables = [
+        'classes',
+        'students',
+        'behaviors',
+        'observers',
+        'submissions'
+      ];
+
+      let allGood = true;
+
+      for (const table of tables) {
+
+        try {
+
+          console.log(
+            `🔍 Testing ${table}...`
+          );
+
+          const response = await fetch(
+            api(table) +
+            '?select=*&limit=1',
+            {
+              method: 'GET',
+              headers: {
+                'apikey': DB.anonKey
+              }
             }
+          );
+
+          const text =
+            await response.text();
+
+          console.log(
+            `📦 ${table} → HTTP ${response.status}`,
+            text
+          );
+
+          if (!response.ok) {
+            allGood = false;
+
+            console.error(
+              `❌ ${table} FAILED`
+            );
           }
-        );
 
-        const text =
-          await response.text();
+        } catch (error) {
 
-        console.log(
-          `📦 ${table} → HTTP ${response.status}`,
-          text
-        );
-
-        if (!response.ok) {
           allGood = false;
 
           console.error(
-            `❌ ${table} FAILED`
+            `❌ ${table} FAILED`,
+            error
           );
         }
+      }
+
+      console.log(
+        '✅ Finished testing all tables'
+      );
+
+      if (el) {
+
+        if (allGood) {
+
+          el.innerHTML =
+            '<span class="chip chip-good">' +
+            '✅ الاتصال ناجح — جميع الجداول تعمل' +
+            '</span>';
+
+        } else {
+
+          el.innerHTML =
+            '<span class="chip chip-warn">' +
+            '❌ يوجد خطأ في أحد الجداول — راجع Console' +
+            '</span>';
+        }
+      }
+    }
+    function copyText(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (navigator.clipboard) { navigator.clipboard.writeText(el.textContent).then(() => toast('تم نسخ الكود �📋')).catch(() => toast('انسخ يدويًا')); }
+      else { const r = document.createRange(); r.selectNodeContents(el); const s = window.getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); toast('تم نسخ الكود 📋'); }
+    }
+    function download(content, name, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = name; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    /* ===================== النوافذ المنبثقة ===================== */
+    function openModal(type, id) {
+      const modal = document.getElementById('modal');
+      const body = document.getElementById('modal-body');
+      if (type === 'class') {
+        const isEdit = !!id;
+        const c = isEdit ? classes.find(x => x.id === id) : { name: '' };
+        document.getElementById('modal-title').textContent = isEdit ? 'تعديل فصل' : 'إضافة فصل';
+        body.innerHTML = '<label>اسم الفصل</label><input type="text" id="m-name" value="' + esc(c.name) + '" placeholder="مثل: الصف الرابع أ" />' +
+          '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveClass(\'' + (id || '') + '\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+      } else if (type === 'student') {
+        const isEdit = !!id;
+        const s = isEdit ? students.find(x => x.id === id) : { name: '', class_id: classes[0] ? classes[0].id : '' };
+        document.getElementById('modal-title').textContent = isEdit ? 'تعديل طالب' : 'إضافة طالب';
+        body.innerHTML = '<label>اسم الطالب/ة</label><input type="text" id="m-name" value="' + esc(s.name) + '" placeholder="الاسم الكامل" />' +
+          '<label style="margin-top:10px">الفصل</label><select id="m-class">' + classes.map(c => '<option value="' + c.id + '" ' + (c.id === s.class_id ? 'selected' : '') + '>' + esc(c.name) + '</option>').join('') + '</select>' +
+          '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveStudent(\'' + (id || '') + '\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+      } else if (type === 'observer') {
+        const isEdit = !!id;
+        const o = isEdit ? observers.find(x => String(x.id) === String(id)) : { name: '' };
+        document.getElementById('modal-title').textContent = isEdit ? 'تعديل اسم راصد' : 'إضافة راصد';
+        body.innerHTML = '<label>اسم الراصد</label><input type="text" id="m-name" value="' + esc(o.name || '') + '" placeholder="مثلاً: أ. محمد العتيبي" />' +
+          '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveObserver(\'' + (id || '') + '\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+      } else if (type === 'bulkStudents') {
+        document.getElementById('modal-title').textContent = 'إضافة طلاب جماعية';
+        body.innerHTML = '<label>الفصل</label><select id="bulk-class">' + classes.map(c => '<option value="' + c.id + '">' + esc(c.name) + '</option>').join('') + '</select>' +
+          '<label style="margin-top:10px">أسماء الطلاب (اسم في كل سطر)</label>' +
+          '<textarea id="bulk-names" rows="8" placeholder="اكتب اسمًا في كل سطر"></textarea>' +
+          '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveBulkStudents()">إضافة الكل</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+      } else if (type === 'behavior') {
+        const isEdit = !!id;
+        const b = isEdit ? behaviors.find(x => x.id === id) : { name: '', emoji: '⭐', points: 3 };
+        document.getElementById('modal-title').textContent = isEdit ? 'تعديل سلوك' : 'إضافة سلوك متميز';
+        body.innerHTML = '<label>اسم السلوك</label><input type="text" id="m-name" value="' + esc(b.name) + '" placeholder="مثل: التزام بالهدوء" />' +
+          '<div class="grid g2" style="margin-top:10px"><div><label>الإيموجي</label><input type="text" id="m-emoji" value="' + (b.emoji || '⭐') + '" maxlength="4" /></div>' +
+          '<div><label>النقاط</label><input type="number" id="m-points" value="' + b.points + '" min="1" max="20" /></div></div>' +
+          '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveBehavior(\'' + (id || '') + '\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
+      } else if (type === 'submission') {
+
+        const e = submissions.find(x => x.id === id);
+
+        if (!e) {
+          toast('السجل غير موجود', 'err');
+          return;
+        }
+
+        document.getElementById('modal-title').textContent =
+          'تعديل السجل المرصود';
+
+        const studentOptions = students.map(s =>
+          '<option value="' + s.id + '" ' +
+          (s.id === e.student_id ? 'selected' : '') +
+          '>' +
+          esc(s.name) +
+          '</option>'
+        ).join('');
+
+        const behaviorOptions = behaviors.map(b =>
+          '<option value="' + b.id + '" ' +
+          (b.id === e.behavior_id ? 'selected' : '') +
+          '>' +
+          (b.emoji || '⭐') +
+          ' ' +
+          esc(b.name) +
+          ' (+' + b.points + ')' +
+          '</option>'
+        ).join('');
+
+        const observerOptions = observers.map(o =>
+          '<option value="' + esc(o.name) + '" ' +
+          (o.name === e.observer ? 'selected' : '') +
+          '>' +
+          esc(o.name) +
+          '</option>'
+        ).join('');
+
+        const dateValue = e.recorded_at
+          ? new Date(e.recorded_at).toISOString().slice(0, 16)
+          : '';
+
+        body.innerHTML =
+
+          '<label>الطالب/ة</label>' +
+          '<select id="m-sub-student">' +
+          studentOptions +
+          '</select>' +
+
+          '<label style="margin-top:10px">السلوك</label>' +
+          '<select id="m-sub-behavior">' +
+          behaviorOptions +
+          '</select>' +
+
+          '<label style="margin-top:10px">الراصد</label>' +
+          '<select id="m-sub-observer">' +
+          observerOptions +
+          '</select>' +
+
+          '<label style="margin-top:10px">الملاحظة</label>' +
+          '<input type="text" id="m-sub-note" value="' +
+          esc(e.note || '') +
+          '" placeholder="ملاحظة اختيارية" />' +
+
+          '<label style="margin-top:10px">التاريخ والوقت</label>' +
+          '<input type="datetime-local" id="m-sub-date" value="' +
+          dateValue +
+          '" />' +
+
+          '<div style="margin-top:14px;display:flex;gap:8px">' +
+          '<button class="btn-primary" onclick="saveSubmission(\'' +
+          id +
+          '\')">حفظ</button>' +
+
+          '<button class="btn-ghost" onclick="closeModal()">' +
+          'إلغاء' +
+          '</button>' +
+          '</div>';
+      }
+      modal.classList.add('show');
+    }
+    function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+    async function saveClass(id) {
+      const name = document.getElementById('m-name').value.trim();
+      if (!name) { toast('اكتب اسم الفصل', 'err'); return; }
+      if (id) { await renameClass(id, name); toast('تم الحفظ'); }
+      else { await addClass(name); toast('تم الحفظ'); }
+      closeModal();
+    }
+    async function saveStudent(id) {
+      const name = document.getElementById('m-name').value.trim();
+      const classId = document.getElementById('m-class').value;
+      if (!name) { toast('اكتب اسم الطالب', 'err'); return; }
+      if (id) { await updateStudent(id, name, classId); toast('تم الحفظ'); }
+      else { await addStudent(name, classId); toast('تم الحفظ'); }
+      closeModal();
+    }
+    async function saveObserver(id) {
+      const name = document.getElementById('m-name').value.trim();
+      if (!name) { toast('اكتب اسم الراصد', 'err'); return; }
+      if (id) {
+        const old = observers.find(x => String(x.id) === String(id));
+        if (old && old.name !== name) {
+          await dbUpdate('observers', 'id', id, { name });
+          // تحديث اسم الراصد في السجلات السابقة ليُحفظ موحداً
+          submissions.filter(e => e.observer === old.name).forEach(e => dbUpdate('submissions', 'id', e.id, { observer: name }));
+        }
+      } else {
+        if (observers.some(o => o.name === name)) { toast('هذا الاسم موجود بالفعل', 'err'); return; }
+        await addObserver(name);
+      }
+      toast('تم الحفظ'); closeModal(); await loadAll();
+    }
+    async function saveBulkStudents() {
+      const classId = document.getElementById('bulk-class').value;
+      const names = document.getElementById('bulk-names').value.split('\n').map(s => s.trim()).filter(Boolean);
+      if (!names.length) { toast('اكتب أسماء الطلاب', 'err'); return; }
+      let added = 0, skipped = 0;
+      for (const name of names) {
+        if (students.some(s => s.name === name && s.class_id === classId)) { skipped++; continue; }
+        try { await addStudent(name, classId); added++; } catch (_) { }
+      }
+      toast('تمت إضافة ' + added + ' طالب' + (skipped ? ' (' + skipped + ' مكرر)' : ''));
+      closeModal();
+    }
+    async function saveBehavior(id) {
+      const name = document.getElementById('m-name').value.trim();
+      const emoji = document.getElementById('m-emoji').value.trim() || '⭐';
+      const points = Math.max(1, Math.min(20, parseInt(document.getElementById('m-points').value) || 3));
+      if (!name) { toast('اكتب اسم السلوك', 'err'); return; }
+      if (id) { await updateBehavior(id, name, emoji, points); toast('تم الحفظ'); }
+      else { await addBehavior(name, emoji, points); toast('تم الحفظ'); }
+      closeModal();
+    }
+    async function saveSubmission(id) {
+
+      const studentId =
+        document.getElementById('m-sub-student').value;
+
+      const behaviorId =
+        document.getElementById('m-sub-behavior').value;
+
+      const observer =
+        document.getElementById('m-sub-observer').value;
+
+      const note =
+        document.getElementById('m-sub-note').value.trim();
+
+      const date =
+        document.getElementById('m-sub-date').value;
+
+      const student =
+        students.find(s => s.id === studentId);
+
+      const behavior =
+        behaviors.find(b => b.id === behaviorId);
+
+      if (!student) {
+        toast('اختر طالباً', 'err');
+        return;
+      }
+
+      if (!behavior) {
+        toast('اختر سلوكاً', 'err');
+        return;
+      }
+
+      if (!observer) {
+        toast('اختر الراصد', 'err');
+        return;
+      }
+
+      try {
+
+        await dbUpdate(
+          'submissions',
+          'id',
+          id,
+          {
+            student_id: student.id,
+            class_id: student.class_id,
+
+            behavior_id: behavior.id,
+            behavior_name: behavior.name,
+            emoji: behavior.emoji || '⭐',
+            points: behavior.points,
+
+            observer: observer,
+            note: note,
+
+            recorded_at:
+              date
+                ? new Date(date).toISOString()
+                : new Date().toISOString()
+          }
+        );
+
+        toast('تم تعديل السجل ✅');
+
+        closeModal();
+
+        await loadAll();
 
       } catch (error) {
 
-        allGood = false;
-
         console.error(
-          `❌ ${table} FAILED`,
+          'saveSubmission',
           error
+        );
+
+        toast(
+          'تعذر تعديل السجل',
+          'err'
         );
       }
     }
-
-    console.log(
-      '✅ Finished testing all tables'
-    );
-
-    if (el) {
-
-      if (allGood) {
-
-        el.innerHTML =
-          '<span class="chip chip-good">' +
-          '✅ الاتصال ناجح — جميع الجداول تعمل' +
-          '</span>';
-
-      } else {
-
-        el.innerHTML =
-          '<span class="chip chip-warn">' +
-          '❌ يوجد خطأ في أحد الجداول — راجع Console' +
-          '</span>';
-      }
-    }
-  }
-function copyText(id){
-  const el = document.getElementById(id);
-  if(!el) return;
-  if(navigator.clipboard){ navigator.clipboard.writeText(el.textContent).then(()=>toast('تم نسخ الكود �📋')).catch(()=>toast('انسخ يدويًا')); }
-  else{ const r=document.createRange(); r.selectNodeContents(el); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); toast('تم نسخ الكود 📋'); }
-}
-function download(content, name, type){
-  const blob = new Blob([content], {type});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = name; a.click();
-  URL.revokeObjectURL(url);
-}
-
-/* ===================== النوافذ المنبثقة ===================== */
-function openModal(type, id){
-  const modal = document.getElementById('modal');
-  const body = document.getElementById('modal-body');
-  if(type === 'class'){
-    const isEdit = !!id;
-    const c = isEdit ? classes.find(x=>x.id===id) : {name:''};
-    document.getElementById('modal-title').textContent = isEdit ? 'تعديل فصل' : 'إضافة فصل';
-    body.innerHTML = '<label>اسم الفصل</label><input type="text" id="m-name" value="'+esc(c.name)+'" placeholder="مثل: الصف الرابع أ" />' +
-      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveClass(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
-  }else if(type === 'student'){
-    const isEdit = !!id;
-    const s = isEdit ? students.find(x=>x.id===id) : {name:'', class_id: classes[0] ? classes[0].id : ''};
-    document.getElementById('modal-title').textContent = isEdit ? 'تعديل طالب' : 'إضافة طالب';
-    body.innerHTML = '<label>اسم الطالب/ة</label><input type="text" id="m-name" value="'+esc(s.name)+'" placeholder="الاسم الكامل" />' +
-      '<label style="margin-top:10px">الفصل</label><select id="m-class">' + classes.map(c=>'<option value="'+c.id+'" '+(c.id===s.class_id?'selected':'')+'>'+esc(c.name)+'</option>').join('') + '</select>' +
-      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveStudent(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
-  }else if(type === 'observer'){
-    const isEdit = !!id;
-    const o = isEdit ? observers.find(x=>String(x.id)===String(id)) : {name:''};
-    document.getElementById('modal-title').textContent = isEdit ? 'تعديل اسم راصد' : 'إضافة راصد';
-    body.innerHTML = '<label>اسم الراصد</label><input type="text" id="m-name" value="'+esc(o.name||'')+'" placeholder="مثلاً: أ. محمد العتيبي" />' +
-      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveObserver(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
-  }else if(type === 'bulkStudents'){
-    document.getElementById('modal-title').textContent = 'إضافة طلاب جماعية';
-    body.innerHTML = '<label>الفصل</label><select id="bulk-class">' + classes.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('') + '</select>' +
-      '<label style="margin-top:10px">أسماء الطلاب (اسم في كل سطر)</label>' +
-      '<textarea id="bulk-names" rows="8" placeholder="اكتب اسمًا في كل سطر"></textarea>' +
-      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveBulkStudents()">إضافة الكل</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
-  }else if(type === 'behavior'){
-    const isEdit = !!id;
-    const b = isEdit ? behaviors.find(x=>x.id===id) : {name:'', emoji:'⭐', points:3};
-    document.getElementById('modal-title').textContent = isEdit ? 'تعديل سلوك' : 'إضافة سلوك متميز';
-    body.innerHTML = '<label>اسم السلوك</label><input type="text" id="m-name" value="'+esc(b.name)+'" placeholder="مثل: التزام بالهدوء" />' +
-      '<div class="grid g2" style="margin-top:10px"><div><label>الإيموجي</label><input type="text" id="m-emoji" value="'+(b.emoji||'⭐')+'" maxlength="4" /></div>' +
-      '<div><label>النقاط</label><input type="number" id="m-points" value="'+b.points+'" min="1" max="20" /></div></div>' +
-      '<div style="margin-top:14px;display:flex;gap:8px"><button class="btn-primary" onclick="saveBehavior(\''+(id||'')+'\')">حفظ</button><button class="btn-ghost" onclick="closeModal()">إلغاء</button></div>';
-  } else if (type === 'submission') {
-
-    const e = submissions.find(x => x.id === id);
-
-    if (!e) {
-      toast('السجل غير موجود', 'err');
-      return;
-    }
-
-    document.getElementById('modal-title').textContent =
-      'تعديل السجل المرصود';
-
-    const studentOptions = students.map(s =>
-      '<option value="' + s.id + '" ' +
-      (s.id === e.student_id ? 'selected' : '') +
-      '>' +
-      esc(s.name) +
-      '</option>'
-    ).join('');
-
-    const behaviorOptions = behaviors.map(b =>
-      '<option value="' + b.id + '" ' +
-      (b.id === e.behavior_id ? 'selected' : '') +
-      '>' +
-      (b.emoji || '⭐') +
-      ' ' +
-      esc(b.name) +
-      ' (+' + b.points + ')' +
-      '</option>'
-    ).join('');
-
-    const observerOptions = observers.map(o =>
-      '<option value="' + esc(o.name) + '" ' +
-      (o.name === e.observer ? 'selected' : '') +
-      '>' +
-      esc(o.name) +
-      '</option>'
-    ).join('');
-
-    const dateValue = e.recorded_at
-      ? new Date(e.recorded_at).toISOString().slice(0, 16)
-      : '';
-
-    body.innerHTML =
-
-      '<label>الطالب/ة</label>' +
-      '<select id="m-sub-student">' +
-      studentOptions +
-      '</select>' +
-
-      '<label style="margin-top:10px">السلوك</label>' +
-      '<select id="m-sub-behavior">' +
-      behaviorOptions +
-      '</select>' +
-
-      '<label style="margin-top:10px">الراصد</label>' +
-      '<select id="m-sub-observer">' +
-      observerOptions +
-      '</select>' +
-
-      '<label style="margin-top:10px">الملاحظة</label>' +
-      '<input type="text" id="m-sub-note" value="' +
-      esc(e.note || '') +
-      '" placeholder="ملاحظة اختيارية" />' +
-
-      '<label style="margin-top:10px">التاريخ والوقت</label>' +
-      '<input type="datetime-local" id="m-sub-date" value="' +
-      dateValue +
-      '" />' +
-
-      '<div style="margin-top:14px;display:flex;gap:8px">' +
-      '<button class="btn-primary" onclick="saveSubmission(\'' +
-      id +
-      '\')">حفظ</button>' +
-
-      '<button class="btn-ghost" onclick="closeModal()">' +
-      'إلغاء' +
-      '</button>' +
-      '</div>';
-  }
-  modal.classList.add('show');
-}
-function closeModal(){ document.getElementById('modal').classList.remove('show'); }
-
-async function saveClass(id){
-  const name = document.getElementById('m-name').value.trim();
-  if(!name){ toast('اكتب اسم الفصل','err'); return; }
-  if(id){ await renameClass(id, name); toast('تم الحفظ'); }
-  else{ await addClass(name); toast('تم الحفظ'); }
-  closeModal();
-}
-async function saveStudent(id){
-  const name = document.getElementById('m-name').value.trim();
-  const classId = document.getElementById('m-class').value;
-  if(!name){ toast('اكتب اسم الطالب','err'); return; }
-  if(id){ await updateStudent(id, name, classId); toast('تم الحفظ'); }
-  else{ await addStudent(name, classId); toast('تم الحفظ'); }
-  closeModal();
-}
-async function saveObserver(id){
-  const name = document.getElementById('m-name').value.trim();
-  if(!name){ toast('اكتب اسم الراصد','err'); return; }
-  if(id){
-    const old = observers.find(x=>String(x.id)===String(id));
-    if(old && old.name !== name){
-      await dbUpdate('observers', 'id', id, { name });
-      // تحديث اسم الراصد في السجلات السابقة ليُحفظ موحداً
-      submissions.filter(e=>e.observer === old.name).forEach(e=>dbUpdate('submissions','id',e.id,{observer:name}));
-    }
-  }else{
-    if(observers.some(o=>o.name === name)){ toast('هذا الاسم موجود بالفعل','err'); return; }
-    await addObserver(name);
-  }
-  toast('تم الحفظ'); closeModal(); await loadAll();
-}
-async function saveBulkStudents(){
-  const classId = document.getElementById('bulk-class').value;
-  const names = document.getElementById('bulk-names').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if(!names.length){ toast('اكتب أسماء الطلاب','err'); return; }
-  let added = 0, skipped = 0;
-  for(const name of names){
-    if(students.some(s=>s.name===name && s.class_id===classId)){ skipped++; continue; }
-    try{ await addStudent(name, classId); added++; }catch(_){}
-  }
-  toast('تمت إضافة '+added+' طالب'+(skipped ? ' ('+skipped+' مكرر)' : ''));
-  closeModal();
-}
-async function saveBehavior(id){
-  const name = document.getElementById('m-name').value.trim();
-  const emoji = document.getElementById('m-emoji').value.trim() || '⭐';
-  const points = Math.max(1, Math.min(20, parseInt(document.getElementById('m-points').value)||3));
-  if(!name){ toast('اكتب اسم السلوك','err'); return; }
-  if(id){ await updateBehavior(id, name, emoji, points); toast('تم الحفظ'); }
-  else{ await addBehavior(name, emoji, points); toast('تم الحفظ'); }
-  closeModal();
-}
-async function saveSubmission(id) {
-
-    const studentId =
-      document.getElementById('m-sub-student').value;
-
-    const behaviorId =
-      document.getElementById('m-sub-behavior').value;
-
-    const observer =
-      document.getElementById('m-sub-observer').value;
-
-    const note =
-      document.getElementById('m-sub-note').value.trim();
-
-    const date =
-      document.getElementById('m-sub-date').value;
-
-    const student =
-      students.find(s => s.id === studentId);
-
-    const behavior =
-      behaviors.find(b => b.id === behaviorId);
-
-    if (!student) {
-      toast('اختر طالباً', 'err');
-      return;
-    }
-
-    if (!behavior) {
-      toast('اختر سلوكاً', 'err');
-      return;
-    }
-
-    if (!observer) {
-      toast('اختر الراصد', 'err');
-      return;
-    }
-
-    try {
-
-      await dbUpdate(
-        'submissions',
-        'id',
-        id,
-        {
-          student_id: student.id,
-          class_id: student.class_id,
-
-          behavior_id: behavior.id,
-          behavior_name: behavior.name,
-          emoji: behavior.emoji || '⭐',
-          points: behavior.points,
-
-          observer: observer,
-          note: note,
-
-          recorded_at:
-            date
-              ? new Date(date).toISOString()
-              : new Date().toISOString()
-        }
-      );
-
-      toast('تم تعديل السجل ✅');
-
-      closeModal();
-
-      await loadAll();
-
-    } catch (error) {
-
-      console.error(
-        'saveSubmission',
-        error
-      );
-
-      toast(
-        'تعذر تعديل السجل',
-        'err'
-      );
-    }
-  }
-  async function deleteSubmission(id) {
+    async function deleteSubmission(id) {
 
       const submission =
         submissions.find(e => e.id === id);
@@ -2076,61 +2831,66 @@ async function saveSubmission(id) {
         );
       }
     }
-/* ===================== أدوات مساعدة ===================== */
-function $(s){ return document.querySelector(s); }
-function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
-function toast(msg, type){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.background = type === 'err' ? 'var(--bad)' : '#1f2937';
-  t.classList.add('show');
-  clearTimeout(window._toastTimer);
-  window._toastTimer = setTimeout(()=>t.classList.remove('show'), 2500);
-}
-function switchTab(name){
-  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-  document.querySelector('.tab[data-tab="'+name+'"]').classList.add('active');
-  document.getElementById('panel-'+name).classList.add('active');
-  renderAll();
-}
+    /* ===================== أدوات مساعدة ===================== */
+    function $(s) { return document.querySelector(s); }
+    function esc(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); }
+    function toast(msg, type) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.style.background = type === 'err' ? 'var(--bad)' : '#1f2937';
+      t.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+    function switchTab(name) {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x => x.classList.remove('active'));
+      document.querySelector('.tab[data-tab="' + name + '"]').classList.add('active');
+      document.getElementById('panel-' + name).classList.add('active');
+      renderAll();
+    }
 
-/* ===================== العرض الكلي ===================== */
-function renderAll(){
-  const totalStars = submissions.reduce((s,e)=>s+(e.points||0),0);
-  document.getElementById('stat-students').textContent = students.length;
-  document.getElementById('stat-stars').textContent = totalStars;
-  document.getElementById('stat-classes').textContent = classes.length;
-  document.getElementById('stat-events').textContent = submissions.length;
-  renderRecordPanel();
-  renderLeaderboard();
-  renderManage();
-  renderBehaviorsList();
-  fillReportSelect();
-}
+    /* ===================== العرض الكلي ===================== */
+    function renderAll() {
+      const totalStars = submissions.reduce((s, e) => s + (e.points || 0), 0);
+      document.getElementById('stat-students').textContent = students.length;
+      document.getElementById('stat-stars').textContent = totalStars;
+      document.getElementById('stat-classes').textContent = classes.length;
+      document.getElementById('stat-events').textContent = submissions.length;
+      renderRecordPanel();
+      renderLeaderboard();
+      renderManage();
+      renderBehaviorsList();
+      fillReportSelect();
+    }
 
-/* ===================== التنقل ===================== */
-document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
-  switchTab(t.dataset.tab);
-}));
+    /* ===================== التنقل ===================== */
+    document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+      switchTab(t.dataset.tab);
+    }));
 
-/* ===================== بدء التشغيل ===================== */
-// loadCfg();
-// loadAll();
-// testDbNow();
- loadCfg();
+    /* ===================== بدء التشغيل ===================== */
+    // loadCfg();
+    // loadAll();
+    // testDbNow();
+    loadCfg();
 
-  console.log('✅ Config loaded');
-  console.log('URL:', DB.url);
-  console.log('Key exists:', !!DB.anonKey);
+    console.log('✅ Config loaded');
+    console.log('URL:', DB.url);
+    console.log('Key exists:', !!DB.anonKey);
 
-  loadAll();
-  testDbNow();
+    loadAll();
+    testDbNow();
 
-  console.log(
-    '✅ نظام رصد السلوك المتميز — يعمل بالكامل من قاعدة البيانات'
-  );
-</script>
-<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
+    console.log(
+      '✅ نظام رصد السلوك المتميز — يعمل بالكامل من قاعدة البيانات'
+    );
+  </script>
+  <script type="module"
+    src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496"
+    integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ=="
+    data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79"}'
+    crossorigin="anonymous"></script>
 </body>
+
 </html>
